@@ -1,0 +1,17 @@
+{
+  "itemGroup.redstone_arsenal": "Redstone Arsenal",
+
+  "item.redstone_arsenal.flux_axe": "Machado de Fluxo-Infundido",
+  "item.redstone_arsenal.flux_battle_wrench": "Chave de Batalha de Fluxo-Infundido",
+  "item.redstone_arsenal.flux_bow": "Arco de Fluxo-Infundido",
+  "item.redstone_arsenal.flux_excavator": "Excavadeira de Fluxo-Infundido",
+  "item.redstone_arsenal.flux_fishing_rod": "Vara de Pesca de Fluxo-Infundido",
+  "item.redstone_arsenal.flux_hammer": "Martelo de Fluxo-Infundido",
+  "item.redstone_arsenal.flux_hoe": "Enxada de Fluxo-Infundido",
+  "item.redstone_arsenal.flux_pickaxe": "Picareta de Fluxo-Infundido",
+  "item.redstone_arsenal.flux_shield": "Escudo de Fluxo-Infundido",
+  "item.redstone_arsenal.flux_shovel": "Pá de Fluxo-Infundido",
+  "item.redstone_arsenal.flux_sickle": "Foice de Fluxo-Infundido",
+  "item.redstone_arsenal.flux_sword": "Espada de Fluxo-Infundido"
+
+}
