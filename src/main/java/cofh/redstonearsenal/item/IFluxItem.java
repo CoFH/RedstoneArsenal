@@ -30,7 +30,7 @@ public interface IFluxItem extends ICoFHItem, IEnergyContainerItem, IMultiModeIt
 
     default int useEnergy(ItemStack stack, boolean simulate) {
 
-        int unbreakingLevel = MathHelper.clamp(EnchantmentHelper.getEnchantmentLevel(Enchantments.UNBREAKING, stack), 0, 10);
+        int unbreakingLevel = MathHelper.clamp(EnchantmentHelper.getItemEnchantmentLevel(Enchantments.UNBREAKING, stack), 0, 10);
         if (MathHelper.RANDOM.nextInt(2 + unbreakingLevel) >= 2) {
             return 0;
         }
@@ -75,9 +75,9 @@ public interface IFluxItem extends ICoFHItem, IEnergyContainerItem, IMultiModeIt
     default void onModeChange(PlayerEntity player, ItemStack stack) {
 
         if (getMode(stack) > 0) {
-            player.world.playSound(null, player.getPosition(), SoundEvents.ENTITY_LIGHTNING_BOLT_THUNDER, SoundCategory.PLAYERS, 0.4F, 1.0F);
+            player.level.playSound(null, player.blockPosition(), SoundEvents.LIGHTNING_BOLT_THUNDER, SoundCategory.PLAYERS, 0.4F, 1.0F);
         } else {
-            player.world.playSound(null, player.getPosition(), SoundEvents.ENTITY_EXPERIENCE_ORB_PICKUP, SoundCategory.PLAYERS, 0.2F, 0.6F);
+            player.level.playSound(null, player.blockPosition(), SoundEvents.EXPERIENCE_ORB_PICKUP, SoundCategory.PLAYERS, 0.2F, 0.6F);
         }
     }
     // endregion

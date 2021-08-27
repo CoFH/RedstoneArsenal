@@ -13,9 +13,9 @@ public class RSAItems {
 
     public static void register() {
 
-        ItemGroup combat = ItemGroup.COMBAT;
-        ItemGroup tools = ItemGroup.TOOLS;
-        ItemGroup misc = ItemGroup.MISC;
+        ItemGroup combat = ItemGroup.TAB_COMBAT;
+        ItemGroup tools = ItemGroup.TAB_TOOLS;
+        ItemGroup misc = ItemGroup.TAB_MISC;
 
         Rarity rarity = Rarity.UNCOMMON;
 
@@ -40,37 +40,37 @@ public class RSAItems {
     public static final IItemTier MATERIAL_FLUX_METAL = new IItemTier() {
 
         @Override
-        public int getMaxUses() {
+        public int getUses() {
 
             return 0;
         }
 
         @Override
-        public float getEfficiency() {
+        public float getSpeed() {
 
             return 8.0F;
         }
 
         @Override
-        public float getAttackDamage() {
+        public float getAttackDamageBonus() {
 
             return 3.0F;
         }
 
         @Override
-        public int getHarvestLevel() {
+        public int getLevel() {
 
             return 4;
         }
 
         @Override
-        public int getEnchantability() {
+        public int getEnchantmentValue() {
 
             return 18;
         }
 
         @Override
-        public Ingredient getRepairMaterial() {
+        public Ingredient getRepairIngredient() {
 
             return Ingredient.EMPTY;
         }

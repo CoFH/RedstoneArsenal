@@ -58,7 +58,7 @@ public class RedstoneArsenal {
 
                 @Override
                 @OnlyIn(Dist.CLIENT)
-                public ItemStack createIcon() {
+                public ItemStack makeIcon() {
 
                     return new ItemStack(ITEMS.get("flux_sword"));
                 }
