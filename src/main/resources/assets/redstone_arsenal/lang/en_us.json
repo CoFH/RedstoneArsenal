@@ -1,6 +1,14 @@
 {
   "itemGroup.redstone_arsenal": "Redstone Arsenal",
 
+  "item.redstone_arsenal.flux_coin": "Flux-Infused Coin",
+  "item.redstone_arsenal.flux_dust": "Flux-Infused Dust"
+  "item.redstone_arsenal.flux_gear": "Flux-Infused Gear",
+  "item.redstone_arsenal.flux_gem": "Flux-Infused Gem",
+  "item.redstone_arsenal.flux_ingot": "Flux-Infused Ingot",
+  "item.redstone_arsenal.flux_nugget": "Flux-Infused Nugget",
+  "item.redstone_arsenal.flux_plate": "Flux-Infused Plate",
+
   "item.redstone_arsenal.flux_axe": "Flux-Infused Axe",
   "item.redstone_arsenal.flux_battle_wrench": "Flux-Infused Battle Wrench",
   "item.redstone_arsenal.flux_bow": "Flux-Infused Bow",

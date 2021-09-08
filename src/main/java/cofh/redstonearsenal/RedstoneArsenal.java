@@ -7,9 +7,6 @@ import cofh.redstonearsenal.init.RSAItems;
 import net.minecraft.block.Block;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
-import net.minecraft.item.ItemStack;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
@@ -53,17 +50,17 @@ public class RedstoneArsenal {
 
     private void clientSetup(final FMLClientSetupEvent event) {
 
-        if (RSAConfig.enableCreativeTab.get()) {
-            itemGroup = new ItemGroup(-1, ID_REDSTONE_ARSENAL) {
-
-                @Override
-                @OnlyIn(Dist.CLIENT)
-                public ItemStack makeIcon() {
-
-                    return new ItemStack(ITEMS.get("flux_sword"));
-                }
-            };
-        }
+        //        if (RSAConfig.enableCreativeTab.get()) {
+        //            itemGroup = new ItemGroup(-1, ID_REDSTONE_ARSENAL) {
+        //
+        //                @Override
+        //                @OnlyIn(Dist.CLIENT)
+        //                public ItemStack makeIcon() {
+        //
+        //                    return new ItemStack(ITEMS.get("flux_sword"));
+        //                }
+        //            };
+        //        }
     }
     // endregion
 }

@@ -30,6 +30,14 @@ public class RSAItemModels extends ItemModelProviderCoFH {
         registerBlockItemModels();
 
         DeferredRegisterCoFH<Item> reg = ITEMS;
+
+        generated(reg.getSup("flux_gem"));
+        generated(reg.getSup("flux_ingot"));
+        generated(reg.getSup("flux_nugget"));
+        generated(reg.getSup("flux_dust"));
+        generated(reg.getSup("flux_gear"));
+        // generated(reg.getSup("flux_plate"));
+        // generated(reg.getSup("flux_coin"));
     }
 
     // region HELPERS
