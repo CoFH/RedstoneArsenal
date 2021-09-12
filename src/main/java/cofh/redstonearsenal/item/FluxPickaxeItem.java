@@ -2,6 +2,7 @@ package cofh.redstonearsenal.item;
 
 import cofh.core.util.ProxyUtils;
 import cofh.lib.energy.EnergyContainerItemWrapper;
+import cofh.lib.item.impl.PickaxeItemCoFH;
 import cofh.lib.util.Utils;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
@@ -17,7 +18,6 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.EquipmentSlotType;
 import net.minecraft.item.IItemTier;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.PickaxeItem;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
@@ -35,7 +35,7 @@ import java.util.Set;
 import static cofh.lib.item.ContainerType.ENERGY;
 import static cofh.lib.util.helpers.StringHelper.*;
 
-public class FluxPickaxeItem extends PickaxeItem implements IFluxItem {
+public class FluxPickaxeItem extends PickaxeItemCoFH implements IFluxItem {
 
     protected static final Set<ToolType> TOOL_TYPES = new ObjectOpenHashSet<>();
     protected static final Set<Material> MATERIALS = new ObjectOpenHashSet<>();

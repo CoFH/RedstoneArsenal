@@ -2,6 +2,7 @@ package cofh.redstonearsenal.item;
 
 import cofh.core.util.ProxyUtils;
 import cofh.lib.energy.EnergyContainerItemWrapper;
+import cofh.lib.item.impl.AxeItemCoFH;
 import cofh.lib.util.Utils;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
@@ -13,7 +14,6 @@ import net.minecraft.entity.ai.attributes.AttributeModifier;
 import net.minecraft.entity.ai.attributes.Attributes;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.EquipmentSlotType;
-import net.minecraft.item.AxeItem;
 import net.minecraft.item.IItemTier;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
@@ -31,7 +31,7 @@ import java.util.List;
 import static cofh.lib.item.ContainerType.ENERGY;
 import static cofh.lib.util.helpers.StringHelper.*;
 
-public class FluxAxeItem extends AxeItem implements IFluxItem {
+public class FluxAxeItem extends AxeItemCoFH implements IFluxItem {
 
     protected final float damage;
     protected final float damageCharged;

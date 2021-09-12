@@ -2,6 +2,7 @@ package cofh.redstonearsenal.item;
 
 import cofh.core.util.ProxyUtils;
 import cofh.lib.energy.EnergyContainerItemWrapper;
+import cofh.lib.item.impl.HoeItemCoFH;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 import net.minecraft.block.BlockState;
@@ -12,7 +13,6 @@ import net.minecraft.entity.ai.attributes.AttributeModifier;
 import net.minecraft.entity.ai.attributes.Attributes;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.EquipmentSlotType;
-import net.minecraft.item.HoeItem;
 import net.minecraft.item.IItemTier;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemUseContext;
@@ -31,7 +31,7 @@ import java.util.List;
 import static cofh.lib.item.ContainerType.ENERGY;
 import static cofh.lib.util.helpers.StringHelper.*;
 
-public class FluxHoeItem extends HoeItem implements IFluxItem {
+public class FluxHoeItem extends HoeItemCoFH implements IFluxItem {
 
     protected final float damage;
     protected final float damageCharged;
