@@ -11,9 +11,9 @@ import static cofh.lib.util.constants.Constants.ID_REDSTONE_ARSENAL;
 import static cofh.redstonearsenal.RedstoneArsenal.BLOCKS;
 import static cofh.redstonearsenal.RedstoneArsenal.ITEMS;
 
-public class RSAItemModels extends ItemModelProviderCoFH {
+public class RSAItemModelProvider extends ItemModelProviderCoFH {
 
-    public RSAItemModels(DataGenerator generator, ExistingFileHelper existingFileHelper) {
+    public RSAItemModelProvider(DataGenerator generator, ExistingFileHelper existingFileHelper) {
 
         super(generator, ID_REDSTONE_ARSENAL, existingFileHelper);
     }

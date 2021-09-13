@@ -1,7 +1,7 @@
 package cofh.redstonearsenal.init;
 
 import cofh.core.item.ItemCoFH;
-import cofh.core.item.ItemTierCoFH;
+import cofh.lib.item.ItemTierCoFH;
 import cofh.redstonearsenal.item.*;
 import net.minecraft.item.IItemTier;
 import net.minecraft.item.Item;
