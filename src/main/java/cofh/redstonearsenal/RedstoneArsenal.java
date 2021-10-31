@@ -24,7 +24,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import static cofh.lib.util.constants.Constants.ID_REDSTONE_ARSENAL;
-import static cofh.redstonearsenal.init.RSAReferences.*;
+import static cofh.redstonearsenal.init.RSAReferences.FLUX_SLASH_ENTITY;
 
 @Mod(ID_REDSTONE_ARSENAL)
 public class RedstoneArsenal {
@@ -81,7 +81,7 @@ public class RedstoneArsenal {
     //region HELPERS
     private void registerEntityRenderingHandlers() {
 
-        RenderingRegistry.registerEntityRenderingHandler(SWORD_PROJECTILE_ENTITY, FluxSlashRenderer::new);
+        RenderingRegistry.registerEntityRenderingHandler(FLUX_SLASH_ENTITY, FluxSlashRenderer::new);
     }
 
     private void addRenderLayers() {

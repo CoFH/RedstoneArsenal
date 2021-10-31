@@ -19,7 +19,7 @@ import net.minecraftforge.fml.network.NetworkHooks;
 
 import javax.annotation.Nullable;
 
-import static cofh.redstonearsenal.init.RSAReferences.SWORD_PROJECTILE_ENTITY;
+import static cofh.redstonearsenal.init.RSAReferences.FLUX_SLASH_ENTITY;
 
 public class FluxSlashEntity extends ProjectileEntity {
 
@@ -36,7 +36,7 @@ public class FluxSlashEntity extends ProjectileEntity {
 
     public FluxSlashEntity(World worldIn, double x, double y, double z) {
 
-        this(SWORD_PROJECTILE_ENTITY, worldIn);
+        this(FLUX_SLASH_ENTITY, worldIn);
         this.setPos(x, y, z);
     }
 

@@ -94,7 +94,6 @@ public class FluxElytraItem extends ElytraItem implements IFluxItem {
     @Override
     public boolean elytraFlightTick(ItemStack stack, LivingEntity entity, int flightTicks) {
 
-        System.out.println(propelTime);
         boolean shouldExtract = (flightTicks & 31) == 0 && !(entity instanceof PlayerEntity && ((PlayerEntity) entity).abilities.instabuild);
         useEnergy(stack, false, !shouldExtract);
 

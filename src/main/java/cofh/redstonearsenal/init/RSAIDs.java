@@ -7,7 +7,7 @@ public class RSAIDs {
     }
 
     // region ENTITIES
-    public static final String ID_SWORD_PROJECTILE = "sword_projectile";
+    public static final String ID_FLUX_SLASH = "flux_slash";
     public static final String ID_FLUX_ARROW = "flux_arrow";
     // endregion
 

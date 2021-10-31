@@ -1,6 +1,5 @@
 package cofh.redstonearsenal.init;
 
-
 import cofh.redstonearsenal.entity.FluxSlashEntity;
 import net.minecraft.entity.EntityType;
 import net.minecraftforge.registries.ObjectHolder;
@@ -17,8 +16,8 @@ public class RSAReferences {
     }
 
     // region ENTITIES
-    @ObjectHolder(ID_SWORD_PROJECTILE)
-    public static final EntityType<FluxSlashEntity> SWORD_PROJECTILE_ENTITY = null;
+    @ObjectHolder(ID_FLUX_SLASH)
+    public static final EntityType<FluxSlashEntity> FLUX_SLASH_ENTITY = null;
     // endregion
 
     // region ITEMS

@@ -2,22 +2,20 @@ package cofh.redstonearsenal.item;
 
 import cofh.core.util.ProxyUtils;
 import cofh.lib.util.Utils;
-import cofh.redstonearsenal.entity.FluxSlashEntity;
-import com.google.common.collect.HashMultimap;
-import com.google.common.collect.Multimap;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.util.ITooltipFlag;
+import net.minecraft.enchantment.EnchantmentHelper;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.ai.attributes.Attribute;
-import net.minecraft.entity.ai.attributes.AttributeModifier;
-import net.minecraft.entity.ai.attributes.Attributes;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.inventory.EquipmentSlotType;
+import net.minecraft.entity.projectile.FishingBobberEntity;
 import net.minecraft.item.FishingRodItem;
-import net.minecraft.item.IItemTier;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.item.UseAction;
+import net.minecraft.stats.Stats;
+import net.minecraft.util.*;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.world.World;
 import net.minecraftforge.api.distmarker.Dist;
@@ -27,6 +25,8 @@ import javax.annotation.Nullable;
 import java.util.List;
 
 public class FluxFishingRodItem extends FishingRodItem implements IFluxItem {
+
+    public static final double REEL_SPEED = 0.2;
 
     protected final int maxEnergy;
     protected final int extract;
@@ -40,6 +40,7 @@ public class FluxFishingRodItem extends FishingRodItem implements IFluxItem {
         this.extract = xfer;
         this.receive = xfer;
 
+        ProxyUtils.registerItemModelProperty(this, new ResourceLocation("cast"), (stack, world, entity) -> entity instanceof PlayerEntity && ((PlayerEntity) entity).fishing != null ? 1F : 0F);
         ProxyUtils.registerItemModelProperty(this, new ResourceLocation("charged"), (stack, world, entity) -> getEnergyStored(stack) > 0 ? 1F : 0F);
         ProxyUtils.registerItemModelProperty(this, new ResourceLocation("active"), (stack, world, entity) -> getEnergyStored(stack) > 0 && getMode(stack) > 0 ? 1F : 0F);
     }
@@ -49,6 +50,88 @@ public class FluxFishingRodItem extends FishingRodItem implements IFluxItem {
     public void appendHoverText(ItemStack stack, @Nullable World worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn) {
 
         tooltipDelegate(stack, worldIn, tooltip, flagIn);
+    }
+
+    @Override
+    public ActionResult<ItemStack> use(World world, PlayerEntity player, Hand hand) {
+
+        ItemStack stack = player.getItemInHand(hand);
+        if (player.fishing != null) {
+            if (getMode(stack) > 0 && player.fishing.getHookedIn() != null) {
+                if (player.isCrouching()) {
+                    player.fishing.remove();
+                }
+                else {
+                    player.startUsingItem(hand);
+                }
+            }
+            else {
+                player.fishing.retrieve(stack);
+                useEnergy(stack, false, player.abilities.instabuild);
+
+                world.playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.FISHING_BOBBER_RETRIEVE, SoundCategory.NEUTRAL, 1.0F, 0.4F / (random.nextFloat() * 0.4F + 0.8F));
+            }
+        }
+        else if (hasEnergy(stack, false)) {
+            world.playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.FISHING_BOBBER_THROW, SoundCategory.NEUTRAL, 0.5F, 0.4F / (random.nextFloat() * 0.4F + 0.8F));
+            if (!world.isClientSide) {
+                world.addFreshEntity(new FishingBobberEntity(player, world, EnchantmentHelper.getFishingLuckBonus(stack), EnchantmentHelper.getFishingSpeedBonus(stack)));
+            }
+            player.awardStat(Stats.ITEM_USED.get(this));
+        }
+        else {
+            return ActionResult.pass(stack);
+        }
+
+        return ActionResult.sidedSuccess(stack, world.isClientSide());
+    }
+
+    @Override
+    public void onUseTick(World world, LivingEntity living, ItemStack stack, int useDuration) {
+
+        if (living instanceof PlayerEntity) {
+            PlayerEntity player = (PlayerEntity) living;
+            if (player.fishing != null && player.fishing.getHookedIn() != null && getMode(stack) > 0) {
+                if (living.isCrouching()) {
+                    player.fishing.remove();
+                }
+                else if ((useDuration & 8) != 0 || hasEnergy(stack, true) || player.abilities.instabuild) {
+                    useEnergy(stack, true, player.abilities.instabuild);
+                    reelIn(stack, player.fishing);
+                    return;
+                }
+            }
+        }
+        living.releaseUsingItem();
+    }
+    
+    public void reelIn(ItemStack stack, FishingBobberEntity bobber) {
+
+        Entity owner = bobber.getOwner();
+        if (!bobber.level.isClientSide && owner != null) {
+            if (bobber.getHookedIn() != null) {
+                Vector3d relPos = owner.position().subtract(bobber.position());
+                bobber.getHookedIn().setDeltaMovement(bobber.getHookedIn().getDeltaMovement().add(relPos.normalize().scale(FluxFishingRodItem.REEL_SPEED)));
+                return;
+            }
+            bobber.remove();
+        }
+    }
+
+    @Override
+    public void releaseUsing(ItemStack stack, World world, LivingEntity living, int useDuration) {
+    }
+
+    @Override
+    public UseAction getUseAnimation(ItemStack stack) {
+
+        return UseAction.BOW;
+    }
+
+    @Override
+    public int getUseDuration(ItemStack p_77626_1_) {
+
+        return 72000;
     }
 
     @Override
