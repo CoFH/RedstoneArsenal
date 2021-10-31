@@ -1,13 +1,20 @@
 package cofh.redstonearsenal;
 
 import cofh.lib.util.DeferredRegisterCoFH;
+import cofh.redstonearsenal.client.renderer.FluxElytraLayer;
+import cofh.redstonearsenal.client.renderer.FluxSlashRenderer;
 import cofh.redstonearsenal.init.RSABlocks;
 import cofh.redstonearsenal.init.RSAConfig;
+import cofh.redstonearsenal.init.RSAEntities;
 import cofh.redstonearsenal.init.RSAItems;
 import net.minecraft.block.Block;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.entity.PlayerRenderer;
+import net.minecraft.entity.EntityType;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
 import net.minecraftforge.eventbus.api.IEventBus;
+import net.minecraftforge.fml.client.registry.RenderingRegistry;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
@@ -17,6 +24,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import static cofh.lib.util.constants.Constants.ID_REDSTONE_ARSENAL;
+import static cofh.redstonearsenal.init.RSAReferences.*;
 
 @Mod(ID_REDSTONE_ARSENAL)
 public class RedstoneArsenal {
@@ -25,6 +33,7 @@ public class RedstoneArsenal {
 
     public static final DeferredRegisterCoFH<Block> BLOCKS = DeferredRegisterCoFH.create(ForgeRegistries.BLOCKS, ID_REDSTONE_ARSENAL);
     public static final DeferredRegisterCoFH<Item> ITEMS = DeferredRegisterCoFH.create(ForgeRegistries.ITEMS, ID_REDSTONE_ARSENAL);
+    public static final DeferredRegisterCoFH<EntityType<?>> ENTITIES = DeferredRegisterCoFH.create(ForgeRegistries.ENTITIES, ID_REDSTONE_ARSENAL);
 
     public static ItemGroup itemGroup;
 
@@ -37,9 +46,11 @@ public class RedstoneArsenal {
 
         BLOCKS.register(modEventBus);
         ITEMS.register(modEventBus);
+        ENTITIES.register(modEventBus);
 
         RSABlocks.register();
         RSAItems.register();
+        RSAEntities.register();
     }
 
     // region INITIALIZATION
@@ -61,6 +72,23 @@ public class RedstoneArsenal {
         //                }
         //            };
         //        }
+
+        registerEntityRenderingHandlers();
+        addRenderLayers();
     }
     // endregion
+
+    //region HELPERS
+    private void registerEntityRenderingHandlers() {
+
+        RenderingRegistry.registerEntityRenderingHandler(SWORD_PROJECTILE_ENTITY, FluxSlashRenderer::new);
+    }
+
+    private void addRenderLayers() {
+
+        for (PlayerRenderer renderer : Minecraft.getInstance().getEntityRenderDispatcher().getSkinMap().values()) {
+            renderer.addLayer(new FluxElytraLayer<>(renderer));
+        }
+    }
+    //endregion
 }

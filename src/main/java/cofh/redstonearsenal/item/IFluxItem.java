@@ -1,40 +1,79 @@
 package cofh.redstonearsenal.item;
 
+import cofh.lib.energy.EnergyContainerItemWrapper;
 import cofh.lib.energy.IEnergyContainerItem;
 import cofh.lib.item.ICoFHItem;
 import cofh.lib.item.IMultiModeItem;
 import cofh.lib.util.helpers.MathHelper;
+import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.enchantment.Enchantments;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.projectile.AbstractArrowEntity;
+import net.minecraft.entity.projectile.ProjectileEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.SoundCategory;
-import net.minecraft.util.SoundEvents;
+import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.util.*;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.world.World;
+import net.minecraftforge.common.capabilities.ICapabilityProvider;
 
+import javax.annotation.Nullable;
+import java.util.List;
+
+import static cofh.lib.item.ContainerType.ENERGY;
 import static cofh.lib.util.constants.Constants.RGB_DURABILITY_FLUX;
+import static cofh.lib.util.helpers.StringHelper.*;
 
 public interface IFluxItem extends ICoFHItem, IEnergyContainerItem, IMultiModeItem {
 
     int ENERGY_PER_USE = 200;
     int ENERGY_PER_USE_CHARGED = 800;
 
-    default int getEnergyPerUse(ItemStack stack) {
+    default int getEnergyPerUse(boolean charged) {
 
-        return getMode(stack) > 0 ? ENERGY_PER_USE_CHARGED : ENERGY_PER_USE;
+        return charged ? ENERGY_PER_USE_CHARGED : ENERGY_PER_USE;
     }
 
-    default boolean hasEnergy(ItemStack stack) {
+    default int getEnergyPerUse(ItemStack stack) {
+
+        return getEnergyPerUse(getMode(stack) > 0);
+    }
+
+    default boolean hasEnergy(ItemStack stack, int amount) {
 
         return getEnergyStored(stack) >= getEnergyPerUse(stack);
     }
 
-    default int useEnergy(ItemStack stack, boolean simulate) {
+    default boolean hasEnergy(ItemStack stack) {
+
+        return hasEnergy(stack, getEnergyPerUse(stack));
+    }
+
+    default boolean hasEnergy(ItemStack stack, boolean charged) {
+
+        return hasEnergy(stack, getEnergyPerUse(charged));
+    }
+
+    default int useEnergy(ItemStack stack, int amount, boolean simulate) {
 
         int unbreakingLevel = MathHelper.clamp(EnchantmentHelper.getItemEnchantmentLevel(Enchantments.UNBREAKING, stack), 0, 10);
         if (MathHelper.RANDOM.nextInt(2 + unbreakingLevel) >= 2) {
             return 0;
         }
-        return extractEnergy(stack, getEnergyPerUse(stack), simulate);
+        return extractEnergy(stack, amount, simulate);
+    }
+
+    default int useEnergy(ItemStack stack, boolean charged, boolean simulate) {
+
+        return useEnergy(stack, getEnergyPerUse(charged), simulate);
+    }
+
+    default int useEnergy(ItemStack stack, boolean simulate) {
+
+        return useEnergy(stack, getEnergyPerUse(stack), false);
     }
 
     @Override
@@ -81,4 +120,31 @@ public interface IFluxItem extends ICoFHItem, IEnergyContainerItem, IMultiModeIt
         }
     }
     // endregion
+
+    @Override
+    default ICapabilityProvider initCapabilities(ItemStack stack, @Nullable CompoundNBT nbt) {
+
+        return new EnergyContainerItemWrapper(stack, this);
+    }
+
+    default void tooltipDelegate(ItemStack stack, @Nullable World worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn) {
+
+        if (getMode(stack) > 0) {
+            tooltip.add(getTextComponent("Empowered")); //TODO: localize or remove
+        }
+
+        boolean creative = isCreative(stack, ENERGY);
+        tooltip.add(getTextComponent(localize("info.cofh.energy") + ": "
+                + (creative ?
+                localize("info.cofh.infinite") :
+                getScaledNumber(getEnergyStored(stack)) + " / " + getScaledNumber(getMaxEnergyStored(stack)) + " RF")));
+    }
+
+    static DamageSource fluxDirectDamage(LivingEntity attacker) {
+        return (new EntityDamageSource("flux", attacker)).bypassArmor();
+    }
+
+    static DamageSource fluxRangedDamage (ProjectileEntity projectile, @Nullable Entity shooter) {
+        return (new IndirectEntityDamageSource("flux_ranged", projectile, shooter)).setProjectile().bypassArmor();
+    }
 }

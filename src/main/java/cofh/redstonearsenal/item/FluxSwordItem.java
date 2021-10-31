@@ -4,6 +4,7 @@ import cofh.core.util.ProxyUtils;
 import cofh.lib.energy.EnergyContainerItemWrapper;
 import cofh.lib.item.impl.SwordItemCoFH;
 import cofh.lib.util.Utils;
+import cofh.redstonearsenal.entity.FluxSlashEntity;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 import net.minecraft.block.BlockState;
@@ -27,9 +28,6 @@ import net.minecraftforge.common.capabilities.ICapabilityProvider;
 
 import javax.annotation.Nullable;
 import java.util.List;
-
-import static cofh.lib.item.ContainerType.ENERGY;
-import static cofh.lib.util.helpers.StringHelper.*;
 
 public class FluxSwordItem extends SwordItemCoFH implements IFluxItem {
 
@@ -61,19 +59,58 @@ public class FluxSwordItem extends SwordItemCoFH implements IFluxItem {
     @OnlyIn(Dist.CLIENT)
     public void appendHoverText(ItemStack stack, @Nullable World worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn) {
 
-        tooltip.add(isCreative(stack, ENERGY)
-                ? getTextComponent("info.cofh.infinite_source")
-                : getTextComponent(localize("info.cofh.energy") + ": " + getScaledNumber(getEnergyStored(stack)) + " / " + getScaledNumber(getMaxEnergyStored(stack)) + " RF"));
+        tooltipDelegate(stack, worldIn, tooltip, flagIn);
     }
 
     @Override
     public boolean hurtEnemy(ItemStack stack, LivingEntity target, LivingEntity attacker) {
 
-        PlayerEntity player = (PlayerEntity) attacker;
-        if (!player.abilities.instabuild && hasEnergy(stack)) {
-            useEnergy(stack, false);
+        if (attacker instanceof PlayerEntity) {
+            PlayerEntity player = (PlayerEntity) attacker;
+            if (!player.abilities.instabuild && hasEnergy(stack)) {
+                useEnergy(stack, false);
+            }
+
+            if (getMode(stack) > 0) {
+                if (canSweepAttack(player)) { //TODO: player attack strength already reset once this is called. time to use Mick's Inn?
+                    shootFluxSlash(stack, player);
+                }
+            }
         }
         return true;
+    }
+
+    @Override
+    public boolean onEntitySwing(ItemStack stack, LivingEntity entity) {
+
+        if (getMode(stack) > 0 && entity instanceof PlayerEntity) {
+            PlayerEntity player = (PlayerEntity) entity;
+
+            if (canSweepAttack(player)) {
+                shootFluxSlash(stack, player);
+            }
+        }
+
+        return false;
+    }
+
+    protected void shootFluxSlash(ItemStack stack, PlayerEntity player) {
+
+        if (hasEnergy(stack, true) || !player.abilities.instabuild) {
+            useEnergy(stack, true, player.abilities.instabuild);
+
+            World world = player.level;
+            if (!world.isClientSide()) {
+                FluxSlashEntity projectile = new FluxSlashEntity(world, player);
+                world.addFreshEntity(projectile);
+            }
+        }
+    }
+
+    public static boolean canSweepAttack(PlayerEntity player) {
+
+        // &&(player.isOnGround() || player.onClimbable() || player.isInWater() || player.hasEffect(Effects.BLINDNESS) || player.isPassenger())
+        return player.getAttackStrengthScale(0.5F) > 0.9F && !player.isSprinting();
     }
 
     @Override
@@ -106,12 +143,6 @@ public class FluxSwordItem extends SwordItemCoFH implements IFluxItem {
     protected float getAttackSpeed(ItemStack stack) {
 
         return hasEnergy(stack) && getMode(stack) > 0 ? attackSpeed + 0.2F : attackSpeed;
-    }
-
-    @Override
-    public ICapabilityProvider initCapabilities(ItemStack stack, @Nullable CompoundNBT nbt) {
-
-        return new EnergyContainerItemWrapper(stack, this, false);
     }
 
     // region IEnergyContainerItem

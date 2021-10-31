@@ -2,7 +2,7 @@
   "itemGroup.redstone_arsenal": "Redstone Arsenal",
 
   "item.redstone_arsenal.flux_coin": "Flux-Infused Coin",
-  "item.redstone_arsenal.flux_dust": "Flux-Infused Dust"
+  "item.redstone_arsenal.flux_dust": "Flux-Infused Dust",
   "item.redstone_arsenal.flux_gear": "Flux-Infused Gear",
   "item.redstone_arsenal.flux_gem": "Flux-Infused Gem",
   "item.redstone_arsenal.flux_ingot": "Flux-Infused Ingot",
@@ -20,6 +20,8 @@
   "item.redstone_arsenal.flux_shield": "Flux-Infused Shield",
   "item.redstone_arsenal.flux_shovel": "Flux-Infused Shovel",
   "item.redstone_arsenal.flux_sickle": "Flux-Infused Sickle",
-  "item.redstone_arsenal.flux_sword": "Flux-Infused Sword"
+  "item.redstone_arsenal.flux_sword": "Flux-Infused Sword",
+  "item.redstone_arsenal.flux_elytra": "Flux-Infused Elytra",
+  "item.redstone_arsenal.flux_controller": "Flux-Infused Elytra Controller"
 
 }

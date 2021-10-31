@@ -61,9 +61,7 @@ public class FluxHoeItem extends HoeItemCoFH implements IFluxItem {
     @OnlyIn(Dist.CLIENT)
     public void appendHoverText(ItemStack stack, @Nullable World worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn) {
 
-        tooltip.add(isCreative(stack, ENERGY)
-                ? getTextComponent("info.cofh.infinite_source")
-                : getTextComponent(localize("info.cofh.energy") + ": " + getScaledNumber(getEnergyStored(stack)) + " / " + getScaledNumber(getMaxEnergyStored(stack)) + " RF"));
+        tooltipDelegate(stack, worldIn, tooltip, flagIn);
     }
 
     @Override
@@ -125,12 +123,6 @@ public class FluxHoeItem extends HoeItemCoFH implements IFluxItem {
     protected float getAttackSpeed(ItemStack stack) {
 
         return hasEnergy(stack) && getMode(stack) > 0 ? attackSpeed + 0.2F : attackSpeed;
-    }
-
-    @Override
-    public ICapabilityProvider initCapabilities(ItemStack stack, @Nullable CompoundNBT nbt) {
-
-        return new EnergyContainerItemWrapper(stack, this);
     }
 
     // region IEnergyContainerItem
