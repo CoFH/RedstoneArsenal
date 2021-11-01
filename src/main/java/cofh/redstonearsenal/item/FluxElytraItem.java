@@ -13,7 +13,9 @@ import net.minecraft.entity.ai.attributes.AttributeModifier;
 import net.minecraft.entity.ai.attributes.Attributes;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.EquipmentSlotType;
+import net.minecraft.item.ArmorItem;
 import net.minecraft.item.ElytraItem;
+import net.minecraft.item.IArmorMaterial;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.vector.Vector3d;
@@ -26,38 +28,33 @@ import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.function.Consumer;
 
 import static cofh.lib.util.helpers.StringHelper.*;
 import static net.minecraft.util.text.TextFormatting.*;
 
-public class FluxElytraItem extends ElytraItem implements IFluxItem {
-
+public class FluxElytraItem extends ArmorItem implements IFluxItem {
 
     public static final double PROPEL_SPEED = 0.85;
-    public static final double BRAKE_RATE = 0.92;
+    public static final double BRAKE_RATE = 0.90;
     public static final int BOOST_TIME = 40;
-    public static final UUID chestUUID = UUID.fromString("9F3D476D-C118-4544-8365-64846904B48E");
+    public static final UUID CHEST_UUID = UUID.fromString("9F3D476D-C118-4544-8365-64846904B48E");
 
     protected int maxEnergy;
     protected int extract;
     protected int receive;
-    protected int defense;
-    protected float toughness;
     protected int propelTime = 0;
 
-    public FluxElytraItem(int defense, float toughness, Properties builder, int maxEnergy, int maxTransfer) {
+    public FluxElytraItem(IArmorMaterial material, EquipmentSlotType slot, Properties builder, int maxEnergy, int maxTransfer) {
 
-        super(builder);
-
-        this.defense = defense;
-        this.toughness = toughness;
+        super(material, slot, builder);
 
         this.maxEnergy = maxEnergy;
         this.extract = maxTransfer;
         this.receive = maxTransfer;
 
         ProxyUtils.registerItemModelProperty(this, new ResourceLocation("charged"), (stack, world, entity) -> getEnergyStored(stack) > 0 ? 1F : 0F);
-        ProxyUtils.registerItemModelProperty(this, new ResourceLocation("active"), (stack, world, entity) -> getEnergyStored(stack) > 0 && getMode(stack) > 0 ? 1F : 0F);
+        ProxyUtils.registerItemModelProperty(this, new ResourceLocation("active"), (stack, world, entity) -> getEnergyStored(stack) > 0 && isEmpowered(stack) ? 1F : 0F);
     }
 
     @Override
@@ -78,9 +75,9 @@ public class FluxElytraItem extends ElytraItem implements IFluxItem {
     public Multimap<Attribute, AttributeModifier> getAttributeModifiers(EquipmentSlotType slot, ItemStack stack) {
 
         Multimap<Attribute, AttributeModifier> multimap = HashMultimap.create();
-        if (slot == EquipmentSlotType.CHEST) {
-            multimap.put(Attributes.ARMOR, new AttributeModifier(chestUUID, "Armor modifier", this.defense, AttributeModifier.Operation.ADDITION));
-            multimap.put(Attributes.ARMOR_TOUGHNESS, new AttributeModifier(chestUUID, "Armor toughness", this.toughness, AttributeModifier.Operation.ADDITION));
+        if (slot == EquipmentSlotType.CHEST && hasEnergy(stack, false)) {
+            multimap.put(Attributes.ARMOR, new AttributeModifier(CHEST_UUID, "Armor modifier", getDefense(), AttributeModifier.Operation.ADDITION));
+            multimap.put(Attributes.ARMOR_TOUGHNESS, new AttributeModifier(CHEST_UUID, "Armor toughness", getToughness(), AttributeModifier.Operation.ADDITION));
         }
         return multimap;
     }
@@ -97,18 +94,8 @@ public class FluxElytraItem extends ElytraItem implements IFluxItem {
         boolean shouldExtract = (flightTicks & 31) == 0 && !(entity instanceof PlayerEntity && ((PlayerEntity) entity).abilities.instabuild);
         useEnergy(stack, false, !shouldExtract);
 
-        if (getMode(stack) == 0) {
-            if (propelTime > 0) {
-                propel(entity);
-                --propelTime;
-            }
-        }
-        else {
-            if (shouldExtract && !hasEnergy(stack, true)) {
-                propelTime = 1;
-            }
-            else {
-                useEnergy(stack, true, !shouldExtract);
+        if (isEmpowered(stack)) {
+            if (useEnergy(stack, true, !shouldExtract)) {
                 if (propelTime < 0) {
                     brake(entity);
                 }
@@ -116,15 +103,30 @@ public class FluxElytraItem extends ElytraItem implements IFluxItem {
                     propel(entity);
                 }
             }
+            else {
+                propelTime = 1; //Stop propelling
+            }
+        }
+        else if (propelTime > 0) {
+            propel(entity);
+            --propelTime;
         }
 
         return true;
     }
 
     @Override
-    public boolean isValidRepairItem(ItemStack stack, ItemStack repairMaterial) {
+    public boolean isDamageable(ItemStack stack) {
 
-        return false;
+        return hasEnergy(stack, false);
+    }
+
+    @Override
+    public <T extends LivingEntity> int damageItem(ItemStack stack, int amount, T entity, Consumer<T> onBroken) {
+
+        amount = Math.min(getEnergyStored(stack), amount * getEnergyPerUse(false));
+        useEnergy(stack, amount, entity instanceof PlayerEntity && ((PlayerEntity) entity).abilities.instabuild);
+        return -1;
     }
 
     //Used to boost a single time, similar to a rocket.
@@ -135,10 +137,9 @@ public class FluxElytraItem extends ElytraItem implements IFluxItem {
         }
         boolean isPlayer = entity instanceof PlayerEntity;
         boolean isCreative = isPlayer && ((PlayerEntity) entity).abilities.instabuild;
-        if (!hasEnergy(stack, true) && !(isCreative)) {
+        if (!useEnergy(stack, true, isCreative)) {
             return false;
         }
-        useEnergy(stack, true, isCreative);
         if (!entity.isFallFlying() && isPlayer) {
             ((PlayerEntity) entity).startFallFlying();
         }
@@ -172,7 +173,7 @@ public class FluxElytraItem extends ElytraItem implements IFluxItem {
         if (entity.isFallFlying()) {
             Vector3d velocity = entity.getDeltaMovement();
             double horzBrake = velocity.x() * velocity.x() + velocity.z() * velocity.z() > 0.25 ? rate : 1;
-            double vertBrake = velocity.y() * velocity.y() > 0.25 ? rate : 1;
+            double vertBrake = velocity.y() * velocity.y() > 0.2 ? rate : 1;
             entity.setDeltaMovement(velocity.multiply(horzBrake, vertBrake, horzBrake));
         }
     }

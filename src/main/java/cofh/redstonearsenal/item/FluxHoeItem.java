@@ -54,7 +54,7 @@ public class FluxHoeItem extends HoeItemCoFH implements IFluxItem {
         this.receive = xfer;
 
         ProxyUtils.registerItemModelProperty(this, new ResourceLocation("charged"), (stack, world, entity) -> getEnergyStored(stack) > 0 ? 1F : 0F);
-        ProxyUtils.registerItemModelProperty(this, new ResourceLocation("active"), (stack, world, entity) -> getEnergyStored(stack) > 0 && getMode(stack) > 0 ? 1F : 0F);
+        ProxyUtils.registerItemModelProperty(this, new ResourceLocation("active"), (stack, world, entity) -> getEnergyStored(stack) > 0 && isEmpowered(stack) ? 1F : 0F);
     }
 
     @Override
@@ -68,7 +68,7 @@ public class FluxHoeItem extends HoeItemCoFH implements IFluxItem {
     public ActionResultType useOn(ItemUseContext context) {
 
         ItemStack stack = context.getItemInHand();
-        if (!hasEnergy(stack)) {
+        if (!hasEnergy(stack, false)) {
             return ActionResultType.PASS;
         }
         World world = context.getLevel();
@@ -83,9 +83,7 @@ public class FluxHoeItem extends HoeItemCoFH implements IFluxItem {
                 if (!world.isClientSide) {
                     world.setBlock(blockpos, blockstate, 11);
                     if (player != null) {
-                        if (player.abilities.instabuild || hasEnergy(stack)) {
-                            useEnergy(stack, player.abilities.instabuild);
-                        }
+                        useEnergy(stack, false, player.abilities.instabuild);
                     }
                 }
                 return ActionResultType.sidedSuccess(world.isClientSide);
@@ -98,9 +96,7 @@ public class FluxHoeItem extends HoeItemCoFH implements IFluxItem {
     public boolean hurtEnemy(ItemStack stack, LivingEntity target, LivingEntity attacker) {
 
         PlayerEntity player = (PlayerEntity) attacker;
-        if (!player.abilities.instabuild && hasEnergy(stack)) {
-            useEnergy(stack, false);
-        }
+        useEnergy(stack, false, player.abilities.instabuild);
         return true;
     }
 
@@ -117,12 +113,12 @@ public class FluxHoeItem extends HoeItemCoFH implements IFluxItem {
 
     protected float getAttackDamage(ItemStack stack) {
 
-        return hasEnergy(stack) ? getMode(stack) > 0 ? damageCharged : damage : 0.0F;
+        return hasEnergy(stack, false) ? damage : 0.0F;
     }
 
     protected float getAttackSpeed(ItemStack stack) {
 
-        return hasEnergy(stack) && getMode(stack) > 0 ? attackSpeed + 0.2F : attackSpeed;
+        return attackSpeed;
     }
 
     // region IEnergyContainerItem

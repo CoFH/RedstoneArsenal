@@ -1,7 +1,6 @@
 package cofh.redstonearsenal.item;
 
 import cofh.core.util.ProxyUtils;
-import cofh.lib.energy.EnergyContainerItemWrapper;
 import cofh.lib.item.impl.AxeItemCoFH;
 import cofh.lib.util.Utils;
 import com.google.common.collect.HashMultimap;
@@ -16,22 +15,20 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.EquipmentSlotType;
 import net.minecraft.item.IItemTier;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.world.World;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.common.capabilities.ICapabilityProvider;
+import net.minecraftforge.event.entity.player.CriticalHitEvent;
 
 import javax.annotation.Nullable;
 import java.util.List;
 
-import static cofh.lib.item.ContainerType.ENERGY;
-import static cofh.lib.util.helpers.StringHelper.*;
-
 public class FluxAxeItem extends AxeItemCoFH implements IFluxItem {
+
+    public static final float ACTIVE_CRIT_MULTIPLIER = 1.5F;
 
     protected final float damage;
     protected final float damageCharged;
@@ -54,12 +51,12 @@ public class FluxAxeItem extends AxeItemCoFH implements IFluxItem {
         this.receive = xfer;
 
         ProxyUtils.registerItemModelProperty(this, new ResourceLocation("charged"), (stack, world, entity) -> getEnergyStored(stack) > 0 ? 1F : 0F);
-        ProxyUtils.registerItemModelProperty(this, new ResourceLocation("active"), (stack, world, entity) -> getEnergyStored(stack) > 0 && getMode(stack) > 0 ? 1F : 0F);
+        ProxyUtils.registerItemModelProperty(this, new ResourceLocation("active"), (stack, world, entity) -> getEnergyStored(stack) > 0 && isEmpowered(stack) ? 1F : 0F);
     }
 
     protected float getEfficiency(ItemStack stack) {
 
-        return getEnergyStored(stack) < getEnergyPerUse(stack) ? 1.0F : getMode(stack) > 0 ? speed + 4.0F : speed;
+        return hasEnergy(stack, false) ? speed : 1.0F;
     }
 
     @Override
@@ -79,19 +76,26 @@ public class FluxAxeItem extends AxeItemCoFH implements IFluxItem {
     public boolean hurtEnemy(ItemStack stack, LivingEntity target, LivingEntity attacker) {
 
         PlayerEntity player = (PlayerEntity) attacker;
-        if (!player.abilities.instabuild && hasEnergy(stack)) {
-            useEnergy(stack, false);
-        }
+        useEnergy(stack, false, player.abilities.instabuild);
         return true;
+    }
+
+    public void handleCritHit(ItemStack stack, CriticalHitEvent event) {
+
+        PlayerEntity player = event.getPlayer();
+        if (isEmpowered(stack) && useEnergy(stack, true, player.abilities.instabuild)) {
+            //TODO: not working, fix lol
+            event.getTarget().invulnerableTime = 0;
+            event.getTarget().hurt(IFluxItem.fluxDirectDamage(player), (event.getDamageModifier() - 1) * ACTIVE_CRIT_MULTIPLIER * getAttackDamage(stack));
+            event.setDamageModifier(1);
+        }
     }
 
     @Override
     public boolean mineBlock(ItemStack stack, World worldIn, BlockState state, BlockPos pos, LivingEntity entityLiving) {
 
         if (Utils.isServerWorld(worldIn) && state.getDestroySpeed(worldIn, pos) != 0.0F) {
-            if (entityLiving instanceof PlayerEntity && !((PlayerEntity) entityLiving).abilities.instabuild) {
-                useEnergy(stack, false);
-            }
+            useEnergy(stack, false, entityLiving instanceof PlayerEntity && ((PlayerEntity) entityLiving).abilities.instabuild);
         }
         return true;
     }
@@ -109,12 +113,12 @@ public class FluxAxeItem extends AxeItemCoFH implements IFluxItem {
 
     protected float getAttackDamage(ItemStack stack) {
 
-        return hasEnergy(stack) ? getMode(stack) > 0 ? damageCharged : damage : 0.0F;
+        return hasEnergy(stack, false) ? damage : 0.0F;
     }
 
     protected float getAttackSpeed(ItemStack stack) {
 
-        return hasEnergy(stack) && getMode(stack) > 0 ? attackSpeed + 0.2F : attackSpeed;
+        return attackSpeed;
     }
 
     // region IEnergyContainerItem

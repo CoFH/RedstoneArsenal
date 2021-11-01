@@ -54,12 +54,12 @@ public class FluxShovelItem extends ShovelItemCoFH implements IFluxItem {
         this.receive = xfer;
 
         ProxyUtils.registerItemModelProperty(this, new ResourceLocation("charged"), (stack, world, entity) -> getEnergyStored(stack) > 0 ? 1F : 0F);
-        ProxyUtils.registerItemModelProperty(this, new ResourceLocation("active"), (stack, world, entity) -> getEnergyStored(stack) > 0 && getMode(stack) > 0 ? 1F : 0F);
+        ProxyUtils.registerItemModelProperty(this, new ResourceLocation("active"), (stack, world, entity) -> getEnergyStored(stack) > 0 && isEmpowered(stack) ? 1F : 0F);
     }
 
     protected float getEfficiency(ItemStack stack) {
 
-        return getEnergyStored(stack) < getEnergyPerUse(stack) ? 1.0F : getMode(stack) > 0 ? speed + 4.0F : speed;
+        return hasEnergy(stack, false) ? speed : 1.0F;
     }
 
     @Override
@@ -79,9 +79,7 @@ public class FluxShovelItem extends ShovelItemCoFH implements IFluxItem {
     public boolean hurtEnemy(ItemStack stack, LivingEntity target, LivingEntity attacker) {
 
         PlayerEntity player = (PlayerEntity) attacker;
-        if (!player.abilities.instabuild && hasEnergy(stack)) {
-            useEnergy(stack, false);
-        }
+        useEnergy(stack, false, player.abilities.instabuild);
         return true;
     }
 
@@ -89,9 +87,7 @@ public class FluxShovelItem extends ShovelItemCoFH implements IFluxItem {
     public boolean mineBlock(ItemStack stack, World worldIn, BlockState state, BlockPos pos, LivingEntity entityLiving) {
 
         if (Utils.isServerWorld(worldIn) && state.getDestroySpeed(worldIn, pos) != 0.0F) {
-            if (entityLiving instanceof PlayerEntity && !((PlayerEntity) entityLiving).abilities.instabuild) {
-                useEnergy(stack, false);
-            }
+            useEnergy(stack, false, entityLiving instanceof PlayerEntity && ((PlayerEntity) entityLiving).abilities.instabuild);
         }
         return true;
     }
@@ -109,12 +105,12 @@ public class FluxShovelItem extends ShovelItemCoFH implements IFluxItem {
 
     protected float getAttackDamage(ItemStack stack) {
 
-        return hasEnergy(stack) ? getMode(stack) > 0 ? damageCharged : damage : 0.0F;
+        return hasEnergy(stack, false) ? damage : 0.0F;
     }
 
     protected float getAttackSpeed(ItemStack stack) {
 
-        return hasEnergy(stack) && getMode(stack) > 0 ? attackSpeed + 0.2F : attackSpeed;
+        return attackSpeed;
     }
 
     // region IEnergyContainerItem

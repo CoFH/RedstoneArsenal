@@ -42,7 +42,7 @@ public class FluxFishingRodItem extends FishingRodItem implements IFluxItem {
 
         ProxyUtils.registerItemModelProperty(this, new ResourceLocation("cast"), (stack, world, entity) -> entity instanceof PlayerEntity && ((PlayerEntity) entity).fishing != null ? 1F : 0F);
         ProxyUtils.registerItemModelProperty(this, new ResourceLocation("charged"), (stack, world, entity) -> getEnergyStored(stack) > 0 ? 1F : 0F);
-        ProxyUtils.registerItemModelProperty(this, new ResourceLocation("active"), (stack, world, entity) -> getEnergyStored(stack) > 0 && getMode(stack) > 0 ? 1F : 0F);
+        ProxyUtils.registerItemModelProperty(this, new ResourceLocation("active"), (stack, world, entity) -> getEnergyStored(stack) > 0 && isEmpowered(stack) ? 1F : 0F);
     }
 
     @Override
@@ -57,7 +57,7 @@ public class FluxFishingRodItem extends FishingRodItem implements IFluxItem {
 
         ItemStack stack = player.getItemInHand(hand);
         if (player.fishing != null) {
-            if (getMode(stack) > 0 && player.fishing.getHookedIn() != null) {
+            if (isEmpowered(stack) && player.fishing.getHookedIn() != null) {
                 if (player.isCrouching()) {
                     player.fishing.remove();
                 }
@@ -91,12 +91,11 @@ public class FluxFishingRodItem extends FishingRodItem implements IFluxItem {
 
         if (living instanceof PlayerEntity) {
             PlayerEntity player = (PlayerEntity) living;
-            if (player.fishing != null && player.fishing.getHookedIn() != null && getMode(stack) > 0) {
+            if (player.fishing != null && player.fishing.getHookedIn() != null && isEmpowered(stack)) {
                 if (living.isCrouching()) {
                     player.fishing.remove();
                 }
-                else if ((useDuration & 8) != 0 || hasEnergy(stack, true) || player.abilities.instabuild) {
-                    useEnergy(stack, true, player.abilities.instabuild);
+                else if (useEnergy(stack, true, (useDuration & 8) != 0 || player.abilities.instabuild)) {
                     reelIn(stack, player.fishing);
                     return;
                 }
@@ -139,9 +138,7 @@ public class FluxFishingRodItem extends FishingRodItem implements IFluxItem {
 
         if (attacker instanceof PlayerEntity) {
             PlayerEntity player = (PlayerEntity) attacker;
-            if (!player.abilities.instabuild && hasEnergy(stack)) {
-                useEnergy(stack, false, false);
-            }
+            useEnergy(stack, false, player.abilities.instabuild);
         }
         return true;
     }
@@ -150,9 +147,7 @@ public class FluxFishingRodItem extends FishingRodItem implements IFluxItem {
     public boolean mineBlock(ItemStack stack, World worldIn, BlockState state, BlockPos pos, LivingEntity entityLiving) {
 
         if (Utils.isServerWorld(worldIn) && state.getDestroySpeed(worldIn, pos) != 0.0F) {
-            if (entityLiving instanceof PlayerEntity && !((PlayerEntity) entityLiving).abilities.instabuild) {
-                useEnergy(stack, false, false);
-            }
+            useEnergy(stack, false, entityLiving instanceof PlayerEntity && ((PlayerEntity) entityLiving).abilities.instabuild);
         }
         return true;
     }

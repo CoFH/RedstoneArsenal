@@ -6,12 +6,6 @@
   "overrides": [
     {
       "predicate": {
-        "cast": 1.0
-      },
-      "model": "redstone_arsenal:item/flux_fishing_rod_cast"
-    },
-    {
-      "predicate": {
         "charged": 1.0
       },
       "model": "redstone_arsenal:item/flux_fishing_rod_charged"

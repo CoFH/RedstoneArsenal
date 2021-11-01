@@ -30,50 +30,46 @@ import static cofh.lib.util.helpers.StringHelper.*;
 public interface IFluxItem extends ICoFHItem, IEnergyContainerItem, IMultiModeItem {
 
     int ENERGY_PER_USE = 200;
-    int ENERGY_PER_USE_CHARGED = 800;
+    int ENERGY_PER_USE_EMPOWERED = 800;
 
-    default int getEnergyPerUse(boolean charged) {
+    default boolean isEmpowered(ItemStack stack) {
 
-        return charged ? ENERGY_PER_USE_CHARGED : ENERGY_PER_USE;
+        return getMode(stack) > 0;
     }
 
-    default int getEnergyPerUse(ItemStack stack) {
+    default int getEnergyPerUse(boolean empowered) {
 
-        return getEnergyPerUse(getMode(stack) > 0);
+        return empowered ? ENERGY_PER_USE_EMPOWERED : ENERGY_PER_USE;
     }
 
     default boolean hasEnergy(ItemStack stack, int amount) {
 
-        return getEnergyStored(stack) >= getEnergyPerUse(stack);
+        return getEnergyStored(stack) >= amount;
     }
 
-    default boolean hasEnergy(ItemStack stack) {
+    default boolean hasEnergy(ItemStack stack, boolean empowered) {
 
-        return hasEnergy(stack, getEnergyPerUse(stack));
+        return hasEnergy(stack, getEnergyPerUse(empowered));
     }
 
-    default boolean hasEnergy(ItemStack stack, boolean charged) {
+    default boolean useEnergy(ItemStack stack, int amount, boolean simulate) {
 
-        return hasEnergy(stack, getEnergyPerUse(charged));
-    }
-
-    default int useEnergy(ItemStack stack, int amount, boolean simulate) {
-
-        int unbreakingLevel = MathHelper.clamp(EnchantmentHelper.getItemEnchantmentLevel(Enchantments.UNBREAKING, stack), 0, 10);
-        if (MathHelper.RANDOM.nextInt(2 + unbreakingLevel) >= 2) {
-            return 0;
+        if (simulate) {
+            return true;
         }
-        return extractEnergy(stack, amount, simulate);
+        if (hasEnergy(stack, amount)) {
+            int unbreakingLevel = MathHelper.clamp(EnchantmentHelper.getItemEnchantmentLevel(Enchantments.UNBREAKING, stack), 0, 10);
+            if (MathHelper.RANDOM.nextInt(2 + unbreakingLevel) < 2) {
+                extractEnergy(stack, amount, false);
+            }
+            return true;
+        }
+        return false;
     }
 
-    default int useEnergy(ItemStack stack, boolean charged, boolean simulate) {
+    default boolean useEnergy(ItemStack stack, boolean empowered, boolean simulate) {
 
-        return useEnergy(stack, getEnergyPerUse(charged), simulate);
-    }
-
-    default int useEnergy(ItemStack stack, boolean simulate) {
-
-        return useEnergy(stack, getEnergyPerUse(stack), false);
+        return useEnergy(stack, getEnergyPerUse(empowered), simulate);
     }
 
     @Override

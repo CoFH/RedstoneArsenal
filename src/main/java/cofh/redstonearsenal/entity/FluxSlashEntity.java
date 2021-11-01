@@ -7,6 +7,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.projectile.*;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.IPacket;
 import net.minecraft.tileentity.EndGatewayTileEntity;
 import net.minecraft.tileentity.TileEntity;
@@ -23,10 +24,10 @@ import static cofh.redstonearsenal.init.RSAReferences.FLUX_SLASH_ENTITY;
 
 public class FluxSlashEntity extends ProjectileEntity {
 
-    public static final float DAMAGE = 2.0F;
     public static final float SPEED = 2.0F;
     public static final int DURATION = 5;
     public final float zRot;
+    public float damage = 2.0F;
 
     public FluxSlashEntity(EntityType<? extends ProjectileEntity> type, World worldIn) {
 
@@ -45,6 +46,12 @@ public class FluxSlashEntity extends ProjectileEntity {
         this(worldIn, livingEntityIn.getX(), 0.7 * livingEntityIn.getEyeY() + 0.3 * livingEntityIn.getY(), livingEntityIn.getZ());
         this.setOwner(livingEntityIn);
         this.shootFromRotation(livingEntityIn, livingEntityIn.xRot, livingEntityIn.yRot, 0.0F, SPEED, 0.5F);
+    }
+
+    public FluxSlashEntity(World worldIn, LivingEntity livingEntityIn, float damage) {
+
+        this(worldIn, livingEntityIn);
+        this.damage = damage;
     }
 
     @Override
@@ -91,7 +98,7 @@ public class FluxSlashEntity extends ProjectileEntity {
     protected void onHitEntity(EntityRayTraceResult result) {
 
         super.onHitEntity(result);
-        result.getEntity().hurt(IFluxItem.fluxRangedDamage(this, this.getOwner()), DAMAGE);
+        result.getEntity().hurt(IFluxItem.fluxRangedDamage(this, this.getOwner()), damage);
     }
 
     @Override
@@ -148,5 +155,21 @@ public class FluxSlashEntity extends ProjectileEntity {
                 this.onHitEntity(new EntityRayTraceResult(entity));
             }
         }
+    }
+
+    @Override
+    public void readAdditionalSaveData(CompoundNBT compound) {
+
+        super.readAdditionalSaveData(compound);
+
+        damage = compound.getFloat("damage");
+    }
+
+    @Override
+    public void addAdditionalSaveData(CompoundNBT compound) {
+
+        super.addAdditionalSaveData(compound);
+
+        compound.putFloat("damage", damage);
     }
 }

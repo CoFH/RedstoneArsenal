@@ -9,6 +9,8 @@ import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.util.ITooltipFlag;
+import net.minecraft.enchantment.EnchantmentHelper;
+import net.minecraft.enchantment.Enchantments;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.attributes.Attribute;
 import net.minecraft.entity.ai.attributes.AttributeModifier;
@@ -32,7 +34,6 @@ import java.util.List;
 public class FluxSwordItem extends SwordItemCoFH implements IFluxItem {
 
     protected final float damage;
-    protected final float damageCharged;
     protected final float attackSpeed;
 
     protected final int maxEnergy;
@@ -44,7 +45,6 @@ public class FluxSwordItem extends SwordItemCoFH implements IFluxItem {
         super(tier, attackDamageIn, attackSpeedIn, builder);
 
         this.damage = getDamage();
-        this.damageCharged = damage + 4.0F;
         this.attackSpeed = attackSpeedIn;
 
         this.maxEnergy = energy;
@@ -52,7 +52,7 @@ public class FluxSwordItem extends SwordItemCoFH implements IFluxItem {
         this.receive = xfer;
 
         ProxyUtils.registerItemModelProperty(this, new ResourceLocation("charged"), (stack, world, entity) -> getEnergyStored(stack) > 0 ? 1F : 0F);
-        ProxyUtils.registerItemModelProperty(this, new ResourceLocation("active"), (stack, world, entity) -> getEnergyStored(stack) > 0 && getMode(stack) > 0 ? 1F : 0F);
+        ProxyUtils.registerItemModelProperty(this, new ResourceLocation("active"), (stack, world, entity) -> getEnergyStored(stack) > 0 && isEmpowered(stack) ? 1F : 0F);
     }
 
     @Override
@@ -67,11 +67,9 @@ public class FluxSwordItem extends SwordItemCoFH implements IFluxItem {
 
         if (attacker instanceof PlayerEntity) {
             PlayerEntity player = (PlayerEntity) attacker;
-            if (!player.abilities.instabuild && hasEnergy(stack)) {
-                useEnergy(stack, false);
-            }
+            useEnergy(stack, false, player.abilities.instabuild);
 
-            if (getMode(stack) > 0) {
+            if (isEmpowered(stack)) {
                 if (canSweepAttack(player)) { //TODO: player attack strength already reset once this is called. time to use Mick's Inn?
                     shootFluxSlash(stack, player);
                 }
@@ -83,7 +81,7 @@ public class FluxSwordItem extends SwordItemCoFH implements IFluxItem {
     @Override
     public boolean onEntitySwing(ItemStack stack, LivingEntity entity) {
 
-        if (getMode(stack) > 0 && entity instanceof PlayerEntity) {
+        if (isEmpowered(stack) && entity instanceof PlayerEntity) {
             PlayerEntity player = (PlayerEntity) entity;
 
             if (canSweepAttack(player)) {
@@ -96,12 +94,10 @@ public class FluxSwordItem extends SwordItemCoFH implements IFluxItem {
 
     protected void shootFluxSlash(ItemStack stack, PlayerEntity player) {
 
-        if (hasEnergy(stack, true) || !player.abilities.instabuild) {
-            useEnergy(stack, true, player.abilities.instabuild);
-
+        if (useEnergy(stack, true, player.abilities.instabuild)) {
             World world = player.level;
             if (!world.isClientSide()) {
-                FluxSlashEntity projectile = new FluxSlashEntity(world, player);
+                FluxSlashEntity projectile = new FluxSlashEntity(world, player, getRangedAttackDamage(stack));
                 world.addFreshEntity(projectile);
             }
         }
@@ -117,9 +113,7 @@ public class FluxSwordItem extends SwordItemCoFH implements IFluxItem {
     public boolean mineBlock(ItemStack stack, World worldIn, BlockState state, BlockPos pos, LivingEntity entityLiving) {
 
         if (Utils.isServerWorld(worldIn) && state.getDestroySpeed(worldIn, pos) != 0.0F) {
-            if (entityLiving instanceof PlayerEntity && !((PlayerEntity) entityLiving).abilities.instabuild) {
-                useEnergy(stack, false);
-            }
+            useEnergy(stack, false, entityLiving instanceof PlayerEntity && ((PlayerEntity) entityLiving).abilities.instabuild);
         }
         return true;
     }
@@ -137,12 +131,17 @@ public class FluxSwordItem extends SwordItemCoFH implements IFluxItem {
 
     protected float getAttackDamage(ItemStack stack) {
 
-        return hasEnergy(stack) ? getMode(stack) > 0 ? damageCharged : damage : 0.0F;
+        return hasEnergy(stack, false) ? damage : 0.0F;
+    }
+
+    protected float getRangedAttackDamage(ItemStack stack) {
+
+        return 2.0F + Utils.getItemEnchantmentLevel(Enchantments.SWEEPING_EDGE, stack);
     }
 
     protected float getAttackSpeed(ItemStack stack) {
 
-        return hasEnergy(stack) && getMode(stack) > 0 ? attackSpeed + 0.2F : attackSpeed;
+        return attackSpeed;
     }
 
     // region IEnergyContainerItem

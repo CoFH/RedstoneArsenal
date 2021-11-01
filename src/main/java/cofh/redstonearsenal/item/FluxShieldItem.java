@@ -4,11 +4,18 @@ import cofh.core.init.CoreConfig;
 import cofh.core.util.ProxyUtils;
 import cofh.lib.item.impl.ShieldItemCoFH;
 import cofh.lib.util.helpers.SecurityHelper;
+import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.util.ITooltipFlag;
+import net.minecraft.enchantment.EnchantmentHelper;
+import net.minecraft.enchantment.Enchantments;
+import net.minecraft.enchantment.UnbreakingEnchantment;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.ServerPlayerEntity;
+import net.minecraft.inventory.EquipmentSlotType;
+import net.minecraft.item.ArmorItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.item.ShieldItem;
@@ -26,6 +33,7 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 import java.util.function.Consumer;
 
 import static cofh.lib.util.helpers.StringHelper.getTextComponent;
@@ -46,9 +54,9 @@ public class FluxShieldItem extends ShieldItemCoFH implements IFluxItem {
         this.extract = maxTransfer;
         this.receive = maxTransfer;
 
-        ProxyUtils.registerItemModelProperty(this, new ResourceLocation("blocking"), (stack, world, entity) -> entity.isBlocking() ? 1F : 0F);
+        ProxyUtils.registerItemModelProperty(this, new ResourceLocation("blocking"), (stack, world, entity) -> entity != null && entity.isBlocking() ? 1F : 0F);
         ProxyUtils.registerItemModelProperty(this, new ResourceLocation("charged"), (stack, world, entity) -> getEnergyStored(stack) > 0 ? 1F : 0F);
-        ProxyUtils.registerItemModelProperty(this, new ResourceLocation("active"), (stack, world, entity) -> getEnergyStored(stack) > 0 && getMode(stack) > 0 ? 1F : 0F);
+        ProxyUtils.registerItemModelProperty(this, new ResourceLocation("active"), (stack, world, entity) -> getEnergyStored(stack) > 0 && isEmpowered(stack) ? 1F : 0F);
     }
 
     @Override
@@ -59,34 +67,51 @@ public class FluxShieldItem extends ShieldItemCoFH implements IFluxItem {
     }
 
     @Override
+    public boolean isDamageable(ItemStack stack) {
+
+        return hasEnergy(stack, false);
+    }
+
+    @Override
     public <T extends LivingEntity> int damageItem(ItemStack stack, int amount, T entity, Consumer<T> onBroken) {
 
-        useEnergy(stack, amount * getEnergyPerUse(false), entity instanceof PlayerEntity && ((PlayerEntity) entity).abilities.instabuild);
-        return 0;
+        amount = Math.min(getEnergyStored(stack), amount * getEnergyPerUse(false));
+        useEnergy(stack, amount, entity instanceof PlayerEntity && ((PlayerEntity) entity).abilities.instabuild);
+        return -1;
     }
 
     @Override
     public ActionResult<ItemStack> use(World world, PlayerEntity player, Hand hand) {
-        //TODO: use energy on block
+
         ItemStack stack = player.getItemInHand(hand);
-        if (getMode(stack) > 0 && (hasEnergy(stack, true) || player.abilities.instabuild)) {
-            useEnergy(stack, true, player.abilities.instabuild);
-            double r2 = RANGE * RANGE;
-            AxisAlignedBB searchArea = player.getBoundingBox().inflate(RANGE);
-            for (Entity entity : world.getEntities(player, searchArea, EntityPredicates.NO_CREATIVE_OR_SPECTATOR)) {
-                if (player.distanceToSqr(entity) < r2) {
-                    Vector3d push = entity.getDeltaMovement().lengthSqr() < 1.0 ? entity.position().subtract(player.position()).normalize() : entity.getDeltaMovement().reverse();
-                    entity.setDeltaMovement(push);
+        if (hasEnergy(stack, false)) {
+            if (isEmpowered(stack) && useEnergy(stack, true, player.abilities.instabuild)) {
+                double r2 = RANGE * RANGE;
+                AxisAlignedBB searchArea = player.getBoundingBox().inflate(RANGE);
+                for (Entity entity : world.getEntities(player, searchArea, EntityPredicates.NO_CREATIVE_OR_SPECTATOR)) {
+                    if (player.distanceToSqr(entity) < r2) {
+                        Vector3d push = entity.getDeltaMovement().lengthSqr() < 1.0 ? entity.position().subtract(player.position()).normalize() : entity.getDeltaMovement().reverse();
+                        entity.setDeltaMovement(push);
+                    }
                 }
             }
+            return super.use(world, player, hand);
         }
-        return super.use(world, player, hand);
+        return ActionResult.pass(stack);
+    }
+
+    @Override
+    public void onUseTick(World world, LivingEntity living, ItemStack stack, int useDuration) {
+
+        if (!isShield(stack, living)) {
+            living.releaseUsingItem();
+        }
     }
 
     @Override
     public boolean isShield(ItemStack stack, @Nullable LivingEntity entity) {
 
-        return stack.getItem() instanceof ShieldItem;
+        return stack.getItem() instanceof FluxShieldItem && hasEnergy(stack, false);
     }
 
     @Override

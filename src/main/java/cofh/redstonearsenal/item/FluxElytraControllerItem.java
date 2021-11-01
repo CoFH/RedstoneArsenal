@@ -41,11 +41,15 @@ public class FluxElytraControllerItem extends Item implements ICoFHItem, IMultiM
     @OnlyIn(Dist.CLIENT)
     public void appendHoverText(ItemStack stack, @Nullable World worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn) {
 
-        if (getMode(stack) > 0) {
+        if (isEmpowered(stack)) {
             tooltip.add(getTextComponent("Empowered")); //TODO: localize or remove
         }
     }
 
+    public boolean isEmpowered(ItemStack stack) {
+
+        return getMode(stack) > 0;
+    }
 
     @Override
     public ActionResult<ItemStack> use(World world, PlayerEntity player, Hand hand) {
@@ -56,7 +60,7 @@ public class FluxElytraControllerItem extends Item implements ICoFHItem, IMultiM
             FluxElytraItem elytra = (FluxElytraItem) chest.getItem();
             elytra.setMode(chest, getMode(stack));
 
-            if (getMode(stack) == 0) {
+            if (!isEmpowered(stack)) {
                 if (elytra.boost(chest, player)) {
                     return ActionResult.sidedSuccess(stack, world.isClientSide());
                 }
@@ -73,7 +77,7 @@ public class FluxElytraControllerItem extends Item implements ICoFHItem, IMultiM
     @Override
     public void onUseTick(World world, LivingEntity living, ItemStack stack, int useDuration) {
 
-        if (!living.isFallFlying() || getMode(stack) == 0) {
+        if (!living.isFallFlying() || !isEmpowered(stack)) {
             living.releaseUsingItem();
         }
     }
@@ -102,9 +106,10 @@ public class FluxElytraControllerItem extends Item implements ICoFHItem, IMultiM
     @Override
     public void onModeChange(PlayerEntity player, ItemStack stack) {
 
-        if (getMode(stack) > 0) {
+        if (isEmpowered(stack)) {
             player.level.playSound(null, player.blockPosition(), SoundEvents.LIGHTNING_BOLT_THUNDER, SoundCategory.PLAYERS, 0.4F, 1.0F);
-        } else {
+        } 
+        else {
             player.level.playSound(null, player.blockPosition(), SoundEvents.EXPERIENCE_ORB_PICKUP, SoundCategory.PLAYERS, 0.2F, 0.6F);
         }
 

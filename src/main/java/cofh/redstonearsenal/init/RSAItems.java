@@ -1,17 +1,20 @@
 package cofh.redstonearsenal.init;
 
 import cofh.core.item.ItemCoFH;
+import cofh.lib.item.ArmorMaterialCoFH;
 import cofh.lib.item.ItemTierCoFH;
 import cofh.redstonearsenal.item.*;
 import cofh.redstonearsenal.item.FluxElytraControllerItem;
 import cofh.redstonearsenal.item.FluxElytraItem;
 import cofh.redstonearsenal.item.FluxShieldItem;
 import cofh.redstonearsenal.item.FluxSwordItem;
+import net.minecraft.inventory.EquipmentSlotType;
 import net.minecraft.item.IItemTier;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.Rarity;
 import net.minecraft.item.crafting.Ingredient;
+import net.minecraft.util.SoundEvents;
 
 import static cofh.redstonearsenal.RedstoneArsenal.ITEMS;
 
@@ -52,10 +55,11 @@ public class RSAItems {
         ITEMS.register("flux_hoe", () -> new FluxHoeItem(MATERIAL_FLUX_METAL, -1.0F, new Item.Properties().tab(tools).rarity(rarity).setNoRepair(), energy, xfer));
         ITEMS.register("flux_fishing_rod", () -> new FluxFishingRodItem(new Item.Properties().tab(tools).rarity(rarity).setNoRepair(), energy, xfer));
 
-        ITEMS.register("flux_elytra", () -> new FluxElytraItem(6, 2, new Item.Properties().stacksTo(1).tab(transportation).rarity(rarity).setNoRepair(), energy, xfer));
+        ITEMS.register("flux_elytra", () -> new FluxElytraItem(FLUX_ELYTRA, EquipmentSlotType.CHEST, new Item.Properties().stacksTo(1).tab(transportation).rarity(rarity).setNoRepair(), energy, xfer));
         ITEMS.register("flux_controller", () -> new FluxElytraControllerItem(new Item.Properties().stacksTo(1).tab(transportation).rarity(rarity).setNoRepair()));
     }
 
     public static final IItemTier MATERIAL_FLUX_METAL = new ItemTierCoFH(4, 0, 8.0F, 3.0F, 18, () -> Ingredient.EMPTY);
+    public static final ArmorMaterialCoFH FLUX_ELYTRA = new ArmorMaterialCoFH("redstone_arsenal:elytra", 0, new int[]{0, 0, 6, 0}, 15, SoundEvents.ARMOR_EQUIP_ELYTRA, 2.0F, 0.0F, () -> MATERIAL_FLUX_METAL.getRepairIngredient());
 
 }
