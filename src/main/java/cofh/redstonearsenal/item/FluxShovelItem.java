@@ -29,9 +29,12 @@ import javax.annotation.Nullable;
 import java.util.List;
 
 import static cofh.lib.item.ContainerType.ENERGY;
+import static cofh.lib.util.constants.Constants.UUID_ATTACK_KNOCKBACK;
 import static cofh.lib.util.helpers.StringHelper.*;
 
 public class FluxShovelItem extends ShovelItemCoFH implements IFluxItem {
+
+    public static final float KNOCKBACK_MODIFIER = 5.0F;
 
     protected final float damage;
     protected final float damageCharged;
@@ -78,8 +81,12 @@ public class FluxShovelItem extends ShovelItemCoFH implements IFluxItem {
     @Override
     public boolean hurtEnemy(ItemStack stack, LivingEntity target, LivingEntity attacker) {
 
-        PlayerEntity player = (PlayerEntity) attacker;
-        useEnergy(stack, false, player.abilities.instabuild);
+        if (attacker instanceof PlayerEntity) {
+            boolean isCreative = ((PlayerEntity) attacker).abilities.instabuild;
+            if (!(isEmpowered(stack) && useEnergy(stack, true, isCreative))) {
+                useEnergy(stack, false, isCreative);
+            }
+        }
         return true;
     }
 
@@ -99,6 +106,9 @@ public class FluxShovelItem extends ShovelItemCoFH implements IFluxItem {
         if (slot == EquipmentSlotType.MAINHAND) {
             multimap.put(Attributes.ATTACK_DAMAGE, new AttributeModifier(BASE_ATTACK_DAMAGE_UUID, "Tool modifier", getAttackDamage(stack), AttributeModifier.Operation.ADDITION));
             multimap.put(Attributes.ATTACK_SPEED, new AttributeModifier(BASE_ATTACK_SPEED_UUID, "Tool modifier", getAttackSpeed(stack), AttributeModifier.Operation.ADDITION));
+            if (isEmpowered(stack) && hasEnergy(stack, true)) {
+                multimap.put(Attributes.ATTACK_KNOCKBACK, new AttributeModifier(UUID_ATTACK_KNOCKBACK, "Tool modifier", KNOCKBACK_MODIFIER, AttributeModifier.Operation.ADDITION));
+            }
         }
         return multimap;
     }

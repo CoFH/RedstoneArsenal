@@ -125,15 +125,15 @@ public interface IFluxItem extends ICoFHItem, IEnergyContainerItem, IMultiModeIt
 
     default void tooltipDelegate(ItemStack stack, @Nullable World worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn) {
 
-        if (getMode(stack) > 0) {
-            tooltip.add(getTextComponent("Empowered")); //TODO: localize or remove
-        }
-
         boolean creative = isCreative(stack, ENERGY);
         tooltip.add(getTextComponent(localize("info.cofh.energy") + ": "
                 + (creative ?
                 localize("info.cofh.infinite") :
                 getScaledNumber(getEnergyStored(stack)) + " / " + getScaledNumber(getMaxEnergyStored(stack)) + " RF")));
+
+        if (isEmpowered(stack)) {
+            tooltip.add(getTextComponent("Empowered")); //TODO: localize or remove
+        }
     }
 
     static DamageSource fluxDirectDamage(LivingEntity attacker) {

@@ -1,6 +1,7 @@
 package cofh.redstonearsenal.item;
 
 import cofh.core.init.CoreConfig;
+import cofh.core.item.ArmorItemCoFH;
 import cofh.core.util.ProxyUtils;
 import cofh.lib.util.helpers.SecurityHelper;
 import com.google.common.collect.HashMultimap;
@@ -33,10 +34,10 @@ import java.util.function.Consumer;
 import static cofh.lib.util.helpers.StringHelper.*;
 import static net.minecraft.util.text.TextFormatting.*;
 
-public class FluxElytraItem extends ArmorItem implements IFluxItem {
+public class FluxElytraItem extends ArmorItemCoFH implements IFluxItem {
 
-    public static final double PROPEL_SPEED = 0.85;
-    public static final double BRAKE_RATE = 0.90;
+    public static final float PROPEL_SPEED = 0.85F;
+    public static final float BRAKE_RATE = 0.95F;
     public static final int BOOST_TIME = 40;
     public static final UUID CHEST_UUID = UUID.fromString("9F3D476D-C118-4544-8365-64846904B48E");
 
@@ -91,25 +92,21 @@ public class FluxElytraItem extends ArmorItem implements IFluxItem {
     @Override
     public boolean elytraFlightTick(ItemStack stack, LivingEntity entity, int flightTicks) {
 
-        boolean shouldExtract = (flightTicks & 31) == 0 && !(entity instanceof PlayerEntity && ((PlayerEntity) entity).abilities.instabuild);
+        boolean isCreative = entity instanceof PlayerEntity && ((PlayerEntity) entity).abilities.instabuild;
+        boolean shouldExtract = (flightTicks & 31) == 0 && !isCreative;
         useEnergy(stack, false, !shouldExtract);
 
-        if (isEmpowered(stack)) {
-            if (useEnergy(stack, true, !shouldExtract)) {
-                if (propelTime < 0) {
-                    brake(entity);
-                }
-                else if (propelTime == 0) {
-                    propel(entity);
-                }
-            }
-            else {
-                propelTime = 1; //Stop propelling
-            }
+        if (entity.isCrouching() && (hasEnergy(stack, true) || isCreative)) {
+            useEnergy(stack, true, !shouldExtract);
+            propelTime = 0;
+            brake(entity);
         }
         else if (propelTime > 0) {
             propel(entity);
             --propelTime;
+        }
+        else if (isEmpowered(stack) && useEnergy(stack, true, !shouldExtract)) {
+            propel(entity);
         }
 
         return true;
@@ -183,16 +180,6 @@ public class FluxElytraItem extends ArmorItem implements IFluxItem {
         brake(entity, BRAKE_RATE);
     }
 
-    public int getPropelTime() {
-
-        return propelTime;
-    }
-
-    public void setPropelTime(int time) {
-
-        propelTime = time;
-    }
-
     // region IEnergyContainerItem
     @Override
     public int getExtract(ItemStack container) {
@@ -212,14 +199,4 @@ public class FluxElytraItem extends ArmorItem implements IFluxItem {
         return getMaxStored(container, maxEnergy);
     }
     // endregion
-
-    @Override
-    public void onModeChange(PlayerEntity player, ItemStack stack) {
-
-        IFluxItem.super.onModeChange(player, stack);
-
-        if (stack.getItem() instanceof FluxElytraItem) {
-            ((FluxElytraItem) stack.getItem()).setPropelTime(0);
-        }
-    }
 }

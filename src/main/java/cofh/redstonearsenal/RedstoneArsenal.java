@@ -74,7 +74,7 @@ public class RedstoneArsenal {
         //        }
 
         registerEntityRenderingHandlers();
-        addRenderLayers();
+        registerRenderLayers();
     }
     // endregion
 
@@ -84,7 +84,7 @@ public class RedstoneArsenal {
         RenderingRegistry.registerEntityRenderingHandler(FLUX_SLASH_ENTITY, FluxSlashRenderer::new);
     }
 
-    private void addRenderLayers() {
+    private void registerRenderLayers() {
 
         for (PlayerRenderer renderer : Minecraft.getInstance().getEntityRenderDispatcher().getSkinMap().values()) {
             renderer.addLayer(new FluxElytraLayer<>(renderer));

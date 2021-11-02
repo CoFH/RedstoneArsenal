@@ -60,47 +60,11 @@ public class FluxElytraControllerItem extends Item implements ICoFHItem, IMultiM
             FluxElytraItem elytra = (FluxElytraItem) chest.getItem();
             elytra.setMode(chest, getMode(stack));
 
-            if (!isEmpowered(stack)) {
-                if (elytra.boost(chest, player)) {
-                    return ActionResult.sidedSuccess(stack, world.isClientSide());
-                }
-            }
-            else if (player.isFallFlying()) {
-                elytra.setPropelTime(-1);
-                player.startUsingItem(hand);
-                return ActionResult.consume(stack);
+            if (!isEmpowered(stack) && elytra.boost(chest, player)) {
+                return ActionResult.sidedSuccess(stack, world.isClientSide());
             }
         }
         return ActionResult.pass(stack);
-    }
-
-    @Override
-    public void onUseTick(World world, LivingEntity living, ItemStack stack, int useDuration) {
-
-        if (!living.isFallFlying() || !isEmpowered(stack)) {
-            living.releaseUsingItem();
-        }
-    }
-
-    @Override
-    public void releaseUsing(ItemStack stack, World world, LivingEntity living, int useDuration) {
-
-        ItemStack chest = living.getItemBySlot(EquipmentSlotType.CHEST);
-        if (chest.getItem() instanceof FluxElytraItem) {
-            ((FluxElytraItem) chest.getItem()).setPropelTime(0);
-        }
-    }
-
-    @Override
-    public UseAction getUseAnimation(ItemStack stack) {
-
-        return UseAction.BOW;
-    }
-
-    @Override
-    public int getUseDuration(ItemStack p_77626_1_) {
-
-        return 72000;
     }
 
     @Override
