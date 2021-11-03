@@ -109,9 +109,10 @@ public interface IFluxItem extends ICoFHItem, IEnergyContainerItem, IMultiModeIt
     @Override
     default void onModeChange(PlayerEntity player, ItemStack stack) {
 
-        if (getMode(stack) > 0) {
+        if (isEmpowered(stack)) {
             player.level.playSound(null, player.blockPosition(), SoundEvents.LIGHTNING_BOLT_THUNDER, SoundCategory.PLAYERS, 0.4F, 1.0F);
-        } else {
+        }
+        else {
             player.level.playSound(null, player.blockPosition(), SoundEvents.EXPERIENCE_ORB_PICKUP, SoundCategory.PLAYERS, 0.2F, 0.6F);
         }
     }

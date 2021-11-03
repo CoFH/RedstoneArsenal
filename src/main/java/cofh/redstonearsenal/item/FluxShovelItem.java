@@ -81,11 +81,9 @@ public class FluxShovelItem extends ShovelItemCoFH implements IFluxItem {
     @Override
     public boolean hurtEnemy(ItemStack stack, LivingEntity target, LivingEntity attacker) {
 
-        if (attacker instanceof PlayerEntity) {
-            boolean isCreative = ((PlayerEntity) attacker).abilities.instabuild;
-            if (!(isEmpowered(stack) && useEnergy(stack, true, isCreative))) {
-                useEnergy(stack, false, isCreative);
-            }
+        boolean isCreative = attacker instanceof PlayerEntity && ((PlayerEntity) attacker).abilities.instabuild;
+        if (!(isEmpowered(stack) && useEnergy(stack, true, isCreative))) {
+            useEnergy(stack, false, isCreative);
         }
         return true;
     }

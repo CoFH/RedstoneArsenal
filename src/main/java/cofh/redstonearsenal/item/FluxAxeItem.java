@@ -22,6 +22,7 @@ import net.minecraft.world.World;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.event.entity.player.CriticalHitEvent;
+import net.minecraftforge.event.world.NoteBlockEvent;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -75,8 +76,7 @@ public class FluxAxeItem extends AxeItemCoFH implements IFluxItem {
     @Override
     public boolean hurtEnemy(ItemStack stack, LivingEntity target, LivingEntity attacker) {
 
-        PlayerEntity player = (PlayerEntity) attacker;
-        useEnergy(stack, false, player.abilities.instabuild);
+        useEnergy(stack, false, attacker instanceof PlayerEntity && ((PlayerEntity) attacker).abilities.instabuild);
         return true;
     }
 

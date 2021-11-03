@@ -13,11 +13,11 @@ import net.minecraft.entity.ai.attributes.Attribute;
 import net.minecraft.entity.ai.attributes.AttributeModifier;
 import net.minecraft.entity.ai.attributes.Attributes;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.projectile.FireworkRocketEntity;
 import net.minecraft.inventory.EquipmentSlotType;
-import net.minecraft.item.ArmorItem;
-import net.minecraft.item.ElytraItem;
-import net.minecraft.item.IArmorMaterial;
-import net.minecraft.item.ItemStack;
+import net.minecraft.item.*;
+import net.minecraft.particles.ParticleTypes;
+import net.minecraft.particles.RedstoneParticleData;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.util.text.ITextComponent;
@@ -38,7 +38,7 @@ public class FluxElytraItem extends ArmorItemCoFH implements IFluxItem {
 
     public static final float PROPEL_SPEED = 0.85F;
     public static final float BRAKE_RATE = 0.95F;
-    public static final int BOOST_TIME = 40;
+    public static final int BOOST_TIME = 32;
     public static final UUID CHEST_UUID = UUID.fromString("9F3D476D-C118-4544-8365-64846904B48E");
 
     protected int maxEnergy;
@@ -93,7 +93,7 @@ public class FluxElytraItem extends ArmorItemCoFH implements IFluxItem {
     public boolean elytraFlightTick(ItemStack stack, LivingEntity entity, int flightTicks) {
 
         boolean isCreative = entity instanceof PlayerEntity && ((PlayerEntity) entity).abilities.instabuild;
-        boolean shouldExtract = (flightTicks & 31) == 0 && !isCreative;
+        boolean shouldExtract = flightTicks % BOOST_TIME == 0 && !isCreative;
         useEnergy(stack, false, !shouldExtract);
 
         if (entity.isCrouching() && (hasEnergy(stack, true) || isCreative)) {
@@ -157,6 +157,10 @@ public class FluxElytraItem extends ArmorItemCoFH implements IFluxItem {
             Vector3d look = entity.getLookAngle();
             Vector3d velocity = entity.getDeltaMovement();
             entity.setDeltaMovement(velocity.add(look.x * speed - velocity.x * 0.5, look.y * speed - velocity.y * 0.5, look.z * speed - velocity.z * 0.5));
+
+            if (entity.level.isClientSide) {
+                entity.level.addParticle(RedstoneParticleData.REDSTONE, entity.getX(), entity.getY(), entity.getZ(), this.random.nextGaussian() * 0.05D, -entity.getDeltaMovement().y * 0.5D, Item.random.nextGaussian() * 0.05D);
+            }
         }
     }
 

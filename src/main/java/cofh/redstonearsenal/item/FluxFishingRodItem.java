@@ -27,6 +27,7 @@ import java.util.List;
 public class FluxFishingRodItem extends FishingRodItem implements IFluxItem {
 
     public static final double REEL_SPEED = 0.2;
+    public static final int REEL_EXTRACT_INTERVAL = 8;
 
     protected final int maxEnergy;
     protected final int extract;
@@ -95,7 +96,7 @@ public class FluxFishingRodItem extends FishingRodItem implements IFluxItem {
                 if (living.isCrouching()) {
                     player.fishing.remove();
                 }
-                else if (useEnergy(stack, true, (useDuration & 8) != 0 || player.abilities.instabuild)) {
+                else if (useEnergy(stack, true, useDuration % REEL_EXTRACT_INTERVAL != 0 || player.abilities.instabuild)) {
                     reelIn(stack, player.fishing);
                     return;
                 }
@@ -109,7 +110,7 @@ public class FluxFishingRodItem extends FishingRodItem implements IFluxItem {
         Entity owner = bobber.getOwner();
         if (!bobber.level.isClientSide && owner != null) {
             if (bobber.getHookedIn() != null) {
-                Vector3d relPos = owner.position().subtract(bobber.position());
+                Vector3d relPos = owner.position().add(owner.getLookAngle()).subtract(bobber.position());
                 bobber.getHookedIn().setDeltaMovement(bobber.getHookedIn().getDeltaMovement().add(relPos.normalize().scale(FluxFishingRodItem.REEL_SPEED)));
                 return;
             }
