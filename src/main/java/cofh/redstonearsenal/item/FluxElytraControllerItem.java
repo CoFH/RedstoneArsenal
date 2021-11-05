@@ -67,16 +67,18 @@ public class FluxElytraControllerItem extends Item implements ICoFHItem, IMultiM
     @Override
     public void onModeChange(PlayerEntity player, ItemStack stack) {
 
-        if (isEmpowered(stack)) {
-            player.level.playSound(null, player.blockPosition(), SoundEvents.LIGHTNING_BOLT_THUNDER, SoundCategory.PLAYERS, 0.4F, 1.0F);
-        }
-        else {
-            player.level.playSound(null, player.blockPosition(), SoundEvents.EXPERIENCE_ORB_PICKUP, SoundCategory.PLAYERS, 0.2F, 0.6F);
-        }
-
         ItemStack chest = player.getItemBySlot(EquipmentSlotType.CHEST);
         if (chest.getItem() instanceof FluxElytraItem) {
             ((FluxElytraItem) chest.getItem()).setMode(chest, getMode(stack));
+            if (isEmpowered(stack)) {
+                player.level.playSound(null, player.blockPosition(), SoundEvents.LIGHTNING_BOLT_THUNDER, SoundCategory.PLAYERS, 0.4F, 1.0F);
+            }
+            else {
+                player.level.playSound(null, player.blockPosition(), SoundEvents.EXPERIENCE_ORB_PICKUP, SoundCategory.PLAYERS, 0.2F, 0.6F);
+            }
+        }
+        else {
+            setMode(stack, isEmpowered(stack) ? 0 : 1);
         }
     }
 }

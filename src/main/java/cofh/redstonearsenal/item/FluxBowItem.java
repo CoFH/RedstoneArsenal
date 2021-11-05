@@ -2,20 +2,22 @@ package cofh.redstonearsenal.item;
 
 import cofh.core.util.ProxyUtils;
 import cofh.lib.capability.CapabilityArchery;
+import cofh.lib.capability.IArcheryAmmoItem;
 import cofh.lib.capability.IArcheryBowItem;
+import cofh.lib.capability.templates.ArcheryBowItemWrapper;
 import cofh.lib.energy.EnergyContainerItemWrapper;
 import cofh.lib.energy.IEnergyContainerItem;
 import cofh.lib.item.impl.BowItemCoFH;
 import cofh.lib.util.helpers.ArcheryHelper;
-import cofh.lib.util.helpers.MathHelper;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.inventory.EquipmentSlotType;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.util.Direction;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.*;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.world.World;
 import net.minecraftforge.api.distmarker.Dist;
@@ -28,19 +30,27 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.List;
 
+import static cofh.lib.capability.CapabilityArchery.BOW_ITEM_CAPABILITY;
+
 public class FluxBowItem extends BowItemCoFH implements IFluxItem {
+
+    protected final int EMPOWERED_ENERGY_USE_INTERVAL = 20;
 
     protected final int maxEnergy;
     protected final int extract;
     protected final int receive;
 
-    public FluxBowItem(Item.Properties builder, int energy, int xfer) {
+    public FluxBowItem(float accuracyModifier, float damageModifier, float velocityModifier, Item.Properties builder, int energy, int xfer) {
 
         super(builder);
 
         this.maxEnergy = energy;
         this.extract = xfer;
         this.receive = xfer;
+
+        this.accuracyModifier = accuracyModifier;;
+        this.damageModifier = damageModifier;
+        this.velocityModifier = velocityModifier;
 
         ProxyUtils.registerItemModelProperty(this, new ResourceLocation("pull"), this::getPullProperty);
         ProxyUtils.registerItemModelProperty(this, new ResourceLocation("charged"), (stack, world, entity) -> getEnergyStored(stack) > 0 ? 1F : 0F);
@@ -62,45 +72,40 @@ public class FluxBowItem extends BowItemCoFH implements IFluxItem {
 
     public float getPullProperty(ItemStack stack, World world, LivingEntity entity) {
 
-        int baseDuration = getUseDuration(stack);
-        int duration = baseDuration - entity.getUseItemRemainingTicks() + 1;
-
-        if (isEmpowered(stack)) {
-
-            return ((float) duration) / baseDuration;
+        if (entity == null || !entity.getUseItem().equals(stack)) {
+            return 0.0F;
         }
-        else {
-            return MathHelper.clamp((float) (duration) / baseDuration, 0.0F, 1.0F);
-        }
+        return MathHelper.clamp((float) (entity.getTicksUsingItem()) / 20F, 0.0F, 1.0F);
     }
 
-//    @Override
-//    public Multimap<Attribute, AttributeModifier> getAttributeModifiers(EquipmentSlotType slot, ItemStack stack) {
-//
-//        Multimap<Attribute, AttributeModifier> multimap = HashMultimap.create();
-//        //TODO?
-//        return multimap;
-//    }
+    @Override
+    public ActionResult<ItemStack> use(World world, PlayerEntity player, Hand hand) {
 
-//    @Override
-//    public ActionResult<ItemStack> use(World world, PlayerEntity player, Hand hand) {
-//
-//        ItemStack stack = player.getItemInHand(hand);
-//        //TODO
-//        return ActionResult.pass(stack);
-//    }
-//
-//    @Override
-//    public void onUseTick(World world, LivingEntity living, ItemStack stack, int useDuration) {
-//
-//        //TODO
-//    }
-//
-//    @Override
-//    public void releaseUsing(ItemStack stack, World world, LivingEntity living, int useDuration) {
-//
-//        //TODO
-//    }
+        ItemStack stack = player.getItemInHand(hand);
+        if (hasEnergy(stack, isEmpowered(stack)) || player.abilities.instabuild) {
+            return super.use(world, player, hand);
+        }
+        return ActionResult.pass(stack);
+    }
+
+    @Override
+    public void releaseUsing(ItemStack stack, World world, LivingEntity living, int durationRemaining) {
+
+        if (living instanceof PlayerEntity) {
+            PlayerEntity player = (PlayerEntity) living;
+            if (useEnergy(stack, isEmpowered(stack), player.abilities.instabuild)) {
+                IArcheryBowItem bowCap = stack.getCapability(BOW_ITEM_CAPABILITY).orElse(new ArcheryBowItemWrapper(stack));
+                bowCap.fireArrow(living.getProjectile(stack), player, getUseDuration(stack) - durationRemaining, world);
+                if (isEmpowered(stack) && !player.abilities.instabuild) {
+                    int amount = Math.min((getUseDuration(stack) - durationRemaining) * ENERGY_PER_USE_EMPOWERED / EMPOWERED_ENERGY_USE_INTERVAL, getEnergyStored(stack));
+                    int maxExtract = getExtract(stack);
+                    for (; amount > 0; amount -= maxExtract) {
+                        useEnergy(stack, Math.min(maxExtract, amount), false);
+                    }
+                }
+            }
+        }
+    }
 
     // region IEnergyContainerItem
     @Override
@@ -150,6 +155,15 @@ public class FluxBowItem extends BowItemCoFH implements IFluxItem {
         @Override
         public float getAccuracyModifier(PlayerEntity shooter) {
 
+            if (isEmpowered(bowItem)) {
+                int duration = shooter.getTicksUsingItem();
+                if (!shooter.abilities.instabuild) {
+                    duration = Math.min(duration, getEnergyStored() * EMPOWERED_ENERGY_USE_INTERVAL / ENERGY_PER_USE_EMPOWERED);
+                }
+                if (duration > 20) {
+                    return Math.min(accuracyModifier / (MathHelper.sqrt((duration / 20.0F) + 3) - 1), 0.1F);
+                }
+            }
             return accuracyModifier;
         }
 
@@ -162,6 +176,15 @@ public class FluxBowItem extends BowItemCoFH implements IFluxItem {
         @Override
         public float getVelocityModifier(PlayerEntity shooter) {
 
+            if (isEmpowered(bowItem)) {
+                int duration = shooter.getTicksUsingItem();
+                if (!shooter.abilities.instabuild) {
+                    duration = Math.min(duration, getEnergyStored() * EMPOWERED_ENERGY_USE_INTERVAL / ENERGY_PER_USE_EMPOWERED);
+                }
+                if (duration > 20) {
+                    return Math.min(velocityModifier * (MathHelper.sqrt((duration / 20.0F) + 3) - 1), 10.0F);
+                }
+            }
             return velocityModifier;
         }
 
@@ -182,8 +205,8 @@ public class FluxBowItem extends BowItemCoFH implements IFluxItem {
         @Nonnull
         public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, @Nullable Direction side) {
 
-            if (cap == CapabilityArchery.BOW_ITEM_CAPABILITY) {
-                return CapabilityArchery.BOW_ITEM_CAPABILITY.orEmpty(cap, holder);
+            if (cap == BOW_ITEM_CAPABILITY) {
+                return BOW_ITEM_CAPABILITY.orEmpty(cap, holder);
             }
             return super.getCapability(cap, side);
         }

@@ -1,7 +1,7 @@
 {
   "parent": "item/generated",
   "textures": {
-    "layer0": "redstone_arsenal:item/flux_crossbow_standby"
+    "layer0": "redstone_arsenal:item/flux_crossbow"
   },
   "display": {
     "thirdperson_righthand": {
@@ -35,7 +35,7 @@
     {
       "predicate": {
         "charged": 1.0,
-        "pull": 0.01
+        "pull": 0.1
       },
       "model": "redstone_arsenal:item/flux_crossbow_charged_0"
     },
