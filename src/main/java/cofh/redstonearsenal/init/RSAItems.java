@@ -49,7 +49,7 @@ public class RSAItems {
         ITEMS.register("flux_sword", () -> new FluxSwordItem(MATERIAL_FLUX_METAL, 3, -2.4F, new Item.Properties().stacksTo(1).tab(combat).rarity(rarity).setNoRepair(), energy, xfer));
         ITEMS.register("flux_shield", () -> new FluxShieldItem(new Item.Properties().stacksTo(1).tab(combat).rarity(rarity).setNoRepair(), energy, xfer));
         ITEMS.register("flux_bow", () -> new FluxBowItem(1, 1, 1, new Item.Properties().stacksTo(1).tab(combat).rarity(rarity).setNoRepair(), energy, xfer));
-        ITEMS.register("flux_crossbow", () -> new FluxCrossbowItem(new Item.Properties().stacksTo(1).tab(combat).rarity(rarity).setNoRepair(), energy, xfer));
+        ITEMS.register("flux_crossbow", () -> new FluxCrossbowItem(1, 1, 1, new Item.Properties().stacksTo(1).tab(combat).rarity(rarity).setNoRepair(), energy, xfer));
 
         ITEMS.register("flux_shovel", () -> new FluxShovelItem(MATERIAL_FLUX_METAL, 1.5F, -3.0F, new Item.Properties().stacksTo(1).tab(tools).rarity(rarity).setNoRepair(), energy, xfer));
         ITEMS.register("flux_pickaxe", () -> new FluxPickaxeItem(MATERIAL_FLUX_METAL, 1, -2.8F, new Item.Properties().stacksTo(1).tab(tools).rarity(rarity).setNoRepair(), energy, xfer));

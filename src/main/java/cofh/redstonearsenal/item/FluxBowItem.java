@@ -1,8 +1,6 @@
 package cofh.redstonearsenal.item;
 
 import cofh.core.util.ProxyUtils;
-import cofh.lib.capability.CapabilityArchery;
-import cofh.lib.capability.IArcheryAmmoItem;
 import cofh.lib.capability.IArcheryBowItem;
 import cofh.lib.capability.templates.ArcheryBowItemWrapper;
 import cofh.lib.energy.EnergyContainerItemWrapper;
@@ -12,11 +10,13 @@ import cofh.lib.util.helpers.ArcheryHelper;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.inventory.EquipmentSlotType;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.util.*;
+import net.minecraft.util.ActionResult;
+import net.minecraft.util.Direction;
+import net.minecraft.util.Hand;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.world.World;
@@ -48,7 +48,7 @@ public class FluxBowItem extends BowItemCoFH implements IFluxItem {
         this.extract = xfer;
         this.receive = xfer;
 
-        this.accuracyModifier = accuracyModifier;;
+        this.accuracyModifier = accuracyModifier;
         this.damageModifier = damageModifier;
         this.velocityModifier = velocityModifier;
 
@@ -82,7 +82,7 @@ public class FluxBowItem extends BowItemCoFH implements IFluxItem {
     public ActionResult<ItemStack> use(World world, PlayerEntity player, Hand hand) {
 
         ItemStack stack = player.getItemInHand(hand);
-        if (hasEnergy(stack, isEmpowered(stack)) || player.abilities.instabuild) {
+        if (hasEnergy(stack, isEmpowered(stack))) {
             return super.use(world, player, hand);
         }
         return ActionResult.pass(stack);
@@ -94,10 +94,11 @@ public class FluxBowItem extends BowItemCoFH implements IFluxItem {
         if (living instanceof PlayerEntity) {
             PlayerEntity player = (PlayerEntity) living;
             if (useEnergy(stack, isEmpowered(stack), player.abilities.instabuild)) {
+                int duration = getUseDuration(stack) - durationRemaining;
                 IArcheryBowItem bowCap = stack.getCapability(BOW_ITEM_CAPABILITY).orElse(new ArcheryBowItemWrapper(stack));
-                bowCap.fireArrow(living.getProjectile(stack), player, getUseDuration(stack) - durationRemaining, world);
+                System.out.println(bowCap.fireArrow(living.getProjectile(stack), player, duration, world));
                 if (isEmpowered(stack) && !player.abilities.instabuild) {
-                    int amount = Math.min((getUseDuration(stack) - durationRemaining) * ENERGY_PER_USE_EMPOWERED / EMPOWERED_ENERGY_USE_INTERVAL, getEnergyStored(stack));
+                    int amount = Math.min(duration * ENERGY_PER_USE_EMPOWERED / EMPOWERED_ENERGY_USE_INTERVAL, getEnergyStored(stack));
                     int maxExtract = getExtract(stack);
                     for (; amount > 0; amount -= maxExtract) {
                         useEnergy(stack, Math.min(maxExtract, amount), false);
@@ -191,7 +192,6 @@ public class FluxBowItem extends BowItemCoFH implements IFluxItem {
         @Override
         public void onArrowLoosed(PlayerEntity shooter) {
 
-            bowItem.hurtAndBreak(1, shooter, (entity) -> entity.broadcastBreakEvent(shooter.getUsedItemHand()));
         }
 
         @Override
