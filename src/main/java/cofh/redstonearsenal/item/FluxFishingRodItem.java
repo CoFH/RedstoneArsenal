@@ -112,6 +112,7 @@ public class FluxFishingRodItem extends FishingRodItem implements IFluxItem {
             if (bobber.getHookedIn() != null) {
                 Vector3d relPos = owner.position().add(owner.getLookAngle()).subtract(bobber.position());
                 bobber.getHookedIn().setDeltaMovement(bobber.getHookedIn().getDeltaMovement().add(relPos.normalize().scale(FluxFishingRodItem.REEL_SPEED)));
+                bobber.getHookedIn().fallDistance = 0;
                 return;
             }
             bobber.remove();

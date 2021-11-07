@@ -1,24 +1,12 @@
 package cofh.redstonearsenal.item;
 
-import cofh.core.init.CoreConfig;
 import cofh.core.util.ProxyUtils;
 import cofh.lib.item.impl.ShieldItemCoFH;
-import cofh.lib.util.helpers.SecurityHelper;
-import net.minecraft.advancements.CriteriaTriggers;
-import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.util.ITooltipFlag;
-import net.minecraft.enchantment.EnchantmentHelper;
-import net.minecraft.enchantment.Enchantments;
-import net.minecraft.enchantment.UnbreakingEnchantment;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.inventory.EquipmentSlotType;
-import net.minecraft.item.ArmorItem;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
-import net.minecraft.item.ShieldItem;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.EntityPredicates;
 import net.minecraft.util.Hand;
@@ -31,13 +19,8 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
 import javax.annotation.Nullable;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 import java.util.function.Consumer;
-
-import static cofh.lib.util.helpers.StringHelper.getTextComponent;
-import static net.minecraft.util.text.TextFormatting.*;
 
 public class FluxShieldItem extends ShieldItemCoFH implements IFluxItem {
 

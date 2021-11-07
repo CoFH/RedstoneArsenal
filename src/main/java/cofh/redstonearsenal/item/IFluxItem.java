@@ -141,6 +141,6 @@ public interface IFluxItem extends ICoFHItem, IEnergyContainerItem, IMultiModeIt
     }
 
     static DamageSource fluxRangedDamage (ProjectileEntity projectile, @Nullable Entity shooter) {
-        return (new IndirectEntityDamageSource("flux_ranged", projectile, shooter)).setProjectile().bypassArmor();
+        return (new IndirectEntityDamageSource("flux", projectile, shooter)).setProjectile().bypassArmor();
     }
 }

@@ -1,6 +1,5 @@
 package cofh.redstonearsenal.item;
 
-import cofh.core.init.CoreConfig;
 import cofh.core.util.ProxyUtils;
 import cofh.lib.capability.IArcheryAmmoItem;
 import cofh.lib.capability.IArcheryBowItem;
@@ -10,10 +9,10 @@ import cofh.lib.energy.IEnergyContainerItem;
 import cofh.lib.util.Utils;
 import cofh.lib.util.helpers.ArcheryHelper;
 import net.minecraft.advancements.CriteriaTriggers;
-import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.enchantment.Enchantments;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
@@ -28,6 +27,7 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.vector.Quaternion;
 import net.minecraft.util.math.vector.Vector3f;
 import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.World;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -37,14 +37,10 @@ import net.minecraftforge.common.util.LazyOptional;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Predicate;
 
 import static cofh.lib.capability.CapabilityArchery.AMMO_ITEM_CAPABILITY;
 import static cofh.lib.capability.CapabilityArchery.BOW_ITEM_CAPABILITY;
-import static cofh.lib.util.helpers.StringHelper.getTextComponent;
-import static net.minecraft.util.text.TextFormatting.GRAY;
 
 public class FluxCrossbowItem extends CrossbowItem implements IFluxItem {
 
@@ -59,6 +55,7 @@ public class FluxCrossbowItem extends CrossbowItem implements IFluxItem {
     protected float velocityModifier;
 
     protected int repeats = 1;
+    protected int cooldown = 0;
 
     public FluxCrossbowItem(float accuracyModifier, float damageModifier, float velocityModifier, Item.Properties builder, int energy, int xfer) {
 
@@ -84,16 +81,8 @@ public class FluxCrossbowItem extends CrossbowItem implements IFluxItem {
     public void appendHoverText(ItemStack stack, @Nullable World worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn) {
 
         tooltipDelegate(stack, worldIn, tooltip, flagIn);
-        List<ITextComponent> additionalTooltips = new ArrayList<>();
-        super.appendHoverText(stack, worldIn, additionalTooltips, flagIn);
-
-        if (!additionalTooltips.isEmpty()) {
-            if (Screen.hasShiftDown() || CoreConfig.alwaysShowDetails) {
-                tooltip.addAll(additionalTooltips);
-            }
-            else if (CoreConfig.holdShiftForDetails) {
-                tooltip.add(getTextComponent("info.cofh.hold_shift_for_details").withStyle(GRAY));
-            }
+        if (!getLoadedProjectile(stack).isEmpty()) {
+            tooltip.add((new TranslationTextComponent("item.redstone_arsenal.flux_crossbow.loaded_from")).append(" ").append(getLoadedProjectile(stack).getDisplayName()));
         }
     }
 
@@ -151,7 +140,7 @@ public class FluxCrossbowItem extends CrossbowItem implements IFluxItem {
             if (!isEmpowered(stack) && isCharged(stack)) {
                 setCharged(stack, !shoot(world, player, stack));
             }
-            else if (!getAmmo(player, stack).isEmpty()) {
+            else if (!ArcheryHelper.findAmmo(player, stack).isEmpty()) {
                 repeats = 1;
                 player.startUsingItem(hand);
             }
@@ -171,6 +160,7 @@ public class FluxCrossbowItem extends CrossbowItem implements IFluxItem {
                 if (repeats >= REPEAT_DURATIONS.length) {
                     return;
                 }
+                cooldown++;
 
                 int next = MathHelper.floor(REPEAT_DURATIONS[repeats] * getUseDuration(stack));
                 if (repeats > 0) {
@@ -224,6 +214,26 @@ public class FluxCrossbowItem extends CrossbowItem implements IFluxItem {
             int duration = getUseDuration(stack) - durationRemaining;
             if (duration >= MathHelper.floor(REPEAT_DURATIONS[1] * getUseDuration(stack))) {
                 ((PlayerEntity) living).getCooldowns().addCooldown(this, Math.min(duration, 200));
+                if (!world.isClientSide()) {
+                    cooldown = 0;
+                }
+            }
+        }
+    }
+
+    @Override
+    public void inventoryTick(ItemStack stack, World world, Entity entity, int itemSlot, boolean isSelected) {
+
+        super.inventoryTick(stack, world, entity, itemSlot, isSelected);
+
+        //Enforce cooldown when switching selected item
+        if (isEmpowered(stack) && entity instanceof PlayerEntity && cooldown > MathHelper.floor(REPEAT_DURATIONS[1] * getUseDuration(stack))) {
+            PlayerEntity player = (PlayerEntity) entity;
+            if (!player.isUsingItem()) {
+                player.getCooldowns().addCooldown(this, Math.min(cooldown, 200));
+                if (!world.isClientSide()) {
+                    cooldown = 0;
+                }
             }
         }
     }
@@ -240,45 +250,16 @@ public class FluxCrossbowItem extends CrossbowItem implements IFluxItem {
         return false;
     }
 
-    public static ItemStack getAmmo(LivingEntity living, ItemStack crossbow) {
-
-        ItemStack ammo = ItemStack.EMPTY;
-        ItemStack offHand = living.getOffhandItem();
-        ItemStack mainHand = living.getMainHandItem();
-        Predicate<ItemStack> isAmmo  = ((ShootableItem) crossbow.getItem()).getSupportedHeldProjectiles();
-
-        if (living instanceof PlayerEntity) {
-            PlayerEntity player = (PlayerEntity) living;
-            if (offHand.getCapability(AMMO_ITEM_CAPABILITY).map(cap -> !cap.isEmpty(player)).orElse(false) || isAmmo.test(offHand)) {
-                return offHand;
-            }
-            if (mainHand.getCapability(AMMO_ITEM_CAPABILITY).map(cap -> !cap.isEmpty(player)).orElse(false) || isAmmo.test(mainHand)) {
-                return mainHand;
-            }
-        }
-        if (isAmmo.test(offHand)) {
-            return offHand;
-        }
-        if (isAmmo.test(mainHand)) {
-            return mainHand;
-        }
-        if (living instanceof PlayerEntity) {
-            ammo = ArcheryHelper.findAmmo((PlayerEntity) living);
-        }
-        if (ammo.isEmpty()) {
-            ammo = living.getProjectile(crossbow);
-        }
-        return ammo;
-    }
-
     public static boolean loadAmmo(LivingEntity living, ItemStack crossbow) {
 
         if (living instanceof PlayerEntity) {
             PlayerEntity player = (PlayerEntity) living;
-            ItemStack ammo = getAmmo(living, crossbow);
+            ItemStack ammo = ArcheryHelper.findAmmo(player, crossbow);
             if (!ammo.isEmpty() && ammo.getItem() instanceof FireworkRocketItem) {
                 crossbow.getOrCreateTag().put("projectile", ammo.save(new CompoundNBT()));
-                ammo.shrink(1);
+                if (!player.abilities.instabuild) {
+                    ammo.shrink(1);
+                }
                 setCharged(crossbow, true);
                 return true;
             }
@@ -426,7 +407,7 @@ public class FluxCrossbowItem extends CrossbowItem implements IFluxItem {
 
                     shootProjectile(shooter, projectile, getBaseSpeed(ammo) * getVelocityModifier(shooter), getAccuracyModifier(shooter), i * 10.F);
                     world.addFreshEntity(projectile);
-                    float pitch = 1.0F / (random.nextFloat() * 0.5F + 1.8F) + (shooter.getRandom().nextBoolean() ? 0.63F : 0.43F);
+                    float pitch = random.nextFloat() * 0.32F + 0.865F;
                     world.playSound(null, shooter.getX(), shooter.getY(), shooter.getZ(), SoundEvents.CROSSBOW_SHOOT, SoundCategory.PLAYERS, 1.0F, pitch);
                 }
             }

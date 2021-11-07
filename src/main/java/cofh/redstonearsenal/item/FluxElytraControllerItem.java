@@ -1,31 +1,25 @@
 package cofh.redstonearsenal.item;
 
-import cofh.core.init.CoreConfig;
 import cofh.lib.item.ICoFHItem;
 import cofh.lib.item.IMultiModeItem;
-import cofh.lib.util.helpers.SecurityHelper;
-import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.util.ITooltipFlag;
-import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.EquipmentSlotType;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.UseAction;
-import net.minecraft.util.*;
+import net.minecraft.util.ActionResult;
+import net.minecraft.util.Hand;
+import net.minecraft.util.SoundCategory;
+import net.minecraft.util.SoundEvents;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.world.World;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
 import javax.annotation.Nullable;
-import java.util.ArrayList;
 import java.util.List;
 
-import static cofh.lib.item.ContainerType.ENERGY;
-import static cofh.lib.util.helpers.StringHelper.*;
-import static cofh.lib.util.helpers.StringHelper.getScaledNumber;
-import static net.minecraft.util.text.TextFormatting.*;
+import static cofh.lib.util.helpers.StringHelper.getTextComponent;
 
 public class FluxElytraControllerItem extends Item implements ICoFHItem, IMultiModeItem {
 

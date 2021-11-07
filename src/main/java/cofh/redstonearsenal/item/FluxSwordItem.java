@@ -1,7 +1,6 @@
 package cofh.redstonearsenal.item;
 
 import cofh.core.util.ProxyUtils;
-import cofh.lib.energy.EnergyContainerItemWrapper;
 import cofh.lib.item.impl.SwordItemCoFH;
 import cofh.lib.util.Utils;
 import cofh.redstonearsenal.entity.FluxSlashEntity;
@@ -9,7 +8,6 @@ import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.util.ITooltipFlag;
-import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.enchantment.Enchantments;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.attributes.Attribute;
@@ -19,14 +17,12 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.EquipmentSlotType;
 import net.minecraft.item.IItemTier;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.world.World;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.common.capabilities.ICapabilityProvider;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -65,16 +61,7 @@ public class FluxSwordItem extends SwordItemCoFH implements IFluxItem {
     @Override
     public boolean hurtEnemy(ItemStack stack, LivingEntity target, LivingEntity attacker) {
 
-        if (attacker instanceof PlayerEntity) {
-            PlayerEntity player = (PlayerEntity) attacker;
-            useEnergy(stack, false, player.abilities.instabuild);
-
-            if (isEmpowered(stack)) {
-                if (canSweepAttack(player)) { //TODO: player attack strength already reset once this is called. time to use Mick's Inn?
-                    shootFluxSlash(stack, player);
-                }
-            }
-        }
+        useEnergy(stack, false, ((PlayerEntity) attacker).abilities.instabuild);
         return true;
     }
 
@@ -83,16 +70,14 @@ public class FluxSwordItem extends SwordItemCoFH implements IFluxItem {
 
         if (isEmpowered(stack) && entity instanceof PlayerEntity) {
             PlayerEntity player = (PlayerEntity) entity;
-
             if (canSweepAttack(player)) {
                 shootFluxSlash(stack, player);
             }
         }
-
         return false;
     }
 
-    protected void shootFluxSlash(ItemStack stack, PlayerEntity player) {
+   public void shootFluxSlash(ItemStack stack, PlayerEntity player) {
 
         if (useEnergy(stack, true, player.abilities.instabuild)) {
             World world = player.level;

@@ -22,14 +22,13 @@ import net.minecraft.world.World;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.event.entity.player.CriticalHitEvent;
-import net.minecraftforge.event.world.NoteBlockEvent;
 
 import javax.annotation.Nullable;
 import java.util.List;
 
 public class FluxAxeItem extends AxeItemCoFH implements IFluxItem {
 
-    public static final float ACTIVE_CRIT_MULTIPLIER = 1.5F;
+    public static final float ACTIVE_CRIT_MULTIPLIER = 1.6F;
 
     protected final float damage;
     protected final float damageCharged;
@@ -76,7 +75,7 @@ public class FluxAxeItem extends AxeItemCoFH implements IFluxItem {
     @Override
     public boolean hurtEnemy(ItemStack stack, LivingEntity target, LivingEntity attacker) {
 
-        useEnergy(stack, false, attacker instanceof PlayerEntity && ((PlayerEntity) attacker).abilities.instabuild);
+        useEnergy(stack, false, ((PlayerEntity) attacker).abilities.instabuild);
         return true;
     }
 
@@ -84,10 +83,9 @@ public class FluxAxeItem extends AxeItemCoFH implements IFluxItem {
 
         PlayerEntity player = event.getPlayer();
         if (isEmpowered(stack) && useEnergy(stack, true, player.abilities.instabuild)) {
-            //TODO: not working, fix lol
-            event.getTarget().invulnerableTime = 0;
-            event.getTarget().hurt(IFluxItem.fluxDirectDamage(player), (event.getDamageModifier() - 1) * ACTIVE_CRIT_MULTIPLIER * getAttackDamage(stack));
+            event.getTarget().hurt(IFluxItem.fluxDirectDamage(player), (event.getDamageModifier() - 1.0F) * ACTIVE_CRIT_MULTIPLIER * (getAttackDamage(stack) + 1.0F));
             event.setDamageModifier(1);
+            event.getTarget().invulnerableTime = 0;
         }
     }
 

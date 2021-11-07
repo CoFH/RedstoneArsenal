@@ -162,7 +162,7 @@ public class FluxBowItem extends BowItemCoFH implements IFluxItem {
                     duration = Math.min(duration, getEnergyStored() * EMPOWERED_ENERGY_USE_INTERVAL / ENERGY_PER_USE_EMPOWERED);
                 }
                 if (duration > 20) {
-                    return Math.min(accuracyModifier / (MathHelper.sqrt((duration / 20.0F) + 3) - 1), 0.1F);
+                    return Math.min(accuracyModifier / MathHelper.sqrt(duration / 20.0F), 10.0F);
                 }
             }
             return accuracyModifier;
@@ -183,7 +183,7 @@ public class FluxBowItem extends BowItemCoFH implements IFluxItem {
                     duration = Math.min(duration, getEnergyStored() * EMPOWERED_ENERGY_USE_INTERVAL / ENERGY_PER_USE_EMPOWERED);
                 }
                 if (duration > 20) {
-                    return Math.min(velocityModifier * (MathHelper.sqrt((duration / 20.0F) + 3) - 1), 10.0F);
+                    return Math.min(velocityModifier * MathHelper.sqrt(duration / 20.0F), 10.0F);
                 }
             }
             return velocityModifier;

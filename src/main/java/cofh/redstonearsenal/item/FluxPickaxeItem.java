@@ -18,7 +18,9 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.EquipmentSlotType;
 import net.minecraft.item.IItemTier;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.ItemUseContext;
 import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.util.ActionResultType;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.ITextComponent;
@@ -104,8 +106,7 @@ public class FluxPickaxeItem extends PickaxeItemCoFH implements IFluxItem {
     @Override
     public boolean hurtEnemy(ItemStack stack, LivingEntity target, LivingEntity attacker) {
 
-        PlayerEntity player = (PlayerEntity) attacker;
-        useEnergy(stack, false, player.abilities.instabuild);
+        useEnergy(stack, false, ((PlayerEntity) attacker).abilities.instabuild);
         return true;
     }
 
@@ -133,6 +134,11 @@ public class FluxPickaxeItem extends PickaxeItemCoFH implements IFluxItem {
             multimap.put(Attributes.ATTACK_SPEED, new AttributeModifier(BASE_ATTACK_SPEED_UUID, "Tool modifier", getAttackSpeed(stack), AttributeModifier.Operation.ADDITION));
         }
         return multimap;
+    }
+
+    public ActionResultType useOn(ItemUseContext context) {
+        //TODO
+        return ActionResultType.PASS;
     }
 
     protected float getAttackDamage(ItemStack stack) {

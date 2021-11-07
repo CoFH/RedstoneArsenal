@@ -1,7 +1,6 @@
 package cofh.redstonearsenal.item;
 
 import cofh.core.util.ProxyUtils;
-import cofh.lib.energy.EnergyContainerItemWrapper;
 import cofh.lib.item.impl.ShovelItemCoFH;
 import cofh.lib.util.Utils;
 import com.google.common.collect.HashMultimap;
@@ -16,21 +15,17 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.EquipmentSlotType;
 import net.minecraft.item.IItemTier;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.world.World;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.common.capabilities.ICapabilityProvider;
 
 import javax.annotation.Nullable;
 import java.util.List;
 
-import static cofh.lib.item.ContainerType.ENERGY;
 import static cofh.lib.util.constants.Constants.UUID_ATTACK_KNOCKBACK;
-import static cofh.lib.util.helpers.StringHelper.*;
 
 public class FluxShovelItem extends ShovelItemCoFH implements IFluxItem {
 
@@ -81,10 +76,7 @@ public class FluxShovelItem extends ShovelItemCoFH implements IFluxItem {
     @Override
     public boolean hurtEnemy(ItemStack stack, LivingEntity target, LivingEntity attacker) {
 
-        boolean isCreative = attacker instanceof PlayerEntity && ((PlayerEntity) attacker).abilities.instabuild;
-        if (!(isEmpowered(stack) && useEnergy(stack, true, isCreative))) {
-            useEnergy(stack, false, isCreative);
-        }
+        useEnergy(stack, isEmpowered(stack), ((PlayerEntity) attacker).abilities.instabuild);
         return true;
     }
 
