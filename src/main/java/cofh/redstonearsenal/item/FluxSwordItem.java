@@ -8,6 +8,7 @@ import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.util.ITooltipFlag;
+import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.Enchantments;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.attributes.Attribute;
@@ -59,22 +60,22 @@ public class FluxSwordItem extends SwordItemCoFH implements IFluxItem {
     }
 
     @Override
+    public boolean canApplyAtEnchantingTable(ItemStack stack, Enchantment enchantment) {
+
+        return super.canApplyAtEnchantingTable(stack, enchantment);
+    }
+
+    @Override
+    public boolean isEnchantable(ItemStack stack) {
+
+        return getItemEnchantability(stack) > 0;
+    }
+
+    @Override
     public boolean hurtEnemy(ItemStack stack, LivingEntity target, LivingEntity attacker) {
 
         useEnergy(stack, false, ((PlayerEntity) attacker).abilities.instabuild);
         return true;
-    }
-
-    @Override
-    public boolean onEntitySwing(ItemStack stack, LivingEntity entity) {
-
-        if (isEmpowered(stack) && entity instanceof PlayerEntity) {
-            PlayerEntity player = (PlayerEntity) entity;
-            if (canSweepAttack(player)) {
-                shootFluxSlash(stack, player);
-            }
-        }
-        return false;
     }
 
    public void shootFluxSlash(ItemStack stack, PlayerEntity player) {

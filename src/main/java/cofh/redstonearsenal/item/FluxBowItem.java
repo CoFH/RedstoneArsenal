@@ -8,6 +8,7 @@ import cofh.lib.energy.IEnergyContainerItem;
 import cofh.lib.item.impl.BowItemCoFH;
 import cofh.lib.util.helpers.ArcheryHelper;
 import net.minecraft.client.util.ITooltipFlag;
+import net.minecraft.enchantment.Enchantment;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
@@ -40,17 +41,14 @@ public class FluxBowItem extends BowItemCoFH implements IFluxItem {
     protected final int extract;
     protected final int receive;
 
-    public FluxBowItem(float accuracyModifier, float damageModifier, float velocityModifier, Item.Properties builder, int energy, int xfer) {
+    public FluxBowItem(int enchantability, float accuracyModifier, float damageModifier, float velocityModifier, Item.Properties builder, int energy, int xfer) {
 
         super(builder);
 
         this.maxEnergy = energy;
         this.extract = xfer;
         this.receive = xfer;
-
-        this.accuracyModifier = accuracyModifier;
-        this.damageModifier = damageModifier;
-        this.velocityModifier = velocityModifier;
+        setParams(enchantability, accuracyModifier, damageModifier, velocityModifier);
 
         ProxyUtils.registerItemModelProperty(this, new ResourceLocation("pull"), this::getPullProperty);
         ProxyUtils.registerItemModelProperty(this, new ResourceLocation("charged"), (stack, world, entity) -> getEnergyStored(stack) > 0 ? 1F : 0F);
@@ -62,6 +60,18 @@ public class FluxBowItem extends BowItemCoFH implements IFluxItem {
     public void appendHoverText(ItemStack stack, @Nullable World worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn) {
 
         tooltipDelegate(stack, worldIn, tooltip, flagIn);
+    }
+
+    @Override
+    public boolean canApplyAtEnchantingTable(ItemStack stack, Enchantment enchantment) {
+
+        return super.canApplyAtEnchantingTable(stack, enchantment);
+    }
+
+    @Override
+    public boolean isEnchantable(ItemStack stack) {
+
+        return getItemEnchantability(stack) > 0;
     }
 
     @Override
@@ -96,8 +106,7 @@ public class FluxBowItem extends BowItemCoFH implements IFluxItem {
             if (useEnergy(stack, isEmpowered(stack), player.abilities.instabuild)) {
                 int duration = getUseDuration(stack) - durationRemaining;
                 IArcheryBowItem bowCap = stack.getCapability(BOW_ITEM_CAPABILITY).orElse(new ArcheryBowItemWrapper(stack));
-                System.out.println(bowCap.fireArrow(living.getProjectile(stack), player, duration, world));
-                if (isEmpowered(stack) && !player.abilities.instabuild) {
+                if (bowCap.fireArrow(living.getProjectile(stack), player, duration, world) && isEmpowered(stack) && !player.abilities.instabuild) {
                     int amount = Math.min(duration * ENERGY_PER_USE_EMPOWERED / EMPOWERED_ENERGY_USE_INTERVAL, getEnergyStored(stack));
                     int maxExtract = getExtract(stack);
                     for (; amount > 0; amount -= maxExtract) {

@@ -1,5 +1,6 @@
 package cofh.redstonearsenal;
 
+import cofh.core.network.packet.client.PlayerMotionPacket;
 import cofh.lib.util.DeferredRegisterCoFH;
 import cofh.redstonearsenal.client.renderer.FluxElytraLayer;
 import cofh.redstonearsenal.client.renderer.FluxSlashRenderer;
@@ -7,6 +8,7 @@ import cofh.redstonearsenal.init.RSABlocks;
 import cofh.redstonearsenal.init.RSAConfig;
 import cofh.redstonearsenal.init.RSAEntities;
 import cofh.redstonearsenal.init.RSAItems;
+import cofh.redstonearsenal.network.packet.server.FluxSlashPacket;
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.entity.PlayerRenderer;
@@ -23,7 +25,9 @@ import net.minecraftforge.registries.ForgeRegistries;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import static cofh.core.CoFHCore.PACKET_HANDLER;
 import static cofh.lib.util.constants.Constants.ID_REDSTONE_ARSENAL;
+import static cofh.lib.util.constants.Constants.PACKET_FLUX_SLASH;
 import static cofh.redstonearsenal.init.RSAReferences.FLUX_SLASH_ENTITY;
 
 @Mod(ID_REDSTONE_ARSENAL)
@@ -39,6 +43,8 @@ public class RedstoneArsenal {
 
     public RedstoneArsenal() {
 
+        registerPackets();
+
         final IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
 
         modEventBus.addListener(this::commonSetup);
@@ -51,6 +57,11 @@ public class RedstoneArsenal {
         RSABlocks.register();
         RSAItems.register();
         RSAEntities.register();
+    }
+
+    private void registerPackets() {
+
+        PACKET_HANDLER.registerPacket(PACKET_FLUX_SLASH, FluxSlashPacket::new);
     }
 
     // region INITIALIZATION

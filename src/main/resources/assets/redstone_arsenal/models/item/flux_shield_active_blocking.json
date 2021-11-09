@@ -1,0 +1,6 @@
+{
+  "parent": "redstone_arsenal:item/flux_shield_blocking",
+  "textures":{
+		"all":"redstone_arsenal:item/flux_shield_active"
+	}
+}

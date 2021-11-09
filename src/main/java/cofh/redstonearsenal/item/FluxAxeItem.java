@@ -7,6 +7,7 @@ import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.util.ITooltipFlag;
+import net.minecraft.enchantment.Enchantment;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.attributes.Attribute;
 import net.minecraft.entity.ai.attributes.AttributeModifier;
@@ -28,7 +29,7 @@ import java.util.List;
 
 public class FluxAxeItem extends AxeItemCoFH implements IFluxItem {
 
-    public static final float ACTIVE_CRIT_MULTIPLIER = 1.6F;
+    public static final float EMPOWERED_CRIT_MULTIPLIER = 1.6F;
 
     protected final float damage;
     protected final float damageCharged;
@@ -67,6 +68,18 @@ public class FluxAxeItem extends AxeItemCoFH implements IFluxItem {
     }
 
     @Override
+    public boolean canApplyAtEnchantingTable(ItemStack stack, Enchantment enchantment) {
+
+        return super.canApplyAtEnchantingTable(stack, enchantment);
+    }
+
+    @Override
+    public boolean isEnchantable(ItemStack stack) {
+
+        return getItemEnchantability(stack) > 0;
+    }
+
+    @Override
     public float getDestroySpeed(ItemStack stack, BlockState state) {
 
         return getToolTypes(stack).stream().anyMatch(state::isToolEffective) ? getEfficiency(stack) : 1.0F;
@@ -83,7 +96,7 @@ public class FluxAxeItem extends AxeItemCoFH implements IFluxItem {
 
         PlayerEntity player = event.getPlayer();
         if (isEmpowered(stack) && useEnergy(stack, true, player.abilities.instabuild)) {
-            event.getTarget().hurt(IFluxItem.fluxDirectDamage(player), (event.getDamageModifier() - 1.0F) * ACTIVE_CRIT_MULTIPLIER * (getAttackDamage(stack) + 1.0F));
+            event.getTarget().hurt(IFluxItem.fluxDirectDamage(player), (event.getDamageModifier() - 1.0F) * EMPOWERED_CRIT_MULTIPLIER * (getAttackDamage(stack) + 1.0F));
             event.setDamageModifier(1);
             event.getTarget().invulnerableTime = 0;
         }

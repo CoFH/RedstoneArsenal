@@ -1,9 +1,11 @@
 package cofh.redstonearsenal.item;
 
 import cofh.core.util.ProxyUtils;
+import cofh.lib.item.impl.FishingRodItemCoFH;
 import cofh.lib.util.Utils;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.util.ITooltipFlag;
+import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
@@ -24,7 +26,7 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 import javax.annotation.Nullable;
 import java.util.List;
 
-public class FluxFishingRodItem extends FishingRodItem implements IFluxItem {
+public class FluxFishingRodItem extends FishingRodItemCoFH implements IFluxItem {
 
     public static final double REEL_SPEED = 0.2;
     public static final int REEL_EXTRACT_INTERVAL = 8;
@@ -33,13 +35,14 @@ public class FluxFishingRodItem extends FishingRodItem implements IFluxItem {
     protected final int extract;
     protected final int receive;
 
-    public FluxFishingRodItem(Properties builder, int energy, int xfer) {
+    public FluxFishingRodItem(int enchantability, int luckModifier, int speedModifier, Properties builder, int energy, int xfer) {
 
         super(builder);
 
         this.maxEnergy = energy;
         this.extract = xfer;
         this.receive = xfer;
+        setParams(enchantability, luckModifier, speedModifier);
 
         ProxyUtils.registerItemModelProperty(this, new ResourceLocation("cast"), (stack, world, entity) -> entity instanceof PlayerEntity && ((PlayerEntity) entity).fishing != null ? 1F : 0F);
         ProxyUtils.registerItemModelProperty(this, new ResourceLocation("charged"), (stack, world, entity) -> getEnergyStored(stack) > 0 ? 1F : 0F);
@@ -51,6 +54,18 @@ public class FluxFishingRodItem extends FishingRodItem implements IFluxItem {
     public void appendHoverText(ItemStack stack, @Nullable World worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn) {
 
         tooltipDelegate(stack, worldIn, tooltip, flagIn);
+    }
+
+    @Override
+    public boolean canApplyAtEnchantingTable(ItemStack stack, Enchantment enchantment) {
+
+        return super.canApplyAtEnchantingTable(stack, enchantment);
+    }
+
+    @Override
+    public boolean isEnchantable(ItemStack stack) {
+
+        return getItemEnchantability(stack) > 0;
     }
 
     @Override
@@ -69,14 +84,15 @@ public class FluxFishingRodItem extends FishingRodItem implements IFluxItem {
             else {
                 player.fishing.retrieve(stack);
                 useEnergy(stack, false, player.abilities.instabuild);
-
                 world.playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.FISHING_BOBBER_RETRIEVE, SoundCategory.NEUTRAL, 1.0F, 0.4F / (random.nextFloat() * 0.4F + 0.8F));
             }
         }
         else if (hasEnergy(stack, false)) {
             world.playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.FISHING_BOBBER_THROW, SoundCategory.NEUTRAL, 0.5F, 0.4F / (random.nextFloat() * 0.4F + 0.8F));
             if (!world.isClientSide) {
-                world.addFreshEntity(new FishingBobberEntity(player, world, EnchantmentHelper.getFishingLuckBonus(stack), EnchantmentHelper.getFishingSpeedBonus(stack)));
+                int luck = EnchantmentHelper.getFishingLuckBonus(stack) + luckModifier;
+                int speed = EnchantmentHelper.getFishingSpeedBonus(stack) + speedModifier;
+                world.addFreshEntity(new FishingBobberEntity(player, world, luck, speed));
             }
             player.awardStat(Stats.ITEM_USED.get(this));
         }

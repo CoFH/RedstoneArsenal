@@ -7,6 +7,7 @@ import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.util.ITooltipFlag;
+import net.minecraft.enchantment.Enchantment;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.attributes.Attribute;
 import net.minecraft.entity.ai.attributes.AttributeModifier;
@@ -55,16 +56,28 @@ public class FluxShovelItem extends ShovelItemCoFH implements IFluxItem {
         ProxyUtils.registerItemModelProperty(this, new ResourceLocation("active"), (stack, world, entity) -> getEnergyStored(stack) > 0 && isEmpowered(stack) ? 1F : 0F);
     }
 
-    protected float getEfficiency(ItemStack stack) {
-
-        return hasEnergy(stack, false) ? speed : 1.0F;
-    }
-
     @Override
     @OnlyIn(Dist.CLIENT)
     public void appendHoverText(ItemStack stack, @Nullable World worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn) {
 
         tooltipDelegate(stack, worldIn, tooltip, flagIn);
+    }
+
+    @Override
+    public boolean canApplyAtEnchantingTable(ItemStack stack, Enchantment enchantment) {
+
+        return super.canApplyAtEnchantingTable(stack, enchantment);
+    }
+
+    @Override
+    public boolean isEnchantable(ItemStack stack) {
+
+        return getItemEnchantability(stack) > 0;
+    }
+
+    protected float getEfficiency(ItemStack stack) {
+
+        return hasEnergy(stack, false) ? speed : 1.0F;
     }
 
     @Override

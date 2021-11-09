@@ -2,11 +2,12 @@ package cofh.redstonearsenal.event;
 
 import cofh.redstonearsenal.item.FluxAxeItem;
 import cofh.redstonearsenal.item.FluxSwordItem;
-import net.minecraft.entity.player.PlayerEntity;
+import cofh.redstonearsenal.network.packet.server.FluxSlashPacket;
 import net.minecraft.item.ItemStack;
-import net.minecraftforge.event.entity.living.LivingHurtEvent;
 import net.minecraftforge.event.entity.player.AttackEntityEvent;
 import net.minecraftforge.event.entity.player.CriticalHitEvent;
+import net.minecraftforge.event.entity.player.PlayerInteractEvent.LeftClickBlock;
+import net.minecraftforge.event.entity.player.PlayerInteractEvent.LeftClickEmpty;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -37,6 +38,31 @@ public class RSAEvents {
                 if (sword.isEmpowered(stack)) {
                     sword.shootFluxSlash(stack, event.getPlayer());
                 }
+            }
+        }
+    }
+
+    @SubscribeEvent(priority = EventPriority.LOWEST)
+    public static void handleLeftClickBlock(LeftClickBlock event) {
+
+        if (!event.isCanceled()) {
+            ItemStack stack = event.getItemStack();
+            if (stack.getItem() instanceof FluxSwordItem && FluxSwordItem.canSweepAttack(event.getPlayer())) {
+                FluxSwordItem sword = (FluxSwordItem) stack.getItem();
+                if (sword.isEmpowered(stack)) {
+                    sword.shootFluxSlash(stack, event.getPlayer());
+                }
+            }
+        }
+    }
+
+    @SubscribeEvent(priority = EventPriority.LOWEST)
+    public static void handleLeftClickEmpty(LeftClickEmpty event) {
+
+        if (!event.isCanceled()) {
+            ItemStack stack = event.getItemStack();
+            if (stack.getItem() instanceof FluxSwordItem) {
+                (new FluxSlashPacket()).sendToServer();
             }
         }
     }

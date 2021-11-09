@@ -109,21 +109,29 @@
 	"overrides": [
     {
       "predicate": {
-        "blocking": 1.0
-      },
-      "model": "redstone_arsenal:item/flux_shield_blocking"
-    },
-    {
-      "predicate": {
         "charged": 1.0
       },
       "model": "redstone_arsenal:item/flux_shield_charged"
     },
     {
       "predicate": {
+        "charged": 1.0,
+        "blocking": 1.0
+      },
+      "model": "redstone_arsenal:item/flux_shield_charged_blocking"
+    },
+    {
+      "predicate": {
         "active": 1.0
       },
       "model": "redstone_arsenal:item/flux_shield_active"
+    },
+    {
+      "predicate": {
+        "active": 1.0,
+        "blocking": 1.0
+      },
+      "model": "redstone_arsenal:item/flux_shield_active_blocking"
     }
   ]
 }

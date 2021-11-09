@@ -57,10 +57,11 @@ public interface IFluxItem extends ICoFHItem, IEnergyContainerItem, IMultiModeIt
             return true;
         }
         if (hasEnergy(stack, amount)) {
-            int unbreakingLevel = MathHelper.clamp(EnchantmentHelper.getItemEnchantmentLevel(Enchantments.UNBREAKING, stack), 0, 10);
-            if (MathHelper.RANDOM.nextInt(2 + unbreakingLevel) < 2) {
-                extractEnergy(stack, amount, false);
-            }
+//            int unbreakingLevel = MathHelper.clamp(EnchantmentHelper.getItemEnchantmentLevel(Enchantments.UNBREAKING, stack), 0, 10);
+//            if (MathHelper.RANDOM.nextInt(2 + unbreakingLevel) < 2) {
+//                extractEnergy(stack, amount, false);
+//            }
+            extractEnergy(stack, amount, false);
             return true;
         }
         return false;

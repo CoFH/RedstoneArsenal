@@ -1,26 +1,38 @@
 package cofh.redstonearsenal.item;
 
 import cofh.core.util.ProxyUtils;
+import cofh.lib.capability.IArcheryBowItem;
+import cofh.lib.capability.IShieldItem;
+import cofh.lib.energy.EnergyContainerItemWrapper;
+import cofh.lib.energy.IEnergyContainerItem;
 import cofh.lib.item.impl.ShieldItemCoFH;
+import cofh.lib.util.helpers.ArcheryHelper;
 import net.minecraft.client.util.ITooltipFlag;
+import net.minecraft.enchantment.Enchantment;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.ActionResult;
-import net.minecraft.util.EntityPredicates;
-import net.minecraft.util.Hand;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.util.*;
 import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.world.World;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraftforge.common.capabilities.Capability;
+import net.minecraftforge.common.capabilities.ICapabilityProvider;
+import net.minecraftforge.common.util.LazyOptional;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.List;
 import java.util.function.Consumer;
+
+import static cofh.lib.capability.CapabilityArchery.BOW_ITEM_CAPABILITY;
+import static cofh.lib.capability.CapabilityShieldItem.SHIELD_ITEM_CAPABILITY;
 
 public class FluxShieldItem extends ShieldItemCoFH implements IFluxItem {
 
@@ -30,14 +42,15 @@ public class FluxShieldItem extends ShieldItemCoFH implements IFluxItem {
     protected int extract;
     protected int receive;
 
-    public FluxShieldItem(Properties builder, int maxEnergy, int maxTransfer) {
+    public FluxShieldItem(int enchantability, Properties builder, int maxEnergy, int maxTransfer) {
 
         super(builder);
         this.maxEnergy = maxEnergy;
         this.extract = maxTransfer;
         this.receive = maxTransfer;
+        setEnchantability(enchantability);
 
-        ProxyUtils.registerItemModelProperty(this, new ResourceLocation("blocking"), (stack, world, entity) -> entity != null && entity.isBlocking() ? 1F : 0F);
+        ProxyUtils.registerItemModelProperty(this, new ResourceLocation("blocking"), (stack, world, entity) -> entity != null && entity.isUsingItem() && entity.getUseItem() == stack ? 1.0F : 0.0F);
         ProxyUtils.registerItemModelProperty(this, new ResourceLocation("charged"), (stack, world, entity) -> getEnergyStored(stack) > 0 ? 1F : 0F);
         ProxyUtils.registerItemModelProperty(this, new ResourceLocation("active"), (stack, world, entity) -> getEnergyStored(stack) > 0 && isEmpowered(stack) ? 1F : 0F);
     }
@@ -47,6 +60,12 @@ public class FluxShieldItem extends ShieldItemCoFH implements IFluxItem {
     public void appendHoverText(ItemStack stack, @Nullable World worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn) {
 
         tooltipDelegate(stack, worldIn, tooltip, flagIn);
+    }
+
+    @Override
+    public ICapabilityProvider initCapabilities(ItemStack stack, @Nullable CompoundNBT nbt) {
+
+        return new FluxShieldItemWrapper(stack, this);
     }
 
     @Override
@@ -120,6 +139,39 @@ public class FluxShieldItem extends ShieldItemCoFH implements IFluxItem {
     public int getMaxEnergyStored(ItemStack container) {
 
         return getMaxStored(container, maxEnergy);
+    }
+    // endregion
+
+
+    // region CAPABILITY WRAPPER
+    protected class FluxShieldItemWrapper extends EnergyContainerItemWrapper implements IShieldItem {
+
+        private final LazyOptional<IShieldItem> holder = LazyOptional.of(() -> this);
+
+        final ItemStack shieldItem;
+
+        FluxShieldItemWrapper(ItemStack shieldItem, IEnergyContainerItem container) {
+
+            super(shieldItem, container);
+            this.shieldItem = shieldItem;
+        }
+
+        @Override
+        public void onBlock(LivingEntity entity, DamageSource source) {
+
+        }
+
+        // region ICapabilityProvider
+        @Override
+        @Nonnull
+        public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, @Nullable Direction side) {
+
+            if (cap == SHIELD_ITEM_CAPABILITY) {
+                return SHIELD_ITEM_CAPABILITY.orEmpty(cap, holder);
+            }
+            return super.getCapability(cap, side);
+        }
+        // endregion
     }
     // endregion
 }
