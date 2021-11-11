@@ -126,9 +126,11 @@ public class FluxFishingRodItem extends FishingRodItemCoFH implements IFluxItem 
         Entity owner = bobber.getOwner();
         if (!bobber.level.isClientSide && owner != null) {
             if (bobber.getHookedIn() != null) {
-                Vector3d relPos = owner.position().add(owner.getLookAngle()).subtract(bobber.position());
-                bobber.getHookedIn().setDeltaMovement(bobber.getHookedIn().getDeltaMovement().add(relPos.normalize().scale(FluxFishingRodItem.REEL_SPEED)));
-                bobber.getHookedIn().fallDistance = 0;
+                Vector3d relPos = owner.position().add(owner.getLookAngle()).subtract(bobber.position()).normalize().scale(FluxFishingRodItem.REEL_SPEED);
+                bobber.getHookedIn().push(relPos.x(), relPos.y(), relPos.z());
+                if (relPos.y() > 0) {
+                    bobber.getHookedIn().fallDistance = 0;
+                }
                 return;
             }
             bobber.remove();

@@ -32,7 +32,6 @@ public class FluxAxeItem extends AxeItemCoFH implements IFluxItem {
     public static final float EMPOWERED_CRIT_MULTIPLIER = 1.6F;
 
     protected final float damage;
-    protected final float damageCharged;
     protected final float attackSpeed;
 
     protected final int maxEnergy;
@@ -44,7 +43,6 @@ public class FluxAxeItem extends AxeItemCoFH implements IFluxItem {
         super(tier, attackDamageIn, attackSpeedIn, builder);
 
         this.damage = getAttackDamage();
-        this.damageCharged = damage + 4.0F;
         this.attackSpeed = attackSpeedIn;
 
         this.maxEnergy = energy;

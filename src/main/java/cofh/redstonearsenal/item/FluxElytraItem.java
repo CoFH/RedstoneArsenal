@@ -98,6 +98,9 @@ public class FluxElytraItem extends ArmorItemCoFH implements IFluxItem {
     @Override
     public boolean elytraFlightTick(ItemStack stack, LivingEntity entity, int flightTicks) {
 
+        if (flightTicks == 0) {
+            propelTime = 0;
+        }
         boolean isCreative = entity instanceof PlayerEntity && ((PlayerEntity) entity).abilities.instabuild;
         boolean shouldExtract = flightTicks % BOOST_TIME == 0 && !isCreative;
         useEnergy(stack, false, !shouldExtract);

@@ -21,7 +21,7 @@ import static cofh.lib.util.constants.Constants.ID_REDSTONE_ARSENAL;
 
 public class FluxSlashRenderer extends EntityRenderer<FluxSlashEntity> {
 
-    private static final ResourceLocation TEXTURE = new ResourceLocation(ID_REDSTONE_ARSENAL + ":textures/entity/sword_projectile.png");
+    private static final ResourceLocation TEXTURE = new ResourceLocation(ID_REDSTONE_ARSENAL + ":textures/entity/flux_slash.png");
     private static final RenderType RENDER_TYPE = FluxRenderType.flux(TEXTURE);
 
     public FluxSlashRenderer(EntityRendererManager manager) {

@@ -77,7 +77,7 @@ public class FluxCrossbowItem extends CrossbowItemCoFH implements IFluxItem {
 
     @Override
     public boolean canApplyAtEnchantingTable(ItemStack stack, Enchantment enchantment) {
-        //TODO: prevent ensorc bow enchants from appearing
+
         return super.canApplyAtEnchantingTable(stack, enchantment);
     }
 
@@ -151,6 +151,19 @@ public class FluxCrossbowItem extends CrossbowItemCoFH implements IFluxItem {
     }
 
     @Override
+    public boolean onDroppedByPlayer(ItemStack item, PlayerEntity player) {
+
+        //TODO
+        if (cooldown > 0) {
+            player.getCooldowns().addCooldown(this, Math.min(cooldown, 200));
+            if (!player.level.isClientSide()) {
+                cooldown = 0;
+            }
+        }
+        return true;
+    }
+
+    @Override
     public void onUseTick(World world, LivingEntity living, ItemStack stack, int durationRemaining) {
 
         if (!world.isClientSide() && hasEnergy(stack, false)) {
@@ -211,32 +224,24 @@ public class FluxCrossbowItem extends CrossbowItemCoFH implements IFluxItem {
             setCharged(stack, true);
             world.playSound(null, living.getX(), living.getY(), living.getZ(), SoundEvents.CROSSBOW_LOADING_END, living instanceof PlayerEntity ? SoundCategory.PLAYERS : SoundCategory.HOSTILE, 1.0F, 1.0F / (random.nextFloat() * 0.5F + 1.0F) + 0.2F);
         }
-        else if (isEmpowered(stack) && living instanceof PlayerEntity) {
-            int duration = getUseDuration(stack) - durationRemaining;
-            if (duration >= MathHelper.floor(REPEAT_DURATIONS[1] * getUseDuration(stack))) {
-                ((PlayerEntity) living).getCooldowns().addCooldown(this, Math.min(duration, 200));
-                if (!world.isClientSide()) {
+    }
+
+    public void startCooldown(LivingEntity entity, ItemStack stack, int amount) {
+
+        if (isEmpowered(stack) && entity instanceof PlayerEntity) {
+            PlayerEntity player = (PlayerEntity) entity;
+            if (amount >= MathHelper.floor(REPEAT_DURATIONS[1] * getUseDuration(stack))) {
+                player.getCooldowns().addCooldown(this, Math.min(amount, 200));
+                if (!player.level.isClientSide()) {
                     cooldown = 0;
                 }
             }
         }
     }
 
-    @Override
-    public void inventoryTick(ItemStack stack, World world, Entity entity, int itemSlot, boolean isSelected) {
+    public void startCooldown(LivingEntity entity, ItemStack stack) {
 
-        super.inventoryTick(stack, world, entity, itemSlot, isSelected);
-
-        //Enforce cooldown when switching selected item
-        if (isEmpowered(stack) && entity instanceof PlayerEntity && cooldown > MathHelper.floor(REPEAT_DURATIONS[1] * getUseDuration(stack))) {
-            PlayerEntity player = (PlayerEntity) entity;
-            if (!player.isUsingItem()) {
-                player.getCooldowns().addCooldown(this, Math.min(cooldown, 200));
-                if (!world.isClientSide()) {
-                    cooldown = 0;
-                }
-            }
-        }
+        startCooldown(entity, stack, cooldown);
     }
 
     public static boolean loadAmmo(LivingEntity living, ItemStack crossbow) {
@@ -312,7 +317,7 @@ public class FluxCrossbowItem extends CrossbowItemCoFH implements IFluxItem {
                 }
 
                 crossbow.removeTagKey("ammo");
-                useEnergy(crossbow, Math.min(ENERGY_PER_USE_EMPOWERED * damage, getEnergyStored(crossbow)), shooter.abilities.instabuild);
+                useEnergy(crossbow, Math.min(ENERGY_PER_USE_EMPOWERED * damage, getEnergyStored(crossbow)), shooter.abilities.instabuild); //TODO
 
                 if (shooter instanceof ServerPlayerEntity) {
                     if (!world.isClientSide) {

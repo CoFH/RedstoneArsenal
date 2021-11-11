@@ -1,6 +1,7 @@
 package cofh.redstonearsenal.init;
 
 import cofh.redstonearsenal.entity.FluxSlashEntity;
+import cofh.redstonearsenal.entity.FluxTridentEntity;
 import net.minecraft.entity.EntityType;
 import net.minecraftforge.registries.ObjectHolder;
 
@@ -18,6 +19,8 @@ public class RSAReferences {
     // region ENTITIES
     @ObjectHolder(ID_FLUX_SLASH)
     public static final EntityType<FluxSlashEntity> FLUX_SLASH_ENTITY = null;
+    @ObjectHolder(ID_FLUX_TRIDENT)
+    public static final EntityType<FluxTridentEntity> FLUX_TRIDENT_ENTITY = null;
     // endregion
 
     // region ITEMS

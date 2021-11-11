@@ -15,7 +15,7 @@ public class FluxElytraLayer<T extends LivingEntity, M extends EntityModel<T>> e
     protected static final ResourceLocation UNCHARGED = new ResourceLocation(ID_REDSTONE_ARSENAL + ":textures/entity/flux_elytra.png");
     //TODO: charged/active
     protected static final ResourceLocation CHARGED = new ResourceLocation(ID_REDSTONE_ARSENAL + ":textures/entity/flux_elytra.png");
-    protected static final ResourceLocation ACTIVE = new ResourceLocation(ID_REDSTONE_ARSENAL + ":textures/entity/flux_elytra.png");
+    protected static final ResourceLocation EMPOWERED = new ResourceLocation(ID_REDSTONE_ARSENAL + ":textures/entity/flux_elytra.png");
 
     public FluxElytraLayer(IEntityRenderer renderer) {
 
@@ -33,10 +33,7 @@ public class FluxElytraLayer<T extends LivingEntity, M extends EntityModel<T>> e
 
         FluxElytraItem elytra = (FluxElytraItem) stack.getItem();
         if (elytra.getEnergyStored(stack) > 0) {
-            if (elytra.getMode(stack) > 0) {
-                return ACTIVE;
-            }
-            return CHARGED;
+            return elytra.isEmpowered(stack) ? EMPOWERED : CHARGED;
         }
         return UNCHARGED;
     }

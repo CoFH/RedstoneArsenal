@@ -33,7 +33,6 @@ public class FluxShovelItem extends ShovelItemCoFH implements IFluxItem {
     public static final float KNOCKBACK_MODIFIER = 5.0F;
 
     protected final float damage;
-    protected final float damageCharged;
     protected final float attackSpeed;
 
     protected final int maxEnergy;
@@ -45,7 +44,6 @@ public class FluxShovelItem extends ShovelItemCoFH implements IFluxItem {
         super(tier, attackDamageIn, attackSpeedIn, builder);
 
         this.damage = getAttackDamage();
-        this.damageCharged = damage + 2.0F;
         this.attackSpeed = attackSpeedIn;
 
         this.maxEnergy = energy;

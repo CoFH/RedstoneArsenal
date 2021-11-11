@@ -1,27 +1,25 @@
 package cofh.redstonearsenal.network.packet.server;
 
 import cofh.core.CoFHCore;
-import cofh.core.util.control.IReconfigurableTile;
 import cofh.lib.network.packet.IPacketServer;
 import cofh.lib.network.packet.PacketBase;
-import cofh.lib.util.control.IReconfigurable.SideConfig;
 import cofh.redstonearsenal.item.FluxSwordItem;
+import cofh.redstonearsenal.item.FluxTridentItem;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketBuffer;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.world.World;
+import net.minecraft.util.ActionResult;
+import net.minecraft.util.Hand;
+import net.minecraft.util.math.vector.Vector3d;
 
-import static cofh.lib.util.constants.Constants.PACKET_FLUX_SLASH;
+import static cofh.lib.util.constants.Constants.PACKET_LEFT_CLICK;
 
-public class FluxSlashPacket extends PacketBase implements IPacketServer {
+public class LeftClickPacket extends PacketBase implements IPacketServer {
 
-//    protected LivingEntity shooter;
+    public LeftClickPacket() {
 
-    public FluxSlashPacket() {
-
-        super(PACKET_FLUX_SLASH, CoFHCore.PACKET_HANDLER);
+        super(PACKET_LEFT_CLICK, CoFHCore.PACKET_HANDLER);
     }
 
     @Override
@@ -32,6 +30,12 @@ public class FluxSlashPacket extends PacketBase implements IPacketServer {
             FluxSwordItem sword = (FluxSwordItem) stack.getItem();
             if (sword.isEmpowered(stack)) {
                 sword.shootFluxSlash(stack, player);
+            }
+        }
+        else if (stack.getItem() instanceof FluxTridentItem) {
+            FluxTridentItem trident = (FluxTridentItem) stack.getItem();
+            if (trident.isEmpowered(stack) && trident.hasEnergy(stack, true)) {
+                trident.startPlunge(player);
             }
         }
     }
@@ -46,9 +50,9 @@ public class FluxSlashPacket extends PacketBase implements IPacketServer {
 
     }
 
-    public static void sendToServer(LivingEntity shooter) {
+    public static void createAndSend() {
 
-        FluxSlashPacket packet = new FluxSlashPacket();
+        LeftClickPacket packet = new LeftClickPacket();
         packet.sendToServer();
     }
 

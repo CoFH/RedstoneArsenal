@@ -69,18 +69,18 @@ public class FluxSlashEntity extends ProjectileEntity {
     public void tick() {
 
         super.tick();
-        if (this.tickCount > DURATION) {
-            this.level.broadcastEntityEvent(this, (byte) 3);
-            this.remove();
+        if (tickCount > DURATION) {
+            level.broadcastEntityEvent(this, (byte) 3);
+            remove();
         }
 
-        this.calculateCollision(this.level);
+        calculateCollision(this.level);
 
-        this.checkInsideBlocks();
-        Vector3d velocity = this.getDeltaMovement();
-        this.updateRotation();
+        checkInsideBlocks();
+        Vector3d velocity = getDeltaMovement();
+        updateRotation();
 
-        this.setPos(this.getX() + velocity.x, this.getY() + velocity.y, this.getZ() + velocity.z);
+        setPos(getX() + velocity.x, getY() + velocity.y, getZ() + velocity.z);
     }
 
     @OnlyIn(Dist.CLIENT)
@@ -105,8 +105,8 @@ public class FluxSlashEntity extends ProjectileEntity {
     protected void onHitBlock(BlockRayTraceResult result) {
 
         super.onHitBlock(result);
-        this.level.broadcastEntityEvent(this, (byte) 3);
-        this.remove();
+        level.broadcastEntityEvent(this, (byte) 3);
+        remove();
     }
 
     public void calculateCollision(World world) {

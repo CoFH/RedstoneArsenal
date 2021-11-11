@@ -12,6 +12,7 @@ import net.minecraft.enchantment.Enchantment;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.*;
@@ -87,19 +88,24 @@ public class FluxShieldItem extends ShieldItemCoFH implements IFluxItem {
 
         ItemStack stack = player.getItemInHand(hand);
         if (hasEnergy(stack, false)) {
-            if (isEmpowered(stack) && useEnergy(stack, true, player.abilities.instabuild)) {
-                double r2 = RANGE * RANGE;
-                AxisAlignedBB searchArea = player.getBoundingBox().inflate(RANGE);
-                for (Entity entity : world.getEntities(player, searchArea, EntityPredicates.NO_CREATIVE_OR_SPECTATOR)) {
-                    if (player.distanceToSqr(entity) < r2) {
-                        Vector3d push = entity.getDeltaMovement().lengthSqr() < 1.0 ? entity.position().subtract(player.position()).normalize() : entity.getDeltaMovement().reverse();
-                        entity.setDeltaMovement(push);
-                    }
-                }
-            }
+            repel(world, player, stack);
             return super.use(world, player, hand);
         }
         return ActionResult.pass(stack);
+    }
+
+    public void repel(World world, LivingEntity living, ItemStack stack) {
+
+        if (isEmpowered(stack) && useEnergy(stack, true, living instanceof PlayerEntity && ((PlayerEntity) living).abilities.instabuild)) {
+            double r2 = RANGE * RANGE;
+            AxisAlignedBB searchArea = living.getBoundingBox().inflate(RANGE);
+            for (Entity entity : world.getEntities(living, searchArea, EntityPredicates.NO_CREATIVE_OR_SPECTATOR)) {
+                if (living.distanceToSqr(entity) < r2) {
+                    Vector3d push = entity.getDeltaMovement().lengthSqr() < 1.0 ? entity.position().subtract(living.position()).normalize() : entity.getDeltaMovement().reverse();
+                    entity.setDeltaMovement(push);
+                }
+            }
+        }
     }
 
     @Override
@@ -159,6 +165,7 @@ public class FluxShieldItem extends ShieldItemCoFH implements IFluxItem {
         @Override
         public void onBlock(LivingEntity entity, DamageSource source) {
 
+            repel(entity.level, entity, shieldItem);
         }
 
         // region ICapabilityProvider

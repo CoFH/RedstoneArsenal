@@ -1,14 +1,14 @@
 package cofh.redstonearsenal;
 
-import cofh.core.network.packet.client.PlayerMotionPacket;
 import cofh.lib.util.DeferredRegisterCoFH;
 import cofh.redstonearsenal.client.renderer.FluxElytraLayer;
 import cofh.redstonearsenal.client.renderer.FluxSlashRenderer;
+import cofh.redstonearsenal.client.renderer.FluxTridentRenderer;
 import cofh.redstonearsenal.init.RSABlocks;
 import cofh.redstonearsenal.init.RSAConfig;
 import cofh.redstonearsenal.init.RSAEntities;
 import cofh.redstonearsenal.init.RSAItems;
-import cofh.redstonearsenal.network.packet.server.FluxSlashPacket;
+import cofh.redstonearsenal.network.packet.server.LeftClickPacket;
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.entity.PlayerRenderer;
@@ -27,8 +27,8 @@ import org.apache.logging.log4j.Logger;
 
 import static cofh.core.CoFHCore.PACKET_HANDLER;
 import static cofh.lib.util.constants.Constants.ID_REDSTONE_ARSENAL;
-import static cofh.lib.util.constants.Constants.PACKET_FLUX_SLASH;
-import static cofh.redstonearsenal.init.RSAReferences.FLUX_SLASH_ENTITY;
+import static cofh.lib.util.constants.Constants.PACKET_LEFT_CLICK;
+import static cofh.redstonearsenal.init.RSAReferences.*;
 
 @Mod(ID_REDSTONE_ARSENAL)
 public class RedstoneArsenal {
@@ -61,7 +61,7 @@ public class RedstoneArsenal {
 
     private void registerPackets() {
 
-        PACKET_HANDLER.registerPacket(PACKET_FLUX_SLASH, FluxSlashPacket::new);
+        PACKET_HANDLER.registerPacket(PACKET_LEFT_CLICK, LeftClickPacket::new);
     }
 
     // region INITIALIZATION
@@ -93,6 +93,7 @@ public class RedstoneArsenal {
     private void registerEntityRenderingHandlers() {
 
         RenderingRegistry.registerEntityRenderingHandler(FLUX_SLASH_ENTITY, FluxSlashRenderer::new);
+        RenderingRegistry.registerEntityRenderingHandler(FLUX_TRIDENT_ENTITY, FluxTridentRenderer::new);
     }
 
     private void registerRenderLayers() {
