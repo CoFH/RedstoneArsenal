@@ -147,28 +147,22 @@ public class FluxCrossbowItem extends CrossbowItemCoFH implements IFluxItem {
             }
             return ActionResult.consume(stack);
         }
-        return ActionResult.pass(stack);
+        return ActionResult.fail(stack);
     }
 
     @Override
-    public boolean onDroppedByPlayer(ItemStack item, PlayerEntity player) {
+    public boolean onDroppedByPlayer(ItemStack stack, PlayerEntity player) {
 
-        //TODO
-        if (cooldown > 0) {
-            player.getCooldowns().addCooldown(this, Math.min(cooldown, 200));
-            if (!player.level.isClientSide()) {
-                cooldown = 0;
-            }
-        }
+        startCooldown(player, stack);
         return true;
     }
 
     @Override
-    public void onUseTick(World world, LivingEntity living, ItemStack stack, int durationRemaining) {
+    public void onUsingTick(ItemStack stack, LivingEntity living, int duration) {
 
+        World world = living.level;
         if (!world.isClientSide() && hasEnergy(stack, false)) {
             int baseDuration = getUseDuration(stack);
-            int duration = baseDuration - durationRemaining;
 
             if (isEmpowered(stack)) {
                 if (repeats >= REPEAT_DURATIONS.length) {

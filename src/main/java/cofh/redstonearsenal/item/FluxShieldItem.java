@@ -37,7 +37,8 @@ import static cofh.lib.capability.CapabilityShieldItem.SHIELD_ITEM_CAPABILITY;
 
 public class FluxShieldItem extends ShieldItemCoFH implements IFluxItem {
 
-    public static final double RANGE = 4;
+    public static final float RANGE = 4;
+    public static final float REPEL_STRENGTH = 2;
 
     protected int maxEnergy;
     protected int extract;
@@ -91,7 +92,7 @@ public class FluxShieldItem extends ShieldItemCoFH implements IFluxItem {
             repel(world, player, stack);
             return super.use(world, player, hand);
         }
-        return ActionResult.pass(stack);
+        return ActionResult.fail(stack);
     }
 
     public void repel(World world, LivingEntity living, ItemStack stack) {
@@ -101,8 +102,12 @@ public class FluxShieldItem extends ShieldItemCoFH implements IFluxItem {
             AxisAlignedBB searchArea = living.getBoundingBox().inflate(RANGE);
             for (Entity entity : world.getEntities(living, searchArea, EntityPredicates.NO_CREATIVE_OR_SPECTATOR)) {
                 if (living.distanceToSqr(entity) < r2) {
-                    Vector3d push = entity.getDeltaMovement().lengthSqr() < 1.0 ? entity.position().subtract(living.position()).normalize() : entity.getDeltaMovement().reverse();
-                    entity.setDeltaMovement(push);
+                    if (entity.getDeltaMovement().lengthSqr() < REPEL_STRENGTH * REPEL_STRENGTH) {
+                        entity.setDeltaMovement(entity.position().subtract(living.position()).normalize().scale(REPEL_STRENGTH));
+                    }
+                    else {
+                        entity.setDeltaMovement(entity.getDeltaMovement().reverse());
+                    }
                 }
             }
         }

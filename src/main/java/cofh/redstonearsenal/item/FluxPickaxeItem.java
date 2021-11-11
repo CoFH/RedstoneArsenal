@@ -1,16 +1,14 @@
 package cofh.redstonearsenal.item;
 
 import cofh.core.util.ProxyUtils;
-import cofh.lib.energy.EnergyContainerItemWrapper;
 import cofh.lib.item.impl.PickaxeItemCoFH;
 import cofh.lib.util.Utils;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
-import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 import net.minecraft.block.BlockState;
-import net.minecraft.block.material.Material;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.enchantment.Enchantment;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.attributes.Attribute;
 import net.minecraft.entity.ai.attributes.AttributeModifier;
@@ -20,7 +18,6 @@ import net.minecraft.inventory.EquipmentSlotType;
 import net.minecraft.item.IItemTier;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemUseContext;
-import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.ActionResultType;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
@@ -28,32 +25,18 @@ import net.minecraft.util.text.ITextComponent;
 import net.minecraft.world.World;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.common.ToolType;
-import net.minecraftforge.common.capabilities.ICapabilityProvider;
 
 import javax.annotation.Nullable;
 import java.util.List;
-import java.util.Set;
 
-import static cofh.lib.item.ContainerType.ENERGY;
-import static cofh.lib.util.helpers.StringHelper.*;
+import static cofh.redstonearsenal.init.RSAReferences.FLUX_GLOW_AIR;
+import static net.minecraft.block.Blocks.AIR;
 
 public class FluxPickaxeItem extends PickaxeItemCoFH implements IFluxItem {
 
-    protected static final Set<ToolType> TOOL_TYPES = new ObjectOpenHashSet<>();
-    protected static final Set<Material> MATERIALS = new ObjectOpenHashSet<>();
-
-    static {
-        TOOL_TYPES.add(ToolType.PICKAXE);
-        TOOL_TYPES.add(ToolType.SHOVEL);
-
-        MATERIALS.add(Material.HEAVY_METAL);
-        MATERIALS.add(Material.METAL);
-        MATERIALS.add(Material.STONE);
-    }
-
+    protected final int LOW_LIGHT_THRESHOLD = 5;
+    protected final int REMOVE_RADIUS = 10;
     protected final float damage;
-    protected final float damageCharged;
     protected final float attackSpeed;
 
     protected final int maxEnergy;
@@ -65,7 +48,6 @@ public class FluxPickaxeItem extends PickaxeItemCoFH implements IFluxItem {
         super(tier, attackDamageIn, attackSpeedIn, builder);
 
         this.damage = getAttackDamage();
-        this.damageCharged = damage + 2.0F;
         this.attackSpeed = attackSpeedIn;
 
         this.maxEnergy = energy;
@@ -103,17 +85,13 @@ public class FluxPickaxeItem extends PickaxeItemCoFH implements IFluxItem {
     @Override
     public boolean canHarvestBlock(ItemStack stack, BlockState state) {
 
-        // Yes, Shovels can harvest Snow and Snow Blocks. That's an intentional omission here. :)
-        if (isEmpowered(stack)) {
-            return TOOL_TYPES.contains(state.getHarvestTool()) ? getTier().getLevel() >= state.getHarvestLevel() : MATERIALS.contains(state.getMaterial());
-        }
         return isCorrectToolForDrops(state);
     }
 
     @Override
     public float getDestroySpeed(ItemStack stack, BlockState state) {
 
-        return MATERIALS.contains(state.getMaterial()) || getToolTypes(stack).stream().anyMatch(state::isToolEffective) ? getEfficiency(stack) : 1.0F;
+        return getToolTypes(stack).stream().anyMatch(state::isToolEffective) ? getEfficiency(stack) : 1.0F;
     }
 
     @Override
@@ -133,12 +111,6 @@ public class FluxPickaxeItem extends PickaxeItemCoFH implements IFluxItem {
     }
 
     @Override
-    public Set<ToolType> getToolTypes(ItemStack stack) {
-
-        return isEmpowered(stack) ? TOOL_TYPES : super.getToolTypes(stack);
-    }
-
-    @Override
     public Multimap<Attribute, AttributeModifier> getAttributeModifiers(EquipmentSlotType slot, ItemStack stack) {
 
         Multimap<Attribute, AttributeModifier> multimap = HashMultimap.create();
@@ -149,9 +121,45 @@ public class FluxPickaxeItem extends PickaxeItemCoFH implements IFluxItem {
         return multimap;
     }
 
+    @Override
     public ActionResultType useOn(ItemUseContext context) {
-        //TODO
+
+        ItemStack tool = context.getItemInHand();
+        if (context.getPlayer() != null && useEnergy(tool, true, context.getPlayer().abilities.instabuild)) {
+            if (context.getPlayer().isCrouching()) {
+                int r = REMOVE_RADIUS;
+                for (BlockPos pos : BlockPos.betweenClosed(context.getClickedPos().offset(-r, -r, -r), context.getClickedPos().offset(r, r, r))) {
+                    if (pos.distSqr(context.getClickedPos()) < r * r && context.getLevel().getBlockState(pos).getBlock().equals(FLUX_GLOW_AIR)) {
+                        context.getLevel().setBlockAndUpdate(pos, AIR.defaultBlockState());
+                    }
+                }
+                return ActionResultType.SUCCESS;
+            }
+            else {
+                BlockPos pos = context.getClickedPos().relative(context.getClickedFace());
+                if (context.getLevel().isEmptyBlock(pos)) {
+                    context.getLevel().setBlockAndUpdate(pos, FLUX_GLOW_AIR.defaultBlockState());
+                    return ActionResultType.SUCCESS;
+                }
+
+            }
+        }
         return ActionResultType.PASS;
+    }
+
+    @Override
+    public void inventoryTick(ItemStack stack, World world, Entity entity, int itemSlot, boolean isSelected) {
+
+        super.inventoryTick(stack, world, entity, itemSlot, isSelected);
+
+        if (!world.isClientSide() && isEmpowered(stack) && world.getGameTime() % 8 == 0) {
+            BlockPos pos = entity.blockPosition();
+            if (world.isEmptyBlock(pos) && world.getRawBrightness(pos, world.getSkyDarken()) <= LOW_LIGHT_THRESHOLD) {
+                if (useEnergy(stack, true, entity instanceof PlayerEntity && ((PlayerEntity) entity).abilities.instabuild)) {
+                    world.setBlockAndUpdate(pos, FLUX_GLOW_AIR.defaultBlockState());
+                }
+            }
+        }
     }
 
     protected float getAttackDamage(ItemStack stack) {

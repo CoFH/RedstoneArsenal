@@ -110,16 +110,11 @@ public class FluxTridentItem extends TridentItemCoFH implements IFluxItem {
     public ActionResult<ItemStack> use(World world, PlayerEntity player, Hand hand) {
 
         ItemStack stack = player.getItemInHand(hand);
-        if (hasEnergy(stack, false) && !player.isAutoSpinAttack()) {
-            if (EnchantmentHelper.getRiptide(stack) > 0 && !player.isInWaterOrRain()) {
-                return ActionResult.fail(stack);
-            }
-            else {
-                player.startUsingItem(hand);
-                return ActionResult.consume(stack);
-            }
+        if (hasEnergy(stack, false) && !player.isAutoSpinAttack() && (EnchantmentHelper.getRiptide(stack) <= 0 || player.isInWaterOrRain())) {
+            player.startUsingItem(hand);
+            return ActionResult.consume(stack);
         }
-        return ActionResult.pass(stack);
+        return ActionResult.fail(stack);
     }
 
     public void releaseUsing(ItemStack stack, World world, LivingEntity entity, int remainingDuration) {

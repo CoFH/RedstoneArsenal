@@ -55,7 +55,7 @@ public class FluxElytraControllerItem extends Item implements ICoFHItem, IMultiM
                 return ActionResult.sidedSuccess(stack, world.isClientSide());
             }
         }
-        return ActionResult.pass(stack);
+        return ActionResult.fail(stack);
     }
 
     @Override

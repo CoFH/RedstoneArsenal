@@ -97,9 +97,8 @@ public class FluxFishingRodItem extends FishingRodItemCoFH implements IFluxItem 
             player.awardStat(Stats.ITEM_USED.get(this));
         }
         else {
-            return ActionResult.pass(stack);
+            return ActionResult.fail(stack);
         }
-
         return ActionResult.sidedSuccess(stack, world.isClientSide());
     }
 

@@ -95,7 +95,7 @@ public class FluxBowItem extends BowItemCoFH implements IFluxItem {
         if (hasEnergy(stack, isEmpowered(stack))) {
             return super.use(world, player, hand);
         }
-        return ActionResult.pass(stack);
+        return ActionResult.fail(stack);
     }
 
     @Override
