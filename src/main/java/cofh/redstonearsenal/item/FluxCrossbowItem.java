@@ -158,11 +158,11 @@ public class FluxCrossbowItem extends CrossbowItemCoFH implements IFluxItem {
     }
 
     @Override
-    public void onUsingTick(ItemStack stack, LivingEntity living, int duration) {
+    public void onUseTick(World world, LivingEntity living, ItemStack stack, int durationRemaining) {
 
-        World world = living.level;
         if (!world.isClientSide() && hasEnergy(stack, false)) {
             int baseDuration = getUseDuration(stack);
+            int duration = baseDuration - durationRemaining;
 
             if (isEmpowered(stack)) {
                 if (repeats >= REPEAT_DURATIONS.length) {

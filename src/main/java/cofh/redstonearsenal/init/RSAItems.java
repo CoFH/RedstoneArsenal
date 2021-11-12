@@ -51,6 +51,7 @@ public class RSAItems {
         ITEMS.register("flux_shield", () -> new FluxShieldItem(MATERIAL_FLUX_METAL.getEnchantmentValue(), new Item.Properties().stacksTo(1).tab(combat).rarity(rarity).setNoRepair(), energy, xfer));
         ITEMS.register("flux_bow", () -> new FluxBowItem(MATERIAL_FLUX_METAL.getEnchantmentValue(), 1, 1, 1, new Item.Properties().stacksTo(1).tab(combat).rarity(rarity).setNoRepair(), energy, xfer));
         ITEMS.register("flux_crossbow", () -> new FluxCrossbowItem(MATERIAL_FLUX_METAL.getEnchantmentValue(), 1, 1, 1, new Item.Properties().stacksTo(1).tab(combat).rarity(rarity).setNoRepair(), energy, xfer));
+        ITEMS.register("flux_quiver", () -> new FluxQuiverItem(new Item.Properties().stacksTo(1).tab(combat).rarity(rarity).setNoRepair(), energy, xfer));
         ITEMS.register("flux_trident", () -> new FluxTridentItem(MATERIAL_FLUX_METAL, 2, 5, -2.9F, new Item.Properties().stacksTo(1).tab(combat).rarity(rarity).setNoRepair().setISTER(() -> FluxTridentISTER::new), energy, xfer));
 
         ITEMS.register("flux_shovel", () -> new FluxShovelItem(MATERIAL_FLUX_METAL, 1.5F, -3.0F, new Item.Properties().stacksTo(1).tab(tools).rarity(rarity).setNoRepair(), energy, xfer));

@@ -106,7 +106,7 @@ public class FluxBowItem extends BowItemCoFH implements IFluxItem {
             if (useEnergy(stack, isEmpowered(stack), player.abilities.instabuild)) {
                 int duration = getUseDuration(stack) - durationRemaining;
                 IArcheryBowItem bowCap = stack.getCapability(BOW_ITEM_CAPABILITY).orElse(new ArcheryBowItemWrapper(stack));
-                if (bowCap.fireArrow(living.getProjectile(stack), player, duration, world) && isEmpowered(stack) && !player.abilities.instabuild) {
+                if (bowCap.fireArrow(ArcheryHelper.findAmmo(player, stack), player, duration, world) && isEmpowered(stack) && !player.abilities.instabuild) {
                     int amount = Math.min(duration * ENERGY_PER_USE_EMPOWERED / EMPOWERED_ENERGY_USE_INTERVAL, getEnergyStored(stack));
                     int maxExtract = getExtract(stack);
                     for (; amount > 0; amount -= maxExtract) {

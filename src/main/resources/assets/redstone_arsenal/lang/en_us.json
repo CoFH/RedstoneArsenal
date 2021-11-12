@@ -13,9 +13,11 @@
 
   "item.redstone_arsenal.flux_sword": "Flux-Infused Sword",
   "item.redstone_arsenal.flux_shield": "Flux-Infused Shield",
+  "item.redstone_arsenal.flux_trident": "Flux-Infused Trident",
   "item.redstone_arsenal.flux_bow": "Flux-Infused Bow",
   "item.redstone_arsenal.flux_crossbow": "Flux-Infused Crossbow",
   "item.redstone_arsenal.flux_crossbow.loaded_from": "Loaded from:",
+  "item.redstone_arsenal.flux_quiver": "Flux-Infused Quiver",
 
   "item.redstone_arsenal.flux_pickaxe": "Flux-Infused Pickaxe",
   "item.redstone_arsenal.flux_shovel": "Flux-Infused Shovel",

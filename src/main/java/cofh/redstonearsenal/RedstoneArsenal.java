@@ -1,6 +1,7 @@
 package cofh.redstonearsenal;
 
 import cofh.lib.util.DeferredRegisterCoFH;
+import cofh.redstonearsenal.client.renderer.FluxArrowRenderer;
 import cofh.redstonearsenal.client.renderer.FluxElytraLayer;
 import cofh.redstonearsenal.client.renderer.FluxSlashRenderer;
 import cofh.redstonearsenal.client.renderer.FluxTridentRenderer;
@@ -93,6 +94,7 @@ public class RedstoneArsenal {
     private void registerEntityRenderingHandlers() {
 
         RenderingRegistry.registerEntityRenderingHandler(FLUX_SLASH_ENTITY, FluxSlashRenderer::new);
+        RenderingRegistry.registerEntityRenderingHandler(FLUX_ARROW_ENTITY, FluxArrowRenderer::new);
         RenderingRegistry.registerEntityRenderingHandler(FLUX_TRIDENT_ENTITY, FluxTridentRenderer::new);
     }
 

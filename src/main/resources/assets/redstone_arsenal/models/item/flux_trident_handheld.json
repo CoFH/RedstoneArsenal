@@ -44,9 +44,9 @@
   "overrides": [
     {
       "predicate": {
-        "throwing": 1
+        "throwing": 1.0
       },
-      "model": "item/trident_throwing"
+      "model": "redstone_arsenal:item/flux_trident_throwing"
     }
   ]
 }

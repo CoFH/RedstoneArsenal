@@ -128,8 +128,9 @@ public class FluxPickaxeItem extends PickaxeItemCoFH implements IFluxItem {
         if (context.getPlayer() != null && useEnergy(tool, true, context.getPlayer().abilities.instabuild)) {
             if (context.getPlayer().isCrouching()) {
                 int r = REMOVE_RADIUS;
+                int r2 = r * r;
                 for (BlockPos pos : BlockPos.betweenClosed(context.getClickedPos().offset(-r, -r, -r), context.getClickedPos().offset(r, r, r))) {
-                    if (pos.distSqr(context.getClickedPos()) < r * r && context.getLevel().getBlockState(pos).getBlock().equals(FLUX_GLOW_AIR)) {
+                    if (pos.distSqr(context.getClickedPos()) < r2 && context.getLevel().getBlockState(pos).getBlock().equals(FLUX_GLOW_AIR)) {
                         context.getLevel().setBlockAndUpdate(pos, AIR.defaultBlockState());
                     }
                 }
