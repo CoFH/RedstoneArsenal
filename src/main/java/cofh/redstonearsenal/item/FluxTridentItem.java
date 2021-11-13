@@ -119,6 +119,7 @@ public class FluxTridentItem extends TridentItemCoFH implements IFluxItem {
     }
 
     public void releaseUsing(ItemStack stack, World world, LivingEntity entity, int remainingDuration) {
+
         if (entity instanceof PlayerEntity) {
             PlayerEntity player = (PlayerEntity)entity;
             int i = this.getUseDuration(stack) - remainingDuration;
@@ -167,10 +168,8 @@ public class FluxTridentItem extends TridentItemCoFH implements IFluxItem {
                         } else {
                             soundevent = SoundEvents.TRIDENT_RIPTIDE_1;
                         }
-
                         world.playSound(null, player, soundevent, SoundCategory.PLAYERS, 1.0F, 1.0F);
                     }
-
                 }
             }
         }
@@ -231,10 +230,10 @@ public class FluxTridentItem extends TridentItemCoFH implements IFluxItem {
     public static Vector3d getPlungeVector(Vector3d lookVector, double magnitude) {
 
         double x = lookVector.x();
-        double y = -Math.abs(lookVector.y());
+        double y = lookVector.y();
         double z = lookVector.z();
         double compSqr = lookVector.lengthSqr() * 0.5;
-        if (compSqr > y * y) {
+        if (compSqr > y * y || y > 0) {
             double comp = MathHelper.sqrt(compSqr);
             double horzSum = Math.abs(x) + Math.abs(z);
             return new Vector3d((x / horzSum) * comp, -comp, (z / horzSum) * comp).scale(magnitude);
@@ -276,7 +275,7 @@ public class FluxTridentItem extends TridentItemCoFH implements IFluxItem {
 
     protected float getPlungeAttackDamage(LivingEntity living, ItemStack stack) {
 
-        return hasEnergy(stack, true) && living.fallDistance > living.getMaxFallDistance() ? 2 * MathHelper.sqrt(living.fallDistance) : 0.0F;
+        return hasEnergy(stack, true) && living.fallDistance > living.getMaxFallDistance() ? 2.5F * MathHelper.sqrt(living.fallDistance) : 0.0F;
     }
 
     protected float getAttackSpeed(ItemStack stack) {

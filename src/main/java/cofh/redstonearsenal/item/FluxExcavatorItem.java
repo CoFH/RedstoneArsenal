@@ -24,10 +24,7 @@ import net.minecraft.inventory.EquipmentSlotType;
 import net.minecraft.item.*;
 import net.minecraft.loot.LootTable;
 import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.util.ActionResultType;
-import net.minecraft.util.Direction;
-import net.minecraft.util.NonNullList;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.*;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.world.World;
@@ -95,14 +92,18 @@ public class FluxExcavatorItem extends ExcavatorItem implements IFluxItem {
 
     @Override
     public ActionResultType useOn(ItemUseContext context) {
-        //TODO: play sound, inventory capabilities?
+
         World world = context.getLevel();
+        BlockPos clickPos = context.getClickedPos();
         if (!world.isClientSide()) {
             ItemStack tool = context.getItemInHand();
             PlayerEntity player = context.getPlayer();
+            if (player == null) {
+                return ActionResultType.PASS;
+            }
             BlockItemUseContext blockContext = new BlockItemUseContext(context);
             if (player.abilities.instabuild) {
-                for (BlockPos pos : AreaEffectHelper.getPlaceableBlocksRadius(tool, context.getClickedPos(), player, 1 + getMode(tool))) {
+                for (BlockPos pos : AreaEffectHelper.getPlaceableBlocksRadius(tool, clickPos, player, 1 + getMode(tool))) {
                     BlockPos fillPos = pos.relative(context.getClickedFace());
                     if (world.getBlockState(fillPos).canBeReplaced(blockContext)) {
                         world.setBlock(fillPos, world.getBlockState(pos).getBlock().defaultBlockState(), 2);
@@ -110,7 +111,7 @@ public class FluxExcavatorItem extends ExcavatorItem implements IFluxItem {
                 }
             }
             else {
-                ImmutableList<BlockPos> blocks = AreaEffectHelper.getPlaceableBlocksRadius(tool, context.getClickedPos(), player, 1 + getMode(tool));
+                ImmutableList<BlockPos> blocks = AreaEffectHelper.getPlaceableBlocksRadius(tool, clickPos, player, 1 + getMode(tool));
                 Map<Block, List<BlockPos>> sorted = new HashMap<>();
                 for (BlockPos pos : blocks) {
                     BlockPos fillPos = pos.relative(context.getClickedFace());
@@ -121,8 +122,8 @@ public class FluxExcavatorItem extends ExcavatorItem implements IFluxItem {
                     }
                 }
                 NonNullList<ItemStack> inventory = player.inventory.items;
-                int slot = -1;
                 for (Block block : sorted.keySet()) {
+                    int slot = -1;
                     if (!hasEnergy(context.getItemInHand(), false)) {
                         break;
                     }
@@ -142,9 +143,12 @@ public class FluxExcavatorItem extends ExcavatorItem implements IFluxItem {
                             inventory.get(slot).shrink(1);
                         }
                     }
-                    slot = -1;
                 }
             }
+        }
+        else {
+            SoundEvent sound = world.getBlockState(clickPos).getSoundType().getPlaceSound();
+            world.playLocalSound(clickPos.getX() + 0.5, clickPos.getY() + 0.5, clickPos.getZ() + 0.5, sound, SoundCategory.BLOCKS, 1.0F, 1.0F, false);
         }
         return ActionResultType.sidedSuccess(world.isClientSide());
     }

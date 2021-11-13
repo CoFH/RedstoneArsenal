@@ -112,25 +112,24 @@ public class FluxArrowEntity extends AbstractArrowEntity {
 
     public void explode(Vector3d pos) {
 
-        double r2 = EXPLOSION_RANGE * EXPLOSION_RANGE;
-        AxisAlignedBB searchArea = this.getBoundingBox().inflate(EXPLOSION_RANGE, 1, EXPLOSION_RANGE);
-        Predicate<Entity> filter = EntityPredicates.NO_CREATIVE_OR_SPECTATOR.and(entity -> entity instanceof LivingEntity);
-        for (Entity target : level.getEntities(this, searchArea, filter)) {
-            if (this.distanceToSqr(target) < r2) {
-                target.hurt(getDamageSource(this, getOwner()), (float) getBaseDamage());
+        if (!level.isClientSide()) {
+            double r2 = EXPLOSION_RANGE * EXPLOSION_RANGE;
+            AxisAlignedBB searchArea = this.getBoundingBox().inflate(EXPLOSION_RANGE, 1, EXPLOSION_RANGE);
+            Predicate<Entity> filter = EntityPredicates.NO_CREATIVE_OR_SPECTATOR.and(entity -> entity instanceof LivingEntity);
+            for (Entity target : level.getEntities(this, searchArea, filter)) {
+                if (this.distanceToSqr(target) < r2) {
+                    target.hurt(getDamageSource(this, getOwner()), (float) getBaseDamage());
+                }
             }
+            level.broadcastEntityEvent(this, (byte) 3);
+            remove();
         }
-
-        level.addParticle(ParticleTypes.EXPLOSION, pos.x(), pos.y(), pos.z(), 1.0D, 0.0D, 0.0D);
-        level.playLocalSound(pos.x(), pos.y(), pos.z(), SoundEvents.GENERIC_EXPLODE, SoundCategory.BLOCKS, 0.5F, (1.0F + (this.level.random.nextFloat() - this.level.random.nextFloat()) * 0.2F) * 0.7F, false);
-        level.broadcastEntityEvent(this, (byte) 3);
-        remove();
     }
 
     @Override
     public void tick() {
 
-        if (level.isClientSide() && tickCount > LIFESPAN) {
+        if (!level.isClientSide() && tickCount > LIFESPAN) {
             level.broadcastEntityEvent(this, (byte) 3);
             remove();
         }
@@ -154,6 +153,16 @@ public class FluxArrowEntity extends AbstractArrowEntity {
                 this.onHitBlock((BlockRayTraceResult) result);
             }
         }
+    }
+
+    @OnlyIn(Dist.CLIENT)
+    public void handleEntityEvent(byte event) {
+
+        if (event == 3 && this.level.isClientSide && isExplodeArrow()) {
+            level.addParticle(ParticleTypes.EXPLOSION, getX(), getY(), getZ(), 0, 0, 0);
+            level.playLocalSound(getX(), getY(), getZ(), SoundEvents.GENERIC_EXPLODE, SoundCategory.BLOCKS, 0.5F, (1.0F + (this.level.random.nextFloat() - this.level.random.nextFloat()) * 0.2F) * 0.7F, false);
+        }
+        super.handleEntityEvent(event);
     }
 
 

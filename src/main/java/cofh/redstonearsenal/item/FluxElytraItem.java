@@ -33,6 +33,7 @@ public class FluxElytraItem extends ArmorItemCoFH implements IFluxItem {
     public static final float PROPEL_SPEED = 0.85F;
     public static final float BRAKE_RATE = 0.95F;
     public static final int BOOST_TIME = 32;
+    public static final int ENERGY_USE_INTERVAL = 8;
     public static final UUID CHEST_UUID = UUID.fromString("9F3D476D-C118-4544-8365-64846904B48E");
 
     protected int maxEnergy;
@@ -98,11 +99,8 @@ public class FluxElytraItem extends ArmorItemCoFH implements IFluxItem {
     @Override
     public boolean elytraFlightTick(ItemStack stack, LivingEntity entity, int flightTicks) {
 
-        if (flightTicks == 0) {
-            propelTime = 0;
-        }
         boolean isCreative = entity instanceof PlayerEntity && ((PlayerEntity) entity).abilities.instabuild;
-        boolean shouldExtract = flightTicks % BOOST_TIME == 0 && !isCreative;
+        boolean shouldExtract = flightTicks % ENERGY_USE_INTERVAL == 0 && !isCreative;
         useEnergy(stack, false, !shouldExtract);
 
         if (entity.isCrouching() && (hasEnergy(stack, true) || isCreative)) {
@@ -143,7 +141,7 @@ public class FluxElytraItem extends ArmorItemCoFH implements IFluxItem {
         }
         boolean isPlayer = entity instanceof PlayerEntity;
         boolean isCreative = isPlayer && ((PlayerEntity) entity).abilities.instabuild;
-        if (!useEnergy(stack, true, isCreative)) {
+        if (!useEnergy(stack, getEnergyPerUse(true) * boostTime / ENERGY_USE_INTERVAL, isCreative)) {
             return false;
         }
         if (!entity.isFallFlying() && isPlayer) {

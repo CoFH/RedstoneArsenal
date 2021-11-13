@@ -124,6 +124,7 @@ public class FluxQuiverItem extends ItemCoFH implements IFluxItem {
         public AbstractArrowEntity createArrowEntity(World world, PlayerEntity shooter) {
 
             FluxArrowEntity arrow = new FluxArrowEntity(world, shooter);
+            arrow.pickup = AbstractArrowEntity.PickupStatus.DISALLOWED;
             if (isEmpowered(quiverItem)) {
                 ItemStack weapon = shooter.getMainHandItem().isEmpty() ? shooter.getOffhandItem() : shooter.getMainHandItem();
                 if (!weapon.isEmpty()) {

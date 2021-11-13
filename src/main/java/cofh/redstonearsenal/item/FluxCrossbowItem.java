@@ -169,7 +169,6 @@ public class FluxCrossbowItem extends CrossbowItemCoFH implements IFluxItem {
                     return;
                 }
                 cooldown++;
-
                 int next = MathHelper.floor(REPEAT_DURATIONS[repeats] * getUseDuration(stack));
                 if (repeats > 0) {
                     if (duration == next - 2) {
@@ -196,7 +195,6 @@ public class FluxCrossbowItem extends CrossbowItemCoFH implements IFluxItem {
                         return;
                     }
                 }
-
                 int prev = MathHelper.floor(REPEAT_DURATIONS[repeats - 1] * getUseDuration(stack));
                 duration -= prev;
                 baseDuration = next - prev;
@@ -311,7 +309,7 @@ public class FluxCrossbowItem extends CrossbowItemCoFH implements IFluxItem {
                 }
 
                 crossbow.removeTagKey("ammo");
-                useEnergy(crossbow, Math.min(ENERGY_PER_USE_EMPOWERED * damage, getEnergyStored(crossbow)), shooter.abilities.instabuild); //TODO
+                useEnergy(crossbow, Math.min(getEnergyPerUse(true) * damage, getEnergyStored(crossbow)), shooter.abilities.instabuild); //TODO
 
                 if (shooter instanceof ServerPlayerEntity) {
                     if (!world.isClientSide) {
@@ -324,7 +322,6 @@ public class FluxCrossbowItem extends CrossbowItemCoFH implements IFluxItem {
         }
         return false;
     }
-
 
     public float getBaseSpeed(ItemStack ammo) {
 

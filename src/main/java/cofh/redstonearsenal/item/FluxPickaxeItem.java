@@ -126,23 +126,28 @@ public class FluxPickaxeItem extends PickaxeItemCoFH implements IFluxItem {
 
         ItemStack tool = context.getItemInHand();
         if (context.getPlayer() != null && useEnergy(tool, true, context.getPlayer().abilities.instabuild)) {
+            World world = context.getLevel();
             if (context.getPlayer().isCrouching()) {
                 int r = REMOVE_RADIUS;
                 int r2 = r * r;
                 for (BlockPos pos : BlockPos.betweenClosed(context.getClickedPos().offset(-r, -r, -r), context.getClickedPos().offset(r, r, r))) {
-                    if (pos.distSqr(context.getClickedPos()) < r2 && context.getLevel().getBlockState(pos).getBlock().equals(FLUX_GLOW_AIR)) {
-                        context.getLevel().setBlockAndUpdate(pos, AIR.defaultBlockState());
+                    if (pos.distSqr(context.getClickedPos()) < r2 && world.getBlockState(pos).getBlock().equals(FLUX_GLOW_AIR)) {
+                        world.setBlockAndUpdate(pos, AIR.defaultBlockState());
                     }
                 }
                 return ActionResultType.SUCCESS;
             }
             else {
                 BlockPos pos = context.getClickedPos().relative(context.getClickedFace());
-                if (context.getLevel().isEmptyBlock(pos)) {
-                    context.getLevel().setBlockAndUpdate(pos, FLUX_GLOW_AIR.defaultBlockState());
+                BlockState state = world.getBlockState(pos);
+                if (state.getBlock().equals(FLUX_GLOW_AIR)) {
+                    world.setBlockAndUpdate(pos, AIR.defaultBlockState());
                     return ActionResultType.SUCCESS;
                 }
-
+                else if (state.isAir()) {
+                    world.setBlockAndUpdate(pos, FLUX_GLOW_AIR.defaultBlockState());
+                    return ActionResultType.SUCCESS;
+                }
             }
         }
         return ActionResultType.PASS;

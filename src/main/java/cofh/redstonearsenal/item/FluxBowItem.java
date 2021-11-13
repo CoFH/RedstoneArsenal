@@ -98,25 +98,6 @@ public class FluxBowItem extends BowItemCoFH implements IFluxItem {
         return ActionResult.fail(stack);
     }
 
-    @Override
-    public void releaseUsing(ItemStack stack, World world, LivingEntity living, int durationRemaining) {
-
-        if (living instanceof PlayerEntity) {
-            PlayerEntity player = (PlayerEntity) living;
-            if (useEnergy(stack, isEmpowered(stack), player.abilities.instabuild)) {
-                int duration = getUseDuration(stack) - durationRemaining;
-                IArcheryBowItem bowCap = stack.getCapability(BOW_ITEM_CAPABILITY).orElse(new ArcheryBowItemWrapper(stack));
-                if (bowCap.fireArrow(ArcheryHelper.findAmmo(player, stack), player, duration, world) && isEmpowered(stack) && !player.abilities.instabuild) {
-                    int amount = Math.min(duration * ENERGY_PER_USE_EMPOWERED / EMPOWERED_ENERGY_USE_INTERVAL, getEnergyStored(stack));
-                    int maxExtract = getExtract(stack);
-                    for (; amount > 0; amount -= maxExtract) {
-                        useEnergy(stack, Math.min(maxExtract, amount), false);
-                    }
-                }
-            }
-        }
-    }
-
     // region IEnergyContainerItem
     @Override
     public int getExtract(ItemStack container) {
@@ -168,7 +149,7 @@ public class FluxBowItem extends BowItemCoFH implements IFluxItem {
             if (isEmpowered(bowItem)) {
                 int duration = shooter.getTicksUsingItem();
                 if (!shooter.abilities.instabuild) {
-                    duration = Math.min(duration, getEnergyStored() * EMPOWERED_ENERGY_USE_INTERVAL / ENERGY_PER_USE_EMPOWERED);
+                    duration = Math.min(duration, getEnergyStored() * EMPOWERED_ENERGY_USE_INTERVAL / getEnergyPerUse(true));
                 }
                 if (duration > 20) {
                     return Math.min(accuracyModifier / MathHelper.sqrt(duration / 20.0F), 10.0F);
@@ -189,10 +170,10 @@ public class FluxBowItem extends BowItemCoFH implements IFluxItem {
             if (isEmpowered(bowItem)) {
                 int duration = shooter.getTicksUsingItem();
                 if (!shooter.abilities.instabuild) {
-                    duration = Math.min(duration, getEnergyStored() * EMPOWERED_ENERGY_USE_INTERVAL / ENERGY_PER_USE_EMPOWERED);
+                    duration = Math.min(duration, getEnergyStored() * EMPOWERED_ENERGY_USE_INTERVAL / getEnergyPerUse(true));
                 }
                 if (duration > 20) {
-                    return Math.min(velocityModifier * MathHelper.sqrt(duration / 20.0F), 10.0F);
+                    return Math.min(velocityModifier * (2 * MathHelper.sqrt(duration / 20.0F) - 1), 10.0F);
                 }
             }
             return velocityModifier;
@@ -201,6 +182,19 @@ public class FluxBowItem extends BowItemCoFH implements IFluxItem {
         @Override
         public void onArrowLoosed(PlayerEntity shooter) {
 
+            if (!shooter.abilities.instabuild) {
+                if (isEmpowered(bowItem)) {
+                    int duration = shooter.getTicksUsingItem();
+                    int amount = Math.min(duration * getEnergyPerUse(true) / EMPOWERED_ENERGY_USE_INTERVAL, getEnergyStored());
+                    int maxExtract = getExtract(bowItem);
+                    for (; amount > 0; amount -= maxExtract) {
+                        useEnergy(bowItem, Math.min(maxExtract, amount), false);
+                    }
+                }
+                else {
+                    useEnergy(bowItem, false, false);
+                }
+            }
         }
 
         @Override
