@@ -3,6 +3,7 @@ package cofh.redstonearsenal.init;
 import cofh.redstonearsenal.entity.FluxArrowEntity;
 import cofh.redstonearsenal.entity.FluxSlashEntity;
 import cofh.redstonearsenal.entity.FluxTridentEntity;
+import cofh.redstonearsenal.entity.ShockwaveEntity;
 import net.minecraft.block.Block;
 import net.minecraft.entity.EntityType;
 import net.minecraftforge.registries.ObjectHolder;
@@ -26,6 +27,8 @@ public class RSAReferences {
     public static final EntityType<FluxTridentEntity> FLUX_TRIDENT_ENTITY = null;
     @ObjectHolder(ID_FLUX_ARROW)
     public static final EntityType<FluxArrowEntity> FLUX_ARROW_ENTITY = null;
+    @ObjectHolder(ID_SHOCKWAVE)
+    public static final EntityType<ShockwaveEntity> SHOCKWAVE_ENTITY = null;
     // endregion
 
     // region BLOCKS

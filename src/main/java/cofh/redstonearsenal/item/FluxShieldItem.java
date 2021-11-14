@@ -47,6 +47,7 @@ public class FluxShieldItem extends ShieldItemCoFH implements IFluxItem {
     public FluxShieldItem(int enchantability, Properties builder, int maxEnergy, int maxTransfer) {
 
         super(builder);
+
         this.maxEnergy = maxEnergy;
         this.extract = maxTransfer;
         this.receive = maxTransfer;

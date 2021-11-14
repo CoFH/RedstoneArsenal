@@ -38,13 +38,14 @@ public class FluxQuiverItem extends ItemCoFH implements IFluxItem {
     protected final int extract;
     protected final int receive;
 
-    public FluxQuiverItem(Properties builder, int energy, int xfer) {
+    public FluxQuiverItem(int enchantability, Properties builder, int energy, int xfer) {
 
         super(builder);
 
         this.maxEnergy = energy;
         this.extract = xfer;
         this.receive = xfer;
+        setEnchantability(enchantability);
 
         ProxyUtils.registerItemModelProperty(this, new ResourceLocation("charged"), (stack, world, entity) -> getEnergyStored(stack) > 0 ? 1F : 0F);
         ProxyUtils.registerItemModelProperty(this, new ResourceLocation("active"), (stack, world, entity) -> getEnergyStored(stack) > 0 && isEmpowered(stack) ? 1F : 0F);
@@ -55,6 +56,12 @@ public class FluxQuiverItem extends ItemCoFH implements IFluxItem {
     public void appendHoverText(ItemStack stack, @Nullable World worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn) {
 
         tooltipDelegate(stack, worldIn, tooltip, flagIn);
+    }
+
+    @Override
+    public void tooltipDelegate(ItemStack stack, @Nullable World worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn) {
+
+        IFluxItem.super.tooltipDelegate(stack, worldIn, tooltip, flagIn);
     }
 
     @Override
@@ -73,12 +80,6 @@ public class FluxQuiverItem extends ItemCoFH implements IFluxItem {
     public ICapabilityProvider initCapabilities(ItemStack stack, @Nullable CompoundNBT nbt) {
 
         return new FluxQuiverItemWrapper(stack, this);
-    }
-
-    @Override
-    public void tooltipDelegate(ItemStack stack, @Nullable World worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn) {
-
-        IFluxItem.super.tooltipDelegate(stack, worldIn, tooltip, flagIn);
     }
 
     // region IEnergyContainerItem

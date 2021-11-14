@@ -5,13 +5,14 @@ import cofh.lib.capability.CapabilityAreaEffect;
 import cofh.lib.capability.IAreaEffect;
 import cofh.lib.energy.EnergyContainerItemWrapper;
 import cofh.lib.energy.IEnergyContainerItem;
-import cofh.lib.item.impl.ExcavatorItem;
+import cofh.lib.item.impl.HammerItem;
+import cofh.lib.util.RayTracer;
 import cofh.lib.util.Utils;
 import cofh.lib.util.helpers.AreaEffectHelper;
+import cofh.redstonearsenal.entity.ShockwaveEntity;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Multimap;
-import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.enchantment.Enchantment;
@@ -21,13 +22,19 @@ import net.minecraft.entity.ai.attributes.AttributeModifier;
 import net.minecraft.entity.ai.attributes.Attributes;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.EquipmentSlotType;
-import net.minecraft.item.*;
+import net.minecraft.item.IItemTier;
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.ItemUseContext;
+import net.minecraft.item.UseAction;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.*;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.BlockRayTraceResult;
+import net.minecraft.util.math.RayTraceContext;
+import net.minecraft.util.math.RayTraceResult;
+import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.world.World;
-import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.capabilities.Capability;
@@ -36,14 +43,12 @@ import net.minecraftforge.common.util.LazyOptional;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.function.Predicate;
-import java.util.stream.Collectors;
 
-public class FluxExcavatorItem extends ExcavatorItem implements IFluxItem {
+public class FluxHammerItem extends HammerItem implements IFluxItem {
+
+    public static final int CHARGE_TIME = 20;
+    public static final int COOLDOWN = 40;
 
     protected final float damage;
     protected final float attackSpeed;
@@ -52,7 +57,7 @@ public class FluxExcavatorItem extends ExcavatorItem implements IFluxItem {
     protected final int extract;
     protected final int receive;
 
-    public FluxExcavatorItem(IItemTier tier, float attackDamageIn, float attackSpeedIn, Properties builder, int energy, int xfer) {
+    public FluxHammerItem(IItemTier tier, float attackDamageIn, float attackSpeedIn, Properties builder, int energy, int xfer) {
 
         super(tier, attackDamageIn, attackSpeedIn, builder);
 
@@ -89,81 +94,50 @@ public class FluxExcavatorItem extends ExcavatorItem implements IFluxItem {
     @Override
     public ICapabilityProvider initCapabilities(ItemStack stack, @Nullable CompoundNBT nbt) {
 
-        return new FluxExcavatorItemWrapper(stack, this);
+        return new FluxHammerItemWrapper(stack, this);
     }
 
     @Override
-    public ActionResultType useOn(ItemUseContext context) {
+    public ActionResult<ItemStack> use(World world, PlayerEntity player, Hand hand) {
 
-        World world = context.getLevel();
-        BlockPos clickPos = context.getClickedPos();
-        if (!world.isClientSide()) {
-            ItemStack tool = context.getItemInHand();
-            PlayerEntity player = context.getPlayer();
-            if (player == null) {
-                return ActionResultType.PASS;
-            }
-            BlockItemUseContext blockContext = new BlockItemUseContext(context);
-            if (player.abilities.instabuild) {
-                for (BlockPos pos : AreaEffectHelper.getPlaceableBlocksRadius(tool, clickPos, player, 1 + getMode(tool))) {
-                    BlockPos fillPos = pos.relative(context.getClickedFace());
-                    if (world.getBlockState(fillPos).canBeReplaced(blockContext)) {
-                        world.setBlock(fillPos, world.getBlockState(pos).getBlock().defaultBlockState(), 2);
-                    }
-                }
-            }
-            else {
-                ImmutableList<BlockPos> blocks = AreaEffectHelper.getPlaceableBlocksRadius(tool, clickPos, player, 1 + getMode(tool));
-                Map<Block, List<BlockPos>> sorted = new HashMap<>();
-                for (BlockPos pos : blocks) {
-                    BlockPos fillPos = pos.relative(context.getClickedFace());
-                    if (world.getBlockState(fillPos).canBeReplaced(blockContext)) {
-                        Block block = world.getBlockState(pos).getBlock();
-                        sorted.putIfAbsent(block, new ArrayList<>());
-                        sorted.get(block).add(fillPos);
-                    }
-                }
-                NonNullList<ItemStack> inventory = player.inventory.items;
-                for (Block block : sorted.keySet()) {
-                    int slot = -1;
-                    if (!hasEnergy(context.getItemInHand(), false)) {
-                        break;
-                    }
-                    List<Item> validItems = Block.getDrops(block.defaultBlockState(), (ServerWorld) world, sorted.get(block).get(0), null).stream().map(stack -> stack.getItem()).collect(Collectors.toList());
-                    Predicate<ItemStack> matches = stack -> stack.getItem() instanceof BlockItem && (stack.getItem().equals(block.asItem()) || validItems.contains(stack.getItem()));
-                    for (BlockPos pos : sorted.get(block)) {
-                        if (slot < 0 || inventory.get(slot).isEmpty()) {
-                            slot = findFirstInventory(inventory, matches, slot + 1);
-                            if (slot < 0) {
-                                break;
-                            }
-                        }
-                        if (!useEnergy(context.getItemInHand(), false, false)) {
-                            break;
-                        }
-                        if (world.setBlock(pos, ((BlockItem) inventory.get(slot).getItem()).getBlock().defaultBlockState(), 2)) {
-                            inventory.get(slot).shrink(1);
-                        }
-                    }
-                }
-            }
+        ItemStack stack = player.getItemInHand(hand);
+        if (isEmpowered(stack) && (hasEnergy(stack, true) || player.abilities.instabuild)) {
+            player.startUsingItem(hand);
+            return ActionResult.consume(stack);
         }
-        else {
-            SoundEvent sound = world.getBlockState(clickPos).getSoundType().getPlaceSound();
-            world.playLocalSound(clickPos.getX() + 0.5, clickPos.getY() + 0.5, clickPos.getZ() + 0.5, sound, SoundCategory.BLOCKS, 1.0F, 1.0F, false);
-        }
-        return ActionResultType.sidedSuccess(world.isClientSide());
+        return ActionResult.fail(stack);
     }
 
-    public static int findFirstInventory(NonNullList<ItemStack> inventory, Predicate<ItemStack> filter, int start) {
+    @Override
+    public UseAction getUseAnimation(ItemStack stack) {
 
-        for (int i = start; i < inventory.size(); ++i) {
-            ItemStack stack = inventory.get(i);
-            if (!stack.isEmpty() && filter.test(stack)) {
-                return i;
+        return UseAction.BOW;
+    }
+
+    @Override
+    public void releaseUsing(ItemStack stack, World world, LivingEntity living, int durationRemaining) {
+
+        if (getUseDuration(stack) - durationRemaining > CHARGE_TIME && living.isOnGround() && isEmpowered(stack) && living instanceof PlayerEntity) {
+            PlayerEntity player = (PlayerEntity) living;
+            if (useEnergy(stack, true, player.abilities.instabuild)) {
+                BlockRayTraceResult result = RayTracer.retrace(player, RayTraceContext.FluidMode.NONE);
+                if (result.getType() != RayTraceResult.Type.MISS) {
+                    BlockPos pos = result.getBlockPos();
+                    if (!world.isClientSide()) {
+                        world.addFreshEntity(new ShockwaveEntity(world, living, Vector3d.atCenterOf(pos), living.yRot));
+                    }
+                    world.playSound(player, pos, SoundEvents.RAVAGER_STEP, SoundCategory.BLOCKS, 1.0F, 1.0F);
+                    world.playSound(player, pos, world.getBlockState(pos).getSoundType(world, pos, player).getBreakSound(), SoundCategory.BLOCKS, 1.0F, 1.0F);
+                    player.getCooldowns().addCooldown(this, COOLDOWN);
+                }
             }
         }
-        return -1;
+    }
+
+    @Override
+    public int getUseDuration(ItemStack stack) {
+
+        return 72000;
     }
 
     protected float getEfficiency(ItemStack stack) {
@@ -235,11 +209,11 @@ public class FluxExcavatorItem extends ExcavatorItem implements IFluxItem {
     // endregion
 
     // region CAPABILITY WRAPPER
-    protected class FluxExcavatorItemWrapper extends EnergyContainerItemWrapper implements IAreaEffect {
+    protected class FluxHammerItemWrapper extends EnergyContainerItemWrapper implements IAreaEffect {
 
         private final LazyOptional<IAreaEffect> holder = LazyOptional.of(() -> this);
 
-        FluxExcavatorItemWrapper(ItemStack containerIn, IEnergyContainerItem itemIn) {
+        FluxHammerItemWrapper(ItemStack containerIn, IEnergyContainerItem itemIn) {
 
             super(containerIn, itemIn);
         }
@@ -247,7 +221,7 @@ public class FluxExcavatorItem extends ExcavatorItem implements IFluxItem {
         @Override
         public ImmutableList<BlockPos> getAreaEffectBlocks(BlockPos pos, PlayerEntity player) {
 
-            return AreaEffectHelper.getBreakableBlocksRadius(container, pos, player, 1 + getMode(container));
+            return AreaEffectHelper.getBreakableBlocksRadius(container, pos, player, 1 + getMode(container)); //TODO: keep?
         }
 
         // region ICapabilityProvider

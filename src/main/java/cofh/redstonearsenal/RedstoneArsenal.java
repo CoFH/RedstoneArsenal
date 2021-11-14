@@ -1,10 +1,8 @@
 package cofh.redstonearsenal;
 
+import cofh.lib.client.renderer.entity.NoneRendererCoFH;
 import cofh.lib.util.DeferredRegisterCoFH;
-import cofh.redstonearsenal.client.renderer.FluxArrowRenderer;
-import cofh.redstonearsenal.client.renderer.FluxElytraLayer;
-import cofh.redstonearsenal.client.renderer.FluxSlashRenderer;
-import cofh.redstonearsenal.client.renderer.FluxTridentRenderer;
+import cofh.redstonearsenal.client.renderer.*;
 import cofh.redstonearsenal.init.RSABlocks;
 import cofh.redstonearsenal.init.RSAConfig;
 import cofh.redstonearsenal.init.RSAEntities;
@@ -96,6 +94,7 @@ public class RedstoneArsenal {
         RenderingRegistry.registerEntityRenderingHandler(FLUX_SLASH_ENTITY, FluxSlashRenderer::new);
         RenderingRegistry.registerEntityRenderingHandler(FLUX_ARROW_ENTITY, FluxArrowRenderer::new);
         RenderingRegistry.registerEntityRenderingHandler(FLUX_TRIDENT_ENTITY, FluxTridentRenderer::new);
+        RenderingRegistry.registerEntityRenderingHandler(SHOCKWAVE_ENTITY, ShockwaveRenderer::new);
     }
 
     private void registerRenderLayers() {
