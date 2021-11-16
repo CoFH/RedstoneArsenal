@@ -33,11 +33,14 @@ import net.minecraft.world.World;
 import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraftforge.common.ForgeMod;
 
 import javax.annotation.Nullable;
 import java.util.List;
 import java.util.function.Predicate;
 
+import static cofh.lib.util.constants.Constants.UUID_ENCH_REACH_DISTANCE;
+import static cofh.lib.util.constants.Constants.UUID_TOOL_REACH;
 import static cofh.lib.util.references.CoreReferences.LIGHTNING_RESISTANCE;
 
 public class FluxTridentItem extends TridentItemCoFH implements IFluxItem {
@@ -47,17 +50,19 @@ public class FluxTridentItem extends TridentItemCoFH implements IFluxItem {
 
     protected final float damage;
     protected final float attackSpeed;
+    protected final float addedReach;
 
     protected final int maxEnergy;
     protected final int extract;
     protected final int receive;
 
-    public FluxTridentItem(IItemTier tier, int attackDamageIn, float attackSpeedIn, Properties builder, int energy, int xfer) {
+    public FluxTridentItem(IItemTier tier, int attackDamageIn, float attackSpeedIn, float reachIn, Properties builder, int energy, int xfer) {
 
         super(tier, builder);
 
         this.damage = attackDamageIn + tier.getAttackDamageBonus();
         this.attackSpeed = attackSpeedIn;
+        this.addedReach = reachIn;
 
         this.maxEnergy = energy;
         this.extract = xfer;
@@ -68,9 +73,9 @@ public class FluxTridentItem extends TridentItemCoFH implements IFluxItem {
         ProxyUtils.registerItemModelProperty(this, new ResourceLocation("active"), (stack, world, entity) -> getEnergyStored(stack) > 0 && isEmpowered(stack) ? 1F : 0F);
     }
 
-    public FluxTridentItem(IItemTier tier, int enchantability, int attackDamageIn, float attackSpeedIn, Properties builder, int energy, int xfer) {
+    public FluxTridentItem(IItemTier tier, int enchantability, int attackDamageIn, float attackSpeedIn, float reachIn, Properties builder, int energy, int xfer) {
 
-        this(tier, attackDamageIn, attackSpeedIn, builder, energy, xfer);
+        this(tier, attackDamageIn, attackSpeedIn, reachIn, builder, energy, xfer);
 
         this.enchantability = enchantability;
     }
@@ -264,6 +269,7 @@ public class FluxTridentItem extends TridentItemCoFH implements IFluxItem {
         if (slot == EquipmentSlotType.MAINHAND) {
             multimap.put(Attributes.ATTACK_DAMAGE, new AttributeModifier(BASE_ATTACK_DAMAGE_UUID, "Weapon modifier", getAttackDamage(stack), AttributeModifier.Operation.ADDITION));
             multimap.put(Attributes.ATTACK_SPEED, new AttributeModifier(BASE_ATTACK_SPEED_UUID, "Weapon modifier", getAttackSpeed(stack), AttributeModifier.Operation.ADDITION));
+            multimap.put(ForgeMod.REACH_DISTANCE.get(), new AttributeModifier(UUID_TOOL_REACH, "Weapon modifier", getAddedReach(stack), AttributeModifier.Operation.ADDITION));
         }
         return multimap;
     }
@@ -281,6 +287,11 @@ public class FluxTridentItem extends TridentItemCoFH implements IFluxItem {
     protected float getAttackSpeed(ItemStack stack) {
 
         return attackSpeed;
+    }
+
+    protected float getAddedReach(ItemStack stack) {
+
+        return addedReach;
     }
 
     // region IEnergyContainerItem

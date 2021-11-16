@@ -139,6 +139,12 @@ public class FluxArrowEntity extends AbstractArrowEntity {
     }
 
     @Override
+    protected float getWaterInertia() {
+
+        return 1.0F;
+    }
+
+    @Override
     protected void onHit(RayTraceResult result) {
 
         if (isExplodeArrow()) {

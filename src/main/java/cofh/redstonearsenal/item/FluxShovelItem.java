@@ -26,7 +26,7 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 import javax.annotation.Nullable;
 import java.util.List;
 
-import static cofh.lib.util.constants.Constants.UUID_ATTACK_KNOCKBACK;
+import static cofh.lib.util.constants.Constants.UUID_TOOL_KNOCKBACK;
 
 public class FluxShovelItem extends ShovelItemCoFH implements IFluxItem {
 
@@ -108,7 +108,7 @@ public class FluxShovelItem extends ShovelItemCoFH implements IFluxItem {
             multimap.put(Attributes.ATTACK_DAMAGE, new AttributeModifier(BASE_ATTACK_DAMAGE_UUID, "Tool modifier", getAttackDamage(stack), AttributeModifier.Operation.ADDITION));
             multimap.put(Attributes.ATTACK_SPEED, new AttributeModifier(BASE_ATTACK_SPEED_UUID, "Tool modifier", getAttackSpeed(stack), AttributeModifier.Operation.ADDITION));
             if (isEmpowered(stack) && hasEnergy(stack, true)) {
-                multimap.put(Attributes.ATTACK_KNOCKBACK, new AttributeModifier(UUID_ATTACK_KNOCKBACK, "Tool modifier", KNOCKBACK_MODIFIER, AttributeModifier.Operation.ADDITION));
+                multimap.put(Attributes.ATTACK_KNOCKBACK, new AttributeModifier(UUID_TOOL_KNOCKBACK, "Tool modifier", KNOCKBACK_MODIFIER, AttributeModifier.Operation.ADDITION));
             }
         }
         return multimap;

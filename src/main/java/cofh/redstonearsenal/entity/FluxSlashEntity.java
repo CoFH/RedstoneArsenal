@@ -25,7 +25,7 @@ import static cofh.redstonearsenal.init.RSAReferences.FLUX_SLASH_ENTITY;
 public class FluxSlashEntity extends ProjectileEntity {
 
     public static final float SPEED = 2.0F;
-    public static final int DURATION = 5;
+    public static final int LIFESPAN = 5;
     public final float zRot;
     public float damage = 2.0F;
 
@@ -69,7 +69,7 @@ public class FluxSlashEntity extends ProjectileEntity {
     public void tick() {
 
         super.tick();
-        if (tickCount > DURATION) {
+        if (tickCount > LIFESPAN) {
             level.broadcastEntityEvent(this, (byte) 3);
             remove();
         }

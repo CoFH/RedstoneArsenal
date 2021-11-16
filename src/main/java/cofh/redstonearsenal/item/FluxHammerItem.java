@@ -20,6 +20,7 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.attributes.Attribute;
 import net.minecraft.entity.ai.attributes.AttributeModifier;
 import net.minecraft.entity.ai.attributes.Attributes;
+import net.minecraft.entity.item.FallingBlockEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.EquipmentSlotType;
 import net.minecraft.item.IItemTier;
@@ -101,7 +102,7 @@ public class FluxHammerItem extends HammerItem implements IFluxItem {
     public ActionResult<ItemStack> use(World world, PlayerEntity player, Hand hand) {
 
         ItemStack stack = player.getItemInHand(hand);
-        if (isEmpowered(stack) && (hasEnergy(stack, true) || player.abilities.instabuild)) {
+        if (hasEnergy(stack, true) || player.abilities.instabuild) {
             player.startUsingItem(hand);
             return ActionResult.consume(stack);
         }
@@ -117,19 +118,25 @@ public class FluxHammerItem extends HammerItem implements IFluxItem {
     @Override
     public void releaseUsing(ItemStack stack, World world, LivingEntity living, int durationRemaining) {
 
-        if (getUseDuration(stack) - durationRemaining > CHARGE_TIME && living.isOnGround() && isEmpowered(stack) && living instanceof PlayerEntity) {
+        if (getUseDuration(stack) - durationRemaining > CHARGE_TIME && living.isOnGround() && living instanceof PlayerEntity) {
             PlayerEntity player = (PlayerEntity) living;
-            if (useEnergy(stack, true, player.abilities.instabuild)) {
-                BlockRayTraceResult result = RayTracer.retrace(player, RayTraceContext.FluidMode.NONE);
-                if (result.getType() != RayTraceResult.Type.MISS) {
-                    BlockPos pos = result.getBlockPos();
-                    if (!world.isClientSide()) {
-                        world.addFreshEntity(new ShockwaveEntity(world, living, Vector3d.atCenterOf(pos), living.yRot));
+            BlockRayTraceResult result = RayTracer.retrace(player, RayTraceContext.FluidMode.NONE);
+            if (result.getType() != RayTraceResult.Type.MISS) {
+                BlockPos pos = result.getBlockPos();
+                BlockState state = world.getBlockState(pos);
+                if (!world.isClientSide()) {
+                    if ((isEmpowered(stack) || this.canHarvestBlock(stack, state)) && useEnergy(stack, true, player.abilities.instabuild)) {
+                        if (isEmpowered(stack)) {
+                            world.addFreshEntity(new ShockwaveEntity(world, living, Vector3d.atCenterOf(pos), living.yRot));
+                        }
+                        else {
+                            world.addFreshEntity(new FallingBlockEntity(world, pos.getX() + 0.5D, pos.getY(), pos.getZ() + 0.5D, state));
+                        }
+                        player.getCooldowns().addCooldown(this, COOLDOWN);
                     }
-                    world.playSound(player, pos, SoundEvents.RAVAGER_STEP, SoundCategory.BLOCKS, 1.0F, 1.0F);
-                    world.playSound(player, pos, world.getBlockState(pos).getSoundType(world, pos, player).getBreakSound(), SoundCategory.BLOCKS, 1.0F, 1.0F);
-                    player.getCooldowns().addCooldown(this, COOLDOWN);
                 }
+//                world.playSound(player, pos, SoundEvents.RAVAGER_STEP, SoundCategory.BLOCKS, 1.0F, 1.0F);
+                world.playSound(player, pos, state.getSoundType(world, pos, player).getBreakSound(), SoundCategory.BLOCKS, 1.0F, 1.0F);
             }
         }
     }
@@ -221,7 +228,7 @@ public class FluxHammerItem extends HammerItem implements IFluxItem {
         @Override
         public ImmutableList<BlockPos> getAreaEffectBlocks(BlockPos pos, PlayerEntity player) {
 
-            return AreaEffectHelper.getBreakableBlocksRadius(container, pos, player, 1 + getMode(container)); //TODO: keep?
+            return AreaEffectHelper.getBreakableBlocksRadius(container, pos, player, 1);
         }
 
         // region ICapabilityProvider

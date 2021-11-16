@@ -1,0 +1,6 @@
+{
+  "parent": "redstone_arsenal:item/flux_wrench",
+  "textures": {
+    "layer0": "redstone_arsenal:item/flux_wrench_charged"
+  }
+}

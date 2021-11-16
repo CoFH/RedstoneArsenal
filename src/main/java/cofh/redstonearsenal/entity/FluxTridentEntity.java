@@ -31,14 +31,15 @@ import net.minecraftforge.fml.network.NetworkHooks;
 
 import javax.annotation.Nullable;
 
+import static cofh.redstonearsenal.init.RSAIDs.ID_FLUX_TRIDENT;
 import static cofh.redstonearsenal.init.RSAReferences.FLUX_TRIDENT_ENTITY;
 
 public class FluxTridentEntity extends AbstractArrowEntity {
 
-    private static final DataParameter<Byte> ID_LOYALTY = EntityDataManager.defineId(TridentEntity.class, DataSerializers.BYTE);
-    private static final DataParameter<Boolean> ID_FOIL = EntityDataManager.defineId(TridentEntity.class, DataSerializers.BOOLEAN);
-    private ItemStack tridentItem = new ItemStack(RedstoneArsenal.ITEMS.get("flux_trident").getItem());
-    private boolean dealtDamage;
+    protected static final DataParameter<Byte> ID_LOYALTY = EntityDataManager.defineId(TridentEntity.class, DataSerializers.BYTE);
+    protected static final DataParameter<Boolean> ID_FOIL = EntityDataManager.defineId(TridentEntity.class, DataSerializers.BOOLEAN);
+    protected ItemStack tridentItem = new ItemStack(RedstoneArsenal.ITEMS.get(ID_FLUX_TRIDENT).getItem());
+    protected boolean dealtDamage;
     public int clientSideReturnTridentTickCount;
 
     public FluxTridentEntity(EntityType<? extends FluxTridentEntity> p_i50148_1_, World p_i50148_2_) {

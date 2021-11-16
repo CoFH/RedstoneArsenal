@@ -309,7 +309,7 @@ public class FluxCrossbowItem extends CrossbowItemCoFH implements IFluxItem {
                 }
 
                 crossbow.removeTagKey("ammo");
-                useEnergy(crossbow, Math.min(getEnergyPerUse(true) * damage, getEnergyStored(crossbow)), shooter.abilities.instabuild); //TODO
+                useEnergy(crossbow, Math.min(getEnergyPerUse(true) * damage, getEnergyStored(crossbow)), shooter.abilities.instabuild);
 
                 if (shooter instanceof ServerPlayerEntity) {
                     if (!world.isClientSide) {

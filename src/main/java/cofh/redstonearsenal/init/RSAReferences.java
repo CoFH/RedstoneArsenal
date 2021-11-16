@@ -1,9 +1,6 @@
 package cofh.redstonearsenal.init;
 
-import cofh.redstonearsenal.entity.FluxArrowEntity;
-import cofh.redstonearsenal.entity.FluxSlashEntity;
-import cofh.redstonearsenal.entity.FluxTridentEntity;
-import cofh.redstonearsenal.entity.ShockwaveEntity;
+import cofh.redstonearsenal.entity.*;
 import net.minecraft.block.Block;
 import net.minecraft.entity.EntityType;
 import net.minecraftforge.registries.ObjectHolder;
@@ -25,6 +22,8 @@ public class RSAReferences {
     public static final EntityType<FluxSlashEntity> FLUX_SLASH_ENTITY = null;
     @ObjectHolder(ID_FLUX_TRIDENT)
     public static final EntityType<FluxTridentEntity> FLUX_TRIDENT_ENTITY = null;
+    @ObjectHolder(ID_FLUX_WRENCH)
+    public static final EntityType<FluxWrenchEntity> FLUX_WRENCH_ENTITY = null;
     @ObjectHolder(ID_FLUX_ARROW)
     public static final EntityType<FluxArrowEntity> FLUX_ARROW_ENTITY = null;
     @ObjectHolder(ID_SHOCKWAVE)

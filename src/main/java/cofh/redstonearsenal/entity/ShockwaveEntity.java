@@ -3,31 +3,27 @@ package cofh.redstonearsenal.entity;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.ai.attributes.Attributes;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.IPacket;
+import net.minecraft.potion.EffectInstance;
 import net.minecraft.util.DamageSource;
-import net.minecraft.util.Direction;
 import net.minecraft.util.EntityPredicates;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.network.NetworkHooks;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
-
+import static cofh.lib.util.references.CoreReferences.SUNDERED;
 import static cofh.redstonearsenal.init.RSAReferences.SHOCKWAVE_ENTITY;
 
 public class ShockwaveEntity extends Entity {
 
-    protected static final int LIFESPAN = 10;
+    public static final int LIFESPAN = 10;
     public static final int ANIM_DURATION = 5;
-    protected static final float DISTANCE_PER_TICK = 1F;
+    public static final float DISTANCE_PER_TICK = 1F;
     protected static final float BASE_DAMAGE = 4;
-    public static List<List<int[]>> offsetsByTick = getOffsetsByTick(LIFESPAN);
+    protected static final int SUNDER_DURATION = 50;
 
     protected LivingEntity owner = null;
 
@@ -72,7 +68,7 @@ public class ShockwaveEntity extends Entity {
             if (tickCount > LIFESPAN + ANIM_DURATION) {
                 this.remove();
             }
-            else if (tickCount < offsetsByTick.size()) {
+            else if (tickCount < LIFESPAN) {
 //                BlockPos origin = this.blockPosition();
 //                List<int[]> offsets = offsetsByTick.get(tickCount);
 //                for (int[] offset : offsets) {
@@ -89,7 +85,7 @@ public class ShockwaveEntity extends Entity {
 //                    }
 //                }
                 float lower = Math.max((tickCount - 1) * DISTANCE_PER_TICK, 0);
-                float upper = lower + DISTANCE_PER_TICK;
+                float upper = lower + DISTANCE_PER_TICK * 1.5F;
                 float lowerSqr = lower * lower;
                 float upperSqr = upper * upper;
                 for (LivingEntity entity : level.getEntitiesOfClass(LivingEntity.class, this.getBoundingBox().inflate(upper + 1, 2, upper + 1).inflate(0.5), EntityPredicates.NO_CREATIVE_OR_SPECTATOR)) {
@@ -99,7 +95,8 @@ public class ShockwaveEntity extends Entity {
                         if (lowerSqr < distSqr && distSqr < upperSqr) {
                             float falloff = (LIFESPAN - (tickCount * 0.5F)) / LIFESPAN;
                             entity.hurt(DamageSource.IN_WALL, BASE_DAMAGE * falloff); //TODO: damage source
-                            Vector3d knockback = relPos.scale(0.5 / MathHelper.sqrt(distSqr)).add(0, 0.3, 0);
+                            entity.addEffect(new EffectInstance(SUNDERED, SUNDER_DURATION, 0, false, false));
+                            Vector3d knockback = relPos.scale(0.8 / MathHelper.sqrt(distSqr)).add(0, 0.3, 0).scale(1.0D - entity.getAttributeValue(Attributes.KNOCKBACK_RESISTANCE));
                             entity.setDeltaMovement(knockback);
                         }
                     }
@@ -107,42 +104,5 @@ public class ShockwaveEntity extends Entity {
             }
         }
         super.tick();
-    }
-
-    protected static List<List<int[]>> getOffsetsByTick(int maxTicks) {
-
-        List<List<int[]>> ticks = IntStream.range(0, maxTicks).mapToObj(i -> new ArrayList<int[]>()).collect(Collectors.toList());
-        float max = maxTicks * DISTANCE_PER_TICK;
-        float max2 = max * max;
-        for (int x = 0; x <= MathHelper.ceil(max); ++x) {
-            for (int z = 0; z <= x; ++z) {
-                int distSqr = x * x + z * z;
-                if (distSqr < max2) {
-                    int index = Math.round(MathHelper.sqrt(distSqr) / DISTANCE_PER_TICK);
-                    if (index < ticks.size()) {
-                        addReflections(ticks.get(index), x, z);
-                    }
-                }
-            }
-        }
-        return ticks;
-    }
-
-    protected static void addReflections(List<int[]> list, int x, int z) {
-
-        list.add(new int[]{x, z});
-        list.add(new int[]{-x, -z});
-        if (z != 0) {
-            list.add(new int[]{-x, z});
-            list.add(new int[]{x, -z});
-        }
-        if (x != 0 && x != z) {
-            list.add(new int[]{z, x});
-            list.add(new int[]{-z, -x});
-            if (z != 0) {
-                list.add(new int[]{-z, x});
-                list.add(new int[]{z, -x});
-            }
-        }
     }
 }
