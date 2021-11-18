@@ -16,6 +16,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.*;
 import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
 import net.minecraftforge.common.capabilities.ICapabilityProvider;
 
@@ -133,7 +134,7 @@ public interface IFluxItem extends ICoFHItem, IEnergyContainerItem, IMultiModeIt
                 getScaledNumber(getEnergyStored(stack)) + " / " + getScaledNumber(getMaxEnergyStored(stack)) + " RF")));
 
         if (isEmpowered(stack)) {
-            tooltip.add(getTextComponent("Empowered")); //TODO: localize or remove
+            tooltip.add(getTextComponent("info.redstone_arsenal.empowered").withStyle(TextFormatting.RED));
         }
     }
 

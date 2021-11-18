@@ -282,6 +282,7 @@ public class FluxArrowEntity extends AbstractArrowEntity {
 
     @Override
     public void addAdditionalSaveData(CompoundNBT nbt) {
+
         super.addAdditionalSaveData(nbt);
         nbt.putBoolean("explode", this.isExplodeArrow());
     }

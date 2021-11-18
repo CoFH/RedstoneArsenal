@@ -1,5 +1,6 @@
 {
   "itemGroup.redstone_arsenal": "Redstone Arsenal",
+  "info.redstone_arsenal.empowered": "Empowered",
   "death.attack.flux": "%2$s's flux flummoxed %1$s!",
   "death.attack.flux.item": "%2$s used %3$s to kill %1$s with flux!",
 
@@ -26,7 +27,7 @@
   "item.redstone_arsenal.flux_sickle": "Flux-Infused Sickle",
   "item.redstone_arsenal.flux_hammer": "Flux-Infused Hammer",
   "item.redstone_arsenal.flux_excavator": "Flux-Infused Excavator",
-  "item.redstone_arsenal.flux_battle_wrench": "Flux-Infused Battle Wrench",
+  "item.redstone_arsenal.flux_wrench": "Flux-Infused Battle Wrench",
   "item.redstone_arsenal.flux_fishing_rod": "Flux-Infused Fishing Rod",
 
   "item.redstone_arsenal.flux_elytra": "Flux-Infused Elytra",

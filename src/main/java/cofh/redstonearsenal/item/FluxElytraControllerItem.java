@@ -12,6 +12,7 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.SoundEvents;
 import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -33,7 +34,7 @@ public class FluxElytraControllerItem extends Item implements ICoFHItem, IMultiM
     public void appendHoverText(ItemStack stack, @Nullable World worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn) {
 
         if (isEmpowered(stack)) {
-            tooltip.add(getTextComponent("Empowered")); //TODO: localize or remove
+            tooltip.add(getTextComponent("info.redstone_arsenal.empowered").withStyle(TextFormatting.RED));
         }
     }
 

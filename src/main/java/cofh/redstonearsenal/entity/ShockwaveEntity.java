@@ -4,6 +4,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.attributes.Attributes;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.IPacket;
 import net.minecraft.potion.EffectInstance;
@@ -94,7 +95,11 @@ public class ShockwaveEntity extends Entity {
                         double distSqr = relPos.lengthSqr();
                         if (lowerSqr < distSqr && distSqr < upperSqr) {
                             float falloff = (LIFESPAN - (tickCount * 0.5F)) / LIFESPAN;
-                            entity.hurt(DamageSource.IN_WALL, BASE_DAMAGE * falloff); //TODO: damage source
+                            DamageSource source = DamageSource.mobAttack(this.owner);
+                            if (this.owner instanceof PlayerEntity) {
+                                source = DamageSource.playerAttack((PlayerEntity) this.owner);
+                            }
+                            entity.hurt(source, BASE_DAMAGE * falloff);
                             entity.addEffect(new EffectInstance(SUNDERED, SUNDER_DURATION, 0, false, false));
                             Vector3d knockback = relPos.scale(0.8 / MathHelper.sqrt(distSqr)).add(0, 0.3, 0).scale(1.0D - entity.getAttributeValue(Attributes.KNOCKBACK_RESISTANCE));
                             entity.setDeltaMovement(knockback);

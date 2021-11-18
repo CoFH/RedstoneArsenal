@@ -129,18 +129,18 @@ public class FluxTridentItem extends TridentItemCoFH implements IFluxItem {
             PlayerEntity player = (PlayerEntity)entity;
             int i = this.getUseDuration(stack) - remainingDuration;
             if (i >= 10) {
-                int j = EnchantmentHelper.getRiptide(stack);
-                if (j <= 0 || player.isInWaterOrRain()) {
+                int riptideLevel = EnchantmentHelper.getRiptide(stack);
+                if (riptideLevel <= 0 || player.isInWaterOrRain()) {
                     if (!world.isClientSide && useEnergy(stack, false, player.abilities.instabuild)) {
-                        if (j == 0) {
-                            FluxTridentEntity tridententity = new FluxTridentEntity(world, player, stack);
-                            tridententity.shootFromRotation(player, player.xRot, player.yRot, 0.0F, 2.5F + j * 0.5F, 1.0F);
+                        if (riptideLevel == 0) {
+                            FluxTridentEntity tridentEntity = new FluxTridentEntity(world, player, stack);
+                            tridentEntity.shootFromRotation(player, player.xRot, player.yRot, 0.0F, 2.5F + riptideLevel * 0.5F, 1.0F);
                             if (player.abilities.instabuild) {
-                                tridententity.pickup = AbstractArrowEntity.PickupStatus.CREATIVE_ONLY;
+                                tridentEntity.pickup = AbstractArrowEntity.PickupStatus.CREATIVE_ONLY;
                             }
 
-                            world.addFreshEntity(tridententity);
-                            world.playSound(null, tridententity, SoundEvents.TRIDENT_THROW, SoundCategory.PLAYERS, 1.0F, 1.0F);
+                            world.addFreshEntity(tridentEntity);
+                            world.playSound(null, tridentEntity, SoundEvents.TRIDENT_THROW, SoundCategory.PLAYERS, 1.0F, 1.0F);
                             if (!player.abilities.instabuild) {
                                 player.inventory.removeItem(stack);
                             }
@@ -148,27 +148,24 @@ public class FluxTridentItem extends TridentItemCoFH implements IFluxItem {
                     }
 
                     player.awardStat(Stats.ITEM_USED.get(this));
-                    if (j > 0) {
-                        float f7 = player.yRot;
-                        float f = player.xRot;
-                        float f1 = -MathHelper.sin(f7 * ((float)Math.PI / 180F)) * MathHelper.cos(f * ((float)Math.PI / 180F));
-                        float f2 = -MathHelper.sin(f * ((float)Math.PI / 180F));
-                        float f3 = MathHelper.cos(f7 * ((float)Math.PI / 180F)) * MathHelper.cos(f * ((float)Math.PI / 180F));
-                        float f4 = MathHelper.sqrt(f1 * f1 + f2 * f2 + f3 * f3);
-                        float f5 = 3.0F * ((1.0F + j) / 4.0F);
-                        f1 = f1 * (f5 / f4);
-                        f2 = f2 * (f5 / f4);
-                        f3 = f3 * (f5 / f4);
-                        player.push(f1, f2, f3);
+                    if (riptideLevel > 0) {
+                        float degToRad = (float)Math.PI / 180F;
+                        float xRotRad = player.xRot * degToRad;
+                        float yRotRad = player.yRot * degToRad;
+                        float xPush = -MathHelper.sin(yRotRad) * MathHelper.cos(xRotRad);
+                        float yPush = -MathHelper.sin(xRotRad);
+                        float zPush = MathHelper.cos(yRotRad) * MathHelper.cos(xRotRad);
+                        float riptideMult = (1.0F + riptideLevel) * 0.75F / MathHelper.sqrt(xPush * xPush + yPush * yPush + zPush * zPush);
+                        player.push(xPush * riptideMult, yPush * riptideMult, zPush * riptideMult);
                         player.startAutoSpinAttack(20);
                         if (player.isOnGround()) {
                             player.move(MoverType.SELF, new Vector3d(0.0D, 1.1999999, 0.0D));
                         }
 
                         SoundEvent soundevent;
-                        if (j >= 3) {
+                        if (riptideLevel >= 3) {
                             soundevent = SoundEvents.TRIDENT_RIPTIDE_3;
-                        } else if (j == 2) {
+                        } else if (riptideLevel == 2) {
                             soundevent = SoundEvents.TRIDENT_RIPTIDE_2;
                         } else {
                             soundevent = SoundEvents.TRIDENT_RIPTIDE_1;

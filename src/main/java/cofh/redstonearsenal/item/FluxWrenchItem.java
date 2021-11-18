@@ -98,8 +98,11 @@ public class FluxWrenchItem extends ItemCoFH implements IFluxItem {
 
         ItemStack stack = player.getItemInHand(hand);
         if (hasEnergy(stack, isEmpowered(stack))) {
-            world.addFreshEntity(new FluxWrenchEntity(world, player, stack));
-            stack.shrink(1);
+            if (!world.isClientSide()) {
+                world.addFreshEntity(new FluxWrenchEntity(world, player, stack));
+                player.inventory.removeItem(stack);
+                player.getCooldowns().addCooldown(this, 10);
+            }
             player.awardStat(Stats.ITEM_USED.get(this));
             return ActionResult.success(stack);
         }
@@ -186,14 +189,7 @@ public class FluxWrenchItem extends ItemCoFH implements IFluxItem {
         if (player == null) {
             return ActionResultType.PASS;
         }
-        if (!(hasEnergy(stack, false) || player.abilities.instabuild)) {
-            return ActionResultType.PASS;
-        }
-        if (player.mayUseItemAt(context.getClickedPos(), context.getClickedFace(), stack) && useDelegate(stack, context)) {
-            useEnergy(stack, false, player.abilities.instabuild);
-            return ActionResultType.SUCCESS;
-        }
-        return ActionResultType.PASS;
+        return player.mayUseItemAt(context.getClickedPos(), context.getClickedFace(), stack) && useDelegate(stack, context) ? ActionResultType.SUCCESS : ActionResultType.PASS;
     }
 
     @Override

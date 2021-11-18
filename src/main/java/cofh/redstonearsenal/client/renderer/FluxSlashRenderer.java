@@ -34,6 +34,7 @@ public class FluxSlashRenderer extends EntityRenderer<FluxSlashEntity> {
 
         matrixStackIn.pushPose();
 
+        matrixStackIn.translate(0, entityIn.getBbHeight() * 0.5F, 0);
         matrixStackIn.mulPose(Vector3f.YP.rotationDegrees(MathHelper.lerp(partialTicks, entityIn.yRotO, entityIn.yRot) - 90));
         matrixStackIn.mulPose(Vector3f.ZP.rotationDegrees(MathHelper.lerp(partialTicks, entityIn.xRotO, entityIn.xRot) + 10));
         matrixStackIn.mulPose(Vector3f.XP.rotationDegrees(entityIn.zRot));
@@ -65,24 +66,22 @@ public class FluxSlashRenderer extends EntityRenderer<FluxSlashEntity> {
 
     public static class FluxRenderType extends RenderType {
 
+        public FluxRenderType(String p_i225992_1_, VertexFormat p_i225992_2_, int p_i225992_3_, int p_i225992_4_, boolean p_i225992_5_, boolean p_i225992_6_, Runnable p_i225992_7_, Runnable p_i225992_8_) {
+
+            super(p_i225992_1_, p_i225992_2_, p_i225992_3_, p_i225992_4_, p_i225992_5_, p_i225992_6_, p_i225992_7_, p_i225992_8_);
+        }
+
         public static final RenderType flux(ResourceLocation texture) {
+
             return RenderType.create("flux_projectile",
                     DefaultVertexFormats.NEW_ENTITY, 7, 256, true, true,
                     RenderType.State.builder().setTextureState(new RenderState.TextureState(texture, false, false))
                             .setTransparencyState(TRANSLUCENT_TRANSPARENCY)
                             .setOutputState(ITEM_ENTITY_TARGET)
-                            .setDiffuseLightingState(DIFFUSE_LIGHTING)
                             .setAlphaState(DEFAULT_ALPHA)
-                            .setLightmapState(NO_LIGHTMAP)
-                            .setOverlayState(OVERLAY)
                             .setCullState(NO_CULL)
-                            .setWriteMaskState(COLOR_WRITE)
+                            .setDepthTestState(LEQUAL_DEPTH_TEST)
                             .createCompositeState(true));
-        }
-
-        public FluxRenderType(String p_i225992_1_, VertexFormat p_i225992_2_, int p_i225992_3_, int p_i225992_4_, boolean p_i225992_5_, boolean p_i225992_6_, Runnable p_i225992_7_, Runnable p_i225992_8_) {
-
-            super(p_i225992_1_, p_i225992_2_, p_i225992_3_, p_i225992_4_, p_i225992_5_, p_i225992_6_, p_i225992_7_, p_i225992_8_);
         }
     }
 }

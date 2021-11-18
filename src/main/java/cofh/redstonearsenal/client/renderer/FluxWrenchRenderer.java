@@ -36,12 +36,11 @@ public class FluxWrenchRenderer extends EntityRenderer<FluxWrenchEntity> {
     public void render(FluxWrenchEntity entityIn, float entityYaw, float partialTicks, MatrixStack matrixStackIn, IRenderTypeBuffer bufferIn, int packedLightIn) {
 
         matrixStackIn.pushPose();
-
         matrixStackIn.translate(0, entityIn.getBbHeight() * 0.5F, 0);
-        matrixStackIn.mulPose(Vector3f.XP.rotationDegrees(90));
+        matrixStackIn.mulPose(Vector3f.XP.rotationDegrees(90 + entityIn.xRot));
         matrixStackIn.mulPose(Vector3f.ZP.rotationDegrees((entityIn.tickCount + partialTicks) * 20));
+        matrixStackIn.scale(1.25F, 1.25F, 1.25F);
         itemRenderer.renderStatic(entityIn.getItem(), ItemCameraTransforms.TransformType.GROUND, packedLightIn, OverlayTexture.NO_OVERLAY, matrixStackIn, bufferIn);
-
         matrixStackIn.popPose();
         super.render(entityIn, entityYaw, partialTicks, matrixStackIn, bufferIn, packedLightIn);
     }

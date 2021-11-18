@@ -88,30 +88,23 @@ public class FluxWrenchEntity extends ProjectileItemEntity {
         Vector3d velocity = this.getDeltaMovement();
         Entity owner = this.getOwner();
         if (owner != null) {
-            Vector3d relPos = owner.getEyePosition(0.5F).subtract(this.position());
+            Vector3d relPos = owner.getEyePosition(1).subtract(this.position());
             double distance = relPos.length();
             if (this.hitSomething) {
-                Vector3d acceleration = relPos.scale(0.5F / distance);
+                Vector3d acceleration = relPos.scale(Math.min(1, 0.05 * tickCount) / distance);
                 velocity = velocity.add(acceleration).normalize().scale(SPEED);
                 this.setDeltaMovement(velocity);
             }
             else if (distance > RANGE) {
                 this.hitSomething = true;
-                this.setDeltaMovement(getDeltaMovement().reverse());
+                this.setDeltaMovement(relPos.scale(SPEED * 0.5 / distance));
             }
         }
         super.tick();
-    }
-
-    @OnlyIn(Dist.CLIENT)
-    public boolean shouldRenderAtSqrDistance(double p_70112_1_) {
-        double d0 = this.getBoundingBox().getSize() * 10.0D;
-        if (Double.isNaN(d0)) {
-            d0 = 1.0D;
+        //Remove water movement slowing
+        if (this.isInWater()) {
+            this.setDeltaMovement(this.getDeltaMovement().scale(1.2375));
         }
-
-        d0 = d0 * 64.0D * getViewScale();
-        return p_70112_1_ < d0 * d0;
     }
 
     @Override
@@ -128,9 +121,27 @@ public class FluxWrenchEntity extends ProjectileItemEntity {
     @Override
     protected void onHit(RayTraceResult result) {
 
-        this.hitSomething = true;
         super.onHit(result);
-        this.setDeltaMovement(getDeltaMovement().reverse());
+        if (!this.hitSomething) {
+            Entity owner = this.getOwner();
+            if (owner != null) {
+                Vector3d relPos = owner.getEyePosition(1).subtract(this.position());
+                double distance = relPos.length();
+                if (distance < 1.5) {
+                    if (!(owner instanceof PlayerEntity && ((PlayerEntity) owner).inventory.add(this.getItem()))) {
+                        level.addFreshEntity(new ItemEntity(level, owner.getX(), owner.getY(), owner.getZ(), this.getItem()));
+                    }
+                    this.remove();
+                }
+                else {
+                    this.setDeltaMovement(relPos.scale(SPEED * 0.5 / distance));
+                }
+            }
+            else {
+                this.setDeltaMovement(getDeltaMovement().scale(-0.5));
+            }
+            this.hitSomething = true;
+        }
     }
 
     @Override

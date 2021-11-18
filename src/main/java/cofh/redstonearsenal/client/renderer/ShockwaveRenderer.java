@@ -31,6 +31,7 @@ public class ShockwaveRenderer extends EntityRenderer<ShockwaveEntity> {
 
     public static List<List<int[]>> offsetsByTick = getOffsetsByTick(ShockwaveEntity.LIFESPAN);
     protected static final BlockRendererDispatcher blockRenderer = Minecraft.getInstance().getBlockRenderer();
+    protected static final List<RenderType> renderTypes = RenderType.chunkBufferLayers();
 
     public ShockwaveRenderer(EntityRendererManager manager) {
 
@@ -42,7 +43,7 @@ public class ShockwaveRenderer extends EntityRenderer<ShockwaveEntity> {
 
         BlockPos origin = entity.blockPosition();
         World world = entity.level;
-        
+
         for (int i = Math.max(0, entity.tickCount - ShockwaveEntity.ANIM_DURATION); i <= entity.tickCount; ++i) {
             if (i >= offsetsByTick.size()) {
                 break;
@@ -61,7 +62,7 @@ public class ShockwaveRenderer extends EntityRenderer<ShockwaveEntity> {
                             matrixStack.pushPose();
                             matrixStack.translate(-0.5 + offset[0], -0.5 + yOffset + y, -0.5 + offset[1]);
                             matrixStack.scale(1.01F, 1.01F, 1.01F);
-                            for (RenderType type : RenderType.chunkBufferLayers()) {
+                            for (RenderType type : renderTypes) {
                                 if (RenderTypeLookup.canRenderInLayer(state, type)) {
                                     ForgeHooksClient.setRenderLayer(type);
                                     blockRenderer.getModelRenderer().renderModel(world, blockRenderer.getBlockModel(state), state, pos, matrixStack, buffer.getBuffer(type), false, new Random(), state.getSeed(pos), OverlayTexture.NO_OVERLAY, EmptyModelData.INSTANCE);
