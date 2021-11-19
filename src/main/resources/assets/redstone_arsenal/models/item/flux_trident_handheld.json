@@ -46,7 +46,7 @@
       "predicate": {
         "throwing": 1.0
       },
-      "model": "redstone_arsenal:item/flux_trident_throwing"
+      "model": "redstone_arsenal:item/flux_trident_inventory"
     }
   ]
 }

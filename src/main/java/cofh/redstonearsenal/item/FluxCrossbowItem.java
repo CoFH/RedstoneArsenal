@@ -35,12 +35,14 @@ import net.minecraftforge.common.capabilities.ICapabilityProvider;
 
 import javax.annotation.Nullable;
 import java.util.List;
+import java.util.function.BiFunction;
 
 import static cofh.lib.capability.CapabilityArchery.*;
 
 public class FluxCrossbowItem extends CrossbowItemCoFH implements IFluxItem {
 
-    protected static final float[] REPEAT_DURATIONS = getRepeatDurations(1.4F, 0.6F, -0.2F, 20);
+    protected static final int MAX_REPEATS = 20;
+    protected static final int REPEAT_START_DELAY = 20;
 
     protected final int maxEnergy;
     protected final int extract;
@@ -102,29 +104,18 @@ public class FluxCrossbowItem extends CrossbowItemCoFH implements IFluxItem {
         int duration = baseDuration - entity.getUseItemRemainingTicks();
 
         if (isEmpowered(stack)) {
-            if (repeats >= REPEAT_DURATIONS.length) {
+            if (repeats >= MAX_REPEATS) {
                 return 0.0F;
             }
-            int next = MathHelper.floor(REPEAT_DURATIONS[repeats] * getUseDuration(stack));
-            int prev = MathHelper.floor(REPEAT_DURATIONS[repeats - 1] * getUseDuration(stack));
+            int interval = getRepeatInterval(stack);
+            int next = REPEAT_START_DELAY + interval * repeats;
+            int prev = next - interval;
 
             return MathHelper.clamp(((float) duration - prev) / (next - prev), 0.0F, 1.0F);
         }
         else {
             return MathHelper.clamp((float) (duration) / baseDuration, 0.0F, 1.0F);
         }
-    }
-
-    public static float[] getRepeatDurations(float start, float end, float change, int repeats) {
-
-        float[] durations = new float[repeats + 1];
-        float duration = 0;
-        for (int i = 0; i < durations.length; ++i) {
-            durations[i] = duration;
-            duration += start;
-            start = Math.max(start + change, end);
-        }
-        return durations;
     }
 
     @Override
@@ -165,15 +156,16 @@ public class FluxCrossbowItem extends CrossbowItemCoFH implements IFluxItem {
             int duration = baseDuration - durationRemaining;
 
             if (isEmpowered(stack)) {
-                if (repeats >= REPEAT_DURATIONS.length) {
+                if (repeats >= MAX_REPEATS) {
                     return;
                 }
                 cooldown++;
-                int next = MathHelper.floor(REPEAT_DURATIONS[repeats] * getUseDuration(stack));
+                int interval = getRepeatInterval(stack);
+                int next = REPEAT_START_DELAY + interval * repeats;
                 if (repeats > 0) {
                     if (duration == next - 2) {
                         if (!loadAmmo(living, stack)) {
-                            repeats = REPEAT_DURATIONS.length;
+                            repeats = MAX_REPEATS;
                             living.releaseUsingItem();
                             return;
                         }
@@ -189,13 +181,13 @@ public class FluxCrossbowItem extends CrossbowItemCoFH implements IFluxItem {
                             living.releaseUsingItem();
                             return;
                         }
-                        if (repeats >= REPEAT_DURATIONS.length) {
+                        if (repeats >= MAX_REPEATS) {
                             living.releaseUsingItem();
                         }
                         return;
                     }
                 }
-                int prev = MathHelper.floor(REPEAT_DURATIONS[repeats - 1] * getUseDuration(stack));
+                int prev = next - interval;
                 duration -= prev;
                 baseDuration = next - prev;
             }
@@ -207,6 +199,11 @@ public class FluxCrossbowItem extends CrossbowItemCoFH implements IFluxItem {
                 world.playSound(null, living.getX(), living.getY(), living.getZ(), SoundEvents.CROSSBOW_LOADING_MIDDLE, SoundCategory.PLAYERS, 0.5F, 1.0F);
             }
         }
+    }
+
+    public int getRepeatInterval(ItemStack stack) {
+
+        return 14 - 2 * MathHelper.clamp(Utils.getItemEnchantmentLevel(Enchantments.QUICK_CHARGE, stack), 0, 3);
     }
 
     @Override
@@ -222,9 +219,9 @@ public class FluxCrossbowItem extends CrossbowItemCoFH implements IFluxItem {
 
         if (isEmpowered(stack) && entity instanceof PlayerEntity) {
             PlayerEntity player = (PlayerEntity) entity;
-            if (amount >= MathHelper.floor(REPEAT_DURATIONS[1] * getUseDuration(stack))) {
-                player.getCooldowns().addCooldown(this, Math.min(amount, 200));
+            if (amount >= REPEAT_START_DELAY + getRepeatInterval(stack)) {
                 if (!player.level.isClientSide()) {
+                    player.getCooldowns().addCooldown(this, Math.min(amount, 200));
                     cooldown = 0;
                 }
             }

@@ -1,5 +1,6 @@
 package cofh.redstonearsenal.entity;
 
+import cofh.lib.util.helpers.ArcheryHelper;
 import cofh.redstonearsenal.item.IFluxItem;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -145,16 +146,11 @@ public class FluxSlashEntity extends ProjectileEntity {
         return world.clip(new RayTraceContext(startPos, endPos, RayTraceContext.BlockMode.COLLIDER, RayTraceContext.FluidMode.NONE, this));
     }
 
-    @Nullable
     public void hitEntities(World world, Vector3d startPos, Vector3d endPos) {
 
-        AxisAlignedBB searchArea = this.getBoundingBox().expandTowards(this.getDeltaMovement()).inflate(1.0D);
-        for(Entity entity : world.getEntities(this, searchArea, this::canHitEntity)) {
-            AxisAlignedBB hitbox = entity.getBoundingBox().inflate(this.getBbWidth() * 0.5, this.getBbHeight() * 0.5, this.getBbWidth() * 0.5);
-            if (hitbox.clip(startPos, endPos).isPresent() && !net.minecraftforge.event.ForgeEventFactory.onProjectileImpact(this, new EntityRayTraceResult(entity))) {
-                this.onHitEntity(new EntityRayTraceResult(entity));
-            }
-        }
+        ArcheryHelper.findHitEntities(world, this, startPos, endPos, this::canHitEntity)
+                .filter(result -> !net.minecraftforge.event.ForgeEventFactory.onProjectileImpact(this, result))
+                .forEach(this::onHitEntity);
     }
 
     @Override

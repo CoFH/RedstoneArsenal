@@ -14,6 +14,7 @@ import net.minecraft.client.renderer.entity.EntityRendererManager;
 import net.minecraft.client.renderer.texture.AtlasTexture;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.inventory.container.PlayerContainer;
+import net.minecraft.util.Direction;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
@@ -65,7 +66,7 @@ public class ShockwaveRenderer extends EntityRenderer<ShockwaveEntity> {
                             for (RenderType type : renderTypes) {
                                 if (RenderTypeLookup.canRenderInLayer(state, type)) {
                                     ForgeHooksClient.setRenderLayer(type);
-                                    blockRenderer.getModelRenderer().renderModel(world, blockRenderer.getBlockModel(state), state, pos, matrixStack, buffer.getBuffer(type), false, new Random(), state.getSeed(pos), OverlayTexture.NO_OVERLAY, EmptyModelData.INSTANCE);
+                                    blockRenderer.getModelRenderer().renderModel(world, blockRenderer.getBlockModel(state), state, pos.relative(Direction.UP), matrixStack, buffer.getBuffer(type), false, new Random(), state.getSeed(pos), OverlayTexture.NO_OVERLAY, EmptyModelData.INSTANCE);
                                 }
                             }
                             matrixStack.popPose();

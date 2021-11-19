@@ -138,6 +138,7 @@ public class FluxFishingRodItem extends FishingRodItemCoFH implements IFluxItem 
 
     @Override
     public void releaseUsing(ItemStack stack, World world, LivingEntity living, int useDuration) {
+
     }
 
     @Override
@@ -158,6 +159,9 @@ public class FluxFishingRodItem extends FishingRodItemCoFH implements IFluxItem 
         if (attacker instanceof PlayerEntity) {
             PlayerEntity player = (PlayerEntity) attacker;
             useEnergy(stack, false, player.abilities.instabuild);
+            if (isEmpowered(stack) && player.fishing != null) {
+                player.fishing.remove();
+            }
         }
         return true;
     }

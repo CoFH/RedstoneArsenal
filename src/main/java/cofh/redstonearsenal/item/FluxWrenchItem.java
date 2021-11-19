@@ -5,12 +5,15 @@ import cofh.core.util.ProxyUtils;
 import cofh.lib.block.IDismantleable;
 import cofh.lib.block.IWrenchable;
 import cofh.lib.util.Utils;
+import cofh.lib.util.constants.ToolTypes;
 import cofh.lib.util.helpers.BlockHelper;
 import cofh.redstonearsenal.entity.FluxWrenchEntity;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
+import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
+import net.minecraft.block.material.Material;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.Enchantments;
@@ -37,20 +40,28 @@ import net.minecraft.util.text.ITextComponent;
 import net.minecraft.world.World;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraftforge.common.ToolType;
 
 import javax.annotation.Nullable;
 import java.util.List;
+import java.util.Set;
 
 import static cofh.lib.util.references.CoreReferences.WRENCHED;
 
 public class FluxWrenchItem extends ItemCoFH implements IFluxItem {
 
+    protected static final Set<Enchantment> VALID_ENCHANTS = new ObjectOpenHashSet<>();
     protected final float damage;
     protected final float attackSpeed;
 
     protected final int maxEnergy;
     protected final int extract;
     protected final int receive;
+
+    static {
+        VALID_ENCHANTS.add(Enchantments.SHARPNESS);
+        VALID_ENCHANTS.add(Enchantments.FIRE_ASPECT);
+    }
 
     public FluxWrenchItem(IItemTier tier, float attackDamageIn, float attackSpeedIn, Properties builder, int energy, int xfer) {
 
@@ -84,7 +95,7 @@ public class FluxWrenchItem extends ItemCoFH implements IFluxItem {
     @Override
     public boolean canApplyAtEnchantingTable(ItemStack stack, Enchantment enchantment) {
 
-        return super.canApplyAtEnchantingTable(stack, enchantment) || enchantment.equals(Enchantments.SHARPNESS);
+        return super.canApplyAtEnchantingTable(stack, enchantment) || VALID_ENCHANTS.contains(enchantment);
     }
 
     @Override
@@ -101,7 +112,7 @@ public class FluxWrenchItem extends ItemCoFH implements IFluxItem {
             if (!world.isClientSide()) {
                 world.addFreshEntity(new FluxWrenchEntity(world, player, stack));
                 player.inventory.removeItem(stack);
-                player.getCooldowns().addCooldown(this, 10);
+                player.getCooldowns().addCooldown(this, 12);
             }
             player.awardStat(Stats.ITEM_USED.get(this));
             return ActionResult.success(stack);

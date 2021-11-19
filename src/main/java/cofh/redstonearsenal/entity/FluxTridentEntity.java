@@ -36,29 +36,33 @@ import static cofh.redstonearsenal.init.RSAReferences.FLUX_TRIDENT_ENTITY;
 
 public class FluxTridentEntity extends AbstractArrowEntity {
 
-    protected static final DataParameter<Byte> ID_LOYALTY = EntityDataManager.defineId(TridentEntity.class, DataSerializers.BYTE);
-    protected static final DataParameter<Boolean> ID_FOIL = EntityDataManager.defineId(TridentEntity.class, DataSerializers.BOOLEAN);
+    protected static final DataParameter<Byte> ID_LOYALTY = EntityDataManager.defineId(FluxTridentEntity.class, DataSerializers.BYTE);
+    protected static final DataParameter<Boolean> ID_FOIL = EntityDataManager.defineId(FluxTridentEntity.class, DataSerializers.BOOLEAN);
     protected ItemStack tridentItem = new ItemStack(RedstoneArsenal.ITEMS.get(ID_FLUX_TRIDENT).getItem());
     protected boolean dealtDamage;
     public int clientSideReturnTridentTickCount;
 
     public FluxTridentEntity(EntityType<? extends FluxTridentEntity> p_i50148_1_, World p_i50148_2_) {
+
         super(p_i50148_1_, p_i50148_2_);
     }
 
-    public FluxTridentEntity(World p_i48790_1_, LivingEntity p_i48790_2_, ItemStack p_i48790_3_) {
-        super(FLUX_TRIDENT_ENTITY, p_i48790_2_, p_i48790_1_);
-        this.tridentItem = p_i48790_3_.copy();
-        this.entityData.set(ID_LOYALTY, (byte)EnchantmentHelper.getLoyalty(p_i48790_3_));
-        this.entityData.set(ID_FOIL, p_i48790_3_.hasFoil());
+    public FluxTridentEntity(World world, LivingEntity owner, ItemStack stack) {
+
+        super(FLUX_TRIDENT_ENTITY, owner, world);
+        this.tridentItem = stack.copy();
+        this.entityData.set(ID_LOYALTY, (byte)EnchantmentHelper.getLoyalty(stack));
+        this.entityData.set(ID_FOIL, stack.hasFoil());
     }
 
     @OnlyIn(Dist.CLIENT)
-    public FluxTridentEntity(World p_i48791_1_, double p_i48791_2_, double p_i48791_4_, double p_i48791_6_) {
-        super(FLUX_TRIDENT_ENTITY, p_i48791_2_, p_i48791_4_, p_i48791_6_, p_i48791_1_);
+    public FluxTridentEntity(World world, double x, double y, double z) {
+
+        super(FLUX_TRIDENT_ENTITY, x, y, z, world);
     }
 
     protected void defineSynchedData() {
+
         super.defineSynchedData();
         this.entityData.define(ID_LOYALTY, (byte)0);
         this.entityData.define(ID_FOIL, false);
@@ -76,6 +80,7 @@ public class FluxTridentEntity extends AbstractArrowEntity {
     }
 
     public void tick() {
+
         if (this.inGroundTime > 4) {
             this.dealtDamage = true;
         }
