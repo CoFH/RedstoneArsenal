@@ -2,7 +2,6 @@ package cofh.redstonearsenal.item;
 
 import cofh.core.util.ProxyUtils;
 import cofh.lib.capability.IArcheryBowItem;
-import cofh.lib.capability.templates.ArcheryBowItemWrapper;
 import cofh.lib.energy.EnergyContainerItemWrapper;
 import cofh.lib.energy.IEnergyContainerItem;
 import cofh.lib.item.impl.BowItemCoFH;

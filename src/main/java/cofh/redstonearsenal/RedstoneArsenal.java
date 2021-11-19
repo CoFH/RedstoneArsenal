@@ -1,6 +1,5 @@
 package cofh.redstonearsenal;
 
-import cofh.lib.client.renderer.entity.NoneRendererCoFH;
 import cofh.lib.util.DeferredRegisterCoFH;
 import cofh.redstonearsenal.client.renderer.*;
 import cofh.redstonearsenal.init.RSABlocks;

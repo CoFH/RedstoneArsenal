@@ -5,10 +5,6 @@ import cofh.lib.item.ArmorMaterialCoFH;
 import cofh.lib.item.ItemTierCoFH;
 import cofh.redstonearsenal.client.renderer.FluxTridentISTER;
 import cofh.redstonearsenal.item.*;
-import cofh.redstonearsenal.item.FluxElytraControllerItem;
-import cofh.redstonearsenal.item.FluxElytraItem;
-import cofh.redstonearsenal.item.FluxShieldItem;
-import cofh.redstonearsenal.item.FluxSwordItem;
 import net.minecraft.inventory.EquipmentSlotType;
 import net.minecraft.item.IItemTier;
 import net.minecraft.item.Item;
@@ -18,7 +14,8 @@ import net.minecraft.item.crafting.Ingredient;
 import net.minecraft.util.SoundEvents;
 
 import static cofh.redstonearsenal.RedstoneArsenal.ITEMS;
-import static cofh.redstonearsenal.init.RSAIDs.*;
+import static cofh.redstonearsenal.init.RSAIDs.ID_FLUX_TRIDENT;
+import static cofh.redstonearsenal.init.RSAIDs.ID_FLUX_WRENCH;
 
 public class RSAItems {
 

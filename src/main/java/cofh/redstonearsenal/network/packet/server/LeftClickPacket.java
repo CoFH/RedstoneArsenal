@@ -5,13 +5,9 @@ import cofh.lib.network.packet.IPacketServer;
 import cofh.lib.network.packet.PacketBase;
 import cofh.redstonearsenal.item.FluxSwordItem;
 import cofh.redstonearsenal.item.FluxTridentItem;
-import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketBuffer;
-import net.minecraft.util.ActionResult;
-import net.minecraft.util.Hand;
-import net.minecraft.util.math.vector.Vector3d;
 
 import static cofh.lib.util.constants.Constants.PACKET_LEFT_CLICK;
 

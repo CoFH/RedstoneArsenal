@@ -1,6 +1,9 @@
 package cofh.redstonearsenal.event;
 
-import cofh.redstonearsenal.item.*;
+import cofh.redstonearsenal.item.FluxAxeItem;
+import cofh.redstonearsenal.item.FluxCrossbowItem;
+import cofh.redstonearsenal.item.FluxSwordItem;
+import cofh.redstonearsenal.item.FluxTridentItem;
 import cofh.redstonearsenal.network.packet.server.LeftClickPacket;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.LivingEntity;
@@ -12,14 +15,12 @@ import net.minecraftforge.event.entity.living.LivingEquipmentChangeEvent;
 import net.minecraftforge.event.entity.living.LivingFallEvent;
 import net.minecraftforge.event.entity.player.AttackEntityEvent;
 import net.minecraftforge.event.entity.player.CriticalHitEvent;
-import net.minecraftforge.event.entity.player.PlayerInteractEvent.LeftClickBlock;
-import net.minecraftforge.event.entity.player.PlayerInteractEvent.LeftClickEmpty;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
-import static net.minecraftforge.client.event.InputEvent.*;
 import static cofh.lib.util.constants.Constants.ID_REDSTONE_ARSENAL;
+import static net.minecraftforge.client.event.InputEvent.ClickInputEvent;
 
 @Mod.EventBusSubscriber(modid = ID_REDSTONE_ARSENAL)
 public class RSAEvents {

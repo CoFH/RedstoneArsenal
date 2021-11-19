@@ -3,10 +3,10 @@ package cofh.redstonearsenal.init;
 import cofh.redstonearsenal.block.FluxGlowAirBlock;
 import net.minecraft.block.Blocks;
 
-import static cofh.redstonearsenal.RedstoneArsenal.BLOCKS;
 import static cofh.lib.util.helpers.BlockHelper.lightValue;
+import static cofh.redstonearsenal.RedstoneArsenal.BLOCKS;
+import static cofh.redstonearsenal.init.RSAIDs.ID_FLUX_GLOW_AIR;
 import static net.minecraft.block.AbstractBlock.Properties.copy;
-import static cofh.redstonearsenal.init.RSAIDs.*;
 
 public class RSABlocks {
 

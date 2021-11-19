@@ -4,10 +4,9 @@ import cofh.lib.util.helpers.ArcheryHelper;
 import cofh.redstonearsenal.item.IFluxItem;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.projectile.*;
+import net.minecraft.entity.projectile.ProjectileEntity;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.IPacket;
 import net.minecraft.tileentity.EndGatewayTileEntity;
@@ -18,8 +17,6 @@ import net.minecraft.world.World;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.fml.network.NetworkHooks;
-
-import javax.annotation.Nullable;
 
 import static cofh.redstonearsenal.init.RSAReferences.FLUX_SLASH_ENTITY;
 

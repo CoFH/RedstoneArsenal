@@ -3,7 +3,6 @@ package cofh.redstonearsenal.entity;
 import cofh.lib.util.Utils;
 import cofh.lib.util.helpers.ArcheryHelper;
 import cofh.redstonearsenal.RedstoneArsenal;
-import cofh.redstonearsenal.item.FluxTridentItem;
 import cofh.redstonearsenal.item.FluxWrenchItem;
 import cofh.redstonearsenal.item.IFluxItem;
 import net.minecraft.block.BlockState;
@@ -15,9 +14,8 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.item.ItemEntity;
-import net.minecraft.entity.monster.EndermanEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.projectile.*;
+import net.minecraft.entity.projectile.ProjectileEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
@@ -32,15 +30,9 @@ import net.minecraft.util.Util;
 import net.minecraft.util.math.*;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.World;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.event.world.NoteBlockEvent;
 import net.minecraftforge.fml.network.NetworkHooks;
 
-import javax.annotation.Nullable;
-
 import static cofh.redstonearsenal.init.RSAIDs.ID_FLUX_WRENCH;
-import static cofh.redstonearsenal.init.RSAReferences.FLUX_SLASH_ENTITY;
 import static cofh.redstonearsenal.init.RSAReferences.FLUX_WRENCH_ENTITY;
 
 public class FluxWrenchEntity extends ProjectileEntity {

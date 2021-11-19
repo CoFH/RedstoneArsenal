@@ -19,7 +19,6 @@ import net.minecraft.entity.ai.attributes.AttributeModifier;
 import net.minecraft.entity.ai.attributes.Attributes;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.AbstractArrowEntity;
-import net.minecraft.entity.projectile.TridentEntity;
 import net.minecraft.inventory.EquipmentSlotType;
 import net.minecraft.item.IItemTier;
 import net.minecraft.item.ItemStack;
@@ -39,7 +38,6 @@ import javax.annotation.Nullable;
 import java.util.List;
 import java.util.function.Predicate;
 
-import static cofh.lib.util.constants.Constants.UUID_ENCH_REACH_DISTANCE;
 import static cofh.lib.util.constants.Constants.UUID_TOOL_REACH;
 import static cofh.lib.util.references.CoreReferences.LIGHTNING_RESISTANCE;
 

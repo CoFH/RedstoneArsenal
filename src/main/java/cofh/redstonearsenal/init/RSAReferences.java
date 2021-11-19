@@ -6,7 +6,6 @@ import net.minecraft.entity.EntityType;
 import net.minecraftforge.registries.ObjectHolder;
 
 import static cofh.lib.util.constants.Constants.ID_REDSTONE_ARSENAL;
-import static cofh.lib.util.references.CoreIDs.ID_GLOW_AIR;
 import static cofh.redstonearsenal.init.RSAIDs.*;
 
 @ObjectHolder(ID_REDSTONE_ARSENAL)

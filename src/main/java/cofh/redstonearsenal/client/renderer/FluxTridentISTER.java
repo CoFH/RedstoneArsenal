@@ -1,6 +1,5 @@
 package cofh.redstonearsenal.client.renderer;
 
-import cofh.redstonearsenal.entity.FluxTridentEntity;
 import cofh.redstonearsenal.item.FluxTridentItem;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.vertex.IVertexBuilder;
