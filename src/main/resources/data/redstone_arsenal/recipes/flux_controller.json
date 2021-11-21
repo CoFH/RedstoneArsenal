@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "BX",
+    "X "
+  ],
+  "key": {
+    "X": {
+      "item": "redstone_arsenal:flux_ingot"
+    },
+    "B": {
+      "item": "minecraft:stone_button"
+    }
+  },
+  "result": {
+    "item": "redstone_arsenal:flux_controller"
+  }
+}

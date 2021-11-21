@@ -14,6 +14,7 @@ public class RSAIDs {
 
     // region BLOCKS
     public static final String ID_FLUX_GLOW_AIR = "flux_glow_air";
+    public static final String ID_FLUX_METAL_BLOCK = "flux_metal_block";
     // endregion
 
     // region ITEMS

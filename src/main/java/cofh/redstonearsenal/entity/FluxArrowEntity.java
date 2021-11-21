@@ -105,7 +105,7 @@ public class FluxArrowEntity extends AbstractArrowEntity {
 
         if (!level.isClientSide()) {
             double r2 = EXPLOSION_RANGE * EXPLOSION_RANGE;
-            AxisAlignedBB searchArea = this.getBoundingBox().inflate(EXPLOSION_RANGE, 1, EXPLOSION_RANGE);
+            AxisAlignedBB searchArea = this.getBoundingBox().move(pos.subtract(this.position())).inflate(EXPLOSION_RANGE, 1, EXPLOSION_RANGE);
             Predicate<Entity> filter = EntityPredicates.NO_CREATIVE_OR_SPECTATOR.and(entity -> entity instanceof LivingEntity);
             for (Entity target : level.getEntities(this, searchArea, filter)) {
                 if (this.distanceToSqr(target) < r2) {

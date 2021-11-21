@@ -1,0 +1,22 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "XBX",
+    "X#X",
+    " # "
+  ],
+  "key": {
+    "#": {
+      "item": "redstone_arsenal:flux_obsidian_rod"
+    },
+    "X": {
+      "item": "redstone_arsenal:flux_ingot"
+    },
+    "B": {
+      "item": "redstone_arsenal:flux_metal_block"
+    }
+  },
+  "result": {
+    "item": "redstone_arsenal:flux_hammer"
+  }
+}

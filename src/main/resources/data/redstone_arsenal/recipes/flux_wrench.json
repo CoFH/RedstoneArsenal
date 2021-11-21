@@ -1,0 +1,22 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "X X",
+    " B ",
+    " # "
+  ],
+  "key": {
+    "#": {
+      "item": "redstone_arsenal:flux_obsidian_rod"
+    },
+    "X": {
+      "item": "redstone_arsenal:flux_ingot"
+    },
+    "B": {
+      "item": "redstone_arsenal:flux_gear"
+    }
+  },
+  "result": {
+    "item": "redstone_arsenal:flux_wrench"
+  }
+}

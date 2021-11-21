@@ -104,10 +104,12 @@ public class FluxExcavatorItem extends ExcavatorItem implements IFluxItem {
                 return ActionResultType.PASS;
             }
             BlockItemUseContext blockContext = new BlockItemUseContext(context);
+            BlockPos playerPos = player.blockPosition();
+            BlockPos eyePos = new BlockPos(player.getEyePosition(1));
             if (player.abilities.instabuild) {
                 for (BlockPos pos : AreaEffectHelper.getPlaceableBlocksRadius(tool, clickPos, player, 1 + getMode(tool))) {
                     BlockPos fillPos = pos.relative(context.getClickedFace());
-                    if (world.getBlockState(fillPos).canBeReplaced(blockContext)) {
+                    if (world.getBlockState(fillPos).canBeReplaced(blockContext) && !fillPos.equals(playerPos) && !fillPos.equals(eyePos)) {
                         world.setBlock(fillPos, world.getBlockState(pos).getBlock().defaultBlockState(), 2);
                     }
                 }
@@ -117,7 +119,7 @@ public class FluxExcavatorItem extends ExcavatorItem implements IFluxItem {
                 Map<Block, List<BlockPos>> sorted = new HashMap<>();
                 for (BlockPos pos : blocks) {
                     BlockPos fillPos = pos.relative(context.getClickedFace());
-                    if (world.getBlockState(fillPos).canBeReplaced(blockContext)) {
+                    if (world.getBlockState(fillPos).canBeReplaced(blockContext) && !fillPos.equals(playerPos) && !fillPos.equals(eyePos)) {
                         Block block = world.getBlockState(pos).getBlock();
                         sorted.putIfAbsent(block, new ArrayList<>());
                         sorted.get(block).add(fillPos);

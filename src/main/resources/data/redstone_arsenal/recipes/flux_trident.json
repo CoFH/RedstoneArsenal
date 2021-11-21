@@ -1,0 +1,22 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    " II",
+    " BI",
+    "#  "
+  ],
+  "key": {
+    "#": {
+      "item": "redstone_arsenal:flux_obsidian_rod"
+    },
+    "I": {
+      "item": "redstone_arsenal:flux_ingot"
+    },
+    "B": {
+      "item": "minecraft:trident"
+    }
+  },
+  "result": {
+    "item": "redstone_arsenal:flux_trident"
+  }
+}

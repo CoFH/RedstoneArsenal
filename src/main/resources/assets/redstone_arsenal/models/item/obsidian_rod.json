@@ -1,6 +1,6 @@
 {
   "parent": "item/generated",
   "textures": {
-    "layer0": "redstone_arsenal:item/materials/flux_"
+    "layer0": "redstone_arsenal:item/materials/obsidian_rod"
   }
 }

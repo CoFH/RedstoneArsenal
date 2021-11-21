@@ -34,7 +34,6 @@ public class FluxSlashRenderer extends EntityRenderer<FluxSlashEntity> {
 
         matrixStackIn.pushPose();
 
-        matrixStackIn.translate(0, entityIn.getBbHeight() * 0.5F, 0);
         matrixStackIn.mulPose(Vector3f.YP.rotationDegrees(MathHelper.lerp(partialTicks, entityIn.yRotO, entityIn.yRot) - 90));
         matrixStackIn.mulPose(Vector3f.ZP.rotationDegrees(MathHelper.lerp(partialTicks, entityIn.xRotO, entityIn.xRot) + 10));
         matrixStackIn.mulPose(Vector3f.XP.rotationDegrees(entityIn.zRot));

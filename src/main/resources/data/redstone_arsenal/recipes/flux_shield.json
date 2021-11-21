@@ -1,0 +1,22 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "XGX",
+    "XBX",
+    "XGX"
+  ],
+  "key": {
+    "G": {
+      "item": "redstone_arsenal:flux_gem"
+    },
+    "X": {
+      "item": "redstone_arsenal:flux_ingot"
+    },
+    "B": {
+      "item": "redstone_arsenal:flux_obsidian_rod"
+    }
+  },
+  "result": {
+    "item": "redstone_arsenal:flux_shield"
+  }
+}

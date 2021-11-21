@@ -11,6 +11,10 @@
   "item.redstone_arsenal.flux_ingot": "Flux-Infused Ingot",
   "item.redstone_arsenal.flux_nugget": "Flux-Infused Nugget",
   "item.redstone_arsenal.flux_plate": "Flux-Infused Plate",
+  "item.redstone_arsenal.flux_plating": "Flux-Infused Plating",
+  "item.redstone_arsenal.obsidian_rod": "Obsidian Rod",
+  "item.redstone_arsenal.flux_obsidian_rod": "Flux-Infused Obsidian Rod",
+  "block.redstone_arsenal.flux_metal_block": "Flux-Infused Metal Block",
 
   "item.redstone_arsenal.flux_sword": "Flux-Infused Sword",
   "item.redstone_arsenal.flux_shield": "Flux-Infused Shield",

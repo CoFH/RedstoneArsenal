@@ -48,7 +48,7 @@ import java.util.List;
 public class FluxHammerItem extends HammerItem implements IFluxItem {
 
     public static final int CHARGE_TIME = 20;
-    public static final int COOLDOWN = 40;
+    public static final int COOLDOWN = 20;
 
     protected final float damage;
     protected final float attackSpeed;

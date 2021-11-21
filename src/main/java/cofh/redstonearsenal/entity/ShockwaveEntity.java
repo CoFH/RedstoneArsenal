@@ -23,7 +23,7 @@ public class ShockwaveEntity extends Entity {
     public static final int LIFESPAN = 10;
     public static final int ANIM_DURATION = 5;
     public static final float DISTANCE_PER_TICK = 1F;
-    protected static final float BASE_DAMAGE = 4;
+    protected static final float BASE_DAMAGE = 6;
     protected static final int SUNDER_DURATION = 50;
 
     protected LivingEntity owner = null;
