@@ -1,6 +1,7 @@
 package cofh.redstonearsenal.item;
 
 import cofh.core.util.ProxyUtils;
+import cofh.lib.item.ILeftClickHandlerItem;
 import cofh.lib.item.impl.SwordItemCoFH;
 import cofh.lib.util.Utils;
 import cofh.redstonearsenal.entity.FluxSlashEntity;
@@ -28,7 +29,7 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 import javax.annotation.Nullable;
 import java.util.List;
 
-public class FluxSwordItem extends SwordItemCoFH implements IFluxItem {
+public class FluxSwordItem extends SwordItemCoFH implements IFluxItem, ILeftClickHandlerItem {
 
     protected final float damage;
     protected final float attackSpeed;
@@ -80,12 +81,13 @@ public class FluxSwordItem extends SwordItemCoFH implements IFluxItem {
 
     public void shootFluxSlash(ItemStack stack, PlayerEntity player) {
 
+        if (!this.isEmpowered(stack)) {
+            return;
+        }
         if (useEnergy(stack, true, player.abilities.instabuild)) {
             World world = player.level;
-            if (!world.isClientSide()) {
-                FluxSlashEntity projectile = new FluxSlashEntity(world, player, getRangedAttackDamage(stack));
-                world.addFreshEntity(projectile);
-            }
+            FluxSlashEntity projectile = new FluxSlashEntity(world, player, getRangedAttackDamage(stack));
+            world.addFreshEntity(projectile);
         }
     }
 
@@ -147,6 +149,15 @@ public class FluxSwordItem extends SwordItemCoFH implements IFluxItem {
     public int getMaxEnergyStored(ItemStack container) {
 
         return getMaxStored(container, maxEnergy);
+    }
+    // endregion
+
+    // region ILeftClickHandlerItem
+    public void onLeftClick(PlayerEntity player, ItemStack stack) {
+
+        if (canSweepAttack(player) && isEmpowered(stack)) {
+            shootFluxSlash(stack, player);
+        }
     }
     // endregion
 }

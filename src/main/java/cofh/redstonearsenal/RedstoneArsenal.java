@@ -3,7 +3,6 @@ package cofh.redstonearsenal;
 import cofh.lib.util.DeferredRegisterCoFH;
 import cofh.redstonearsenal.client.renderer.*;
 import cofh.redstonearsenal.init.*;
-import cofh.redstonearsenal.network.packet.server.LeftClickPacket;
 import net.minecraft.block.Block;
 import net.minecraft.entity.EntityType;
 import net.minecraft.item.Item;
@@ -18,9 +17,7 @@ import net.minecraftforge.registries.ForgeRegistries;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import static cofh.core.CoFHCore.PACKET_HANDLER;
 import static cofh.lib.util.constants.Constants.ID_REDSTONE_ARSENAL;
-import static cofh.lib.util.constants.Constants.PACKET_LEFT_CLICK;
 import static cofh.redstonearsenal.init.RSAReferences.*;
 
 @Mod(ID_REDSTONE_ARSENAL)
@@ -36,8 +33,6 @@ public class RedstoneArsenal {
 
     public RedstoneArsenal() {
 
-        registerPackets();
-
         final IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
 
         modEventBus.addListener(this::commonSetup);
@@ -50,11 +45,6 @@ public class RedstoneArsenal {
         RSABlocks.register();
         RSAItems.register();
         RSAEntities.register();
-    }
-
-    private void registerPackets() {
-
-        PACKET_HANDLER.registerPacket(PACKET_LEFT_CLICK, LeftClickPacket::new);
     }
 
     // region INITIALIZATION

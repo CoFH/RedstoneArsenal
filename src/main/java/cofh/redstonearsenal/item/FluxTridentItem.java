@@ -1,6 +1,7 @@
 package cofh.redstonearsenal.item;
 
 import cofh.core.util.ProxyUtils;
+import cofh.lib.item.ILeftClickHandlerItem;
 import cofh.lib.item.impl.TridentItemCoFH;
 import cofh.lib.util.Utils;
 import cofh.redstonearsenal.entity.FluxTridentEntity;
@@ -41,7 +42,7 @@ import java.util.function.Predicate;
 import static cofh.lib.util.constants.Constants.UUID_TOOL_REACH;
 import static cofh.lib.util.references.CoreReferences.LIGHTNING_RESISTANCE;
 
-public class FluxTridentItem extends TridentItemCoFH implements IFluxItem {
+public class FluxTridentItem extends TridentItemCoFH implements IFluxItem, ILeftClickHandlerItem {
 
     public static final double PLUNGE_RANGE = 3.5;
     public static final double PLUNGE_SPEED = 3;
@@ -306,6 +307,15 @@ public class FluxTridentItem extends TridentItemCoFH implements IFluxItem {
     public int getMaxEnergyStored(ItemStack container) {
 
         return getMaxStored(container, maxEnergy);
+    }
+    // endregion
+
+    // region ILeftClickHandlerItem
+    public void onLeftClick(PlayerEntity player, ItemStack stack) {
+
+        if (isEmpowered(stack) && hasEnergy(stack, true)) {
+            startPlunge(player);
+        }
     }
     // endregion
 }
