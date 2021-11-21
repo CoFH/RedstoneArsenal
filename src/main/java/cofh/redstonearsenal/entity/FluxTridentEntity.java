@@ -50,7 +50,7 @@ public class FluxTridentEntity extends AbstractArrowEntity {
 
         super(FLUX_TRIDENT_ENTITY, owner, world);
         this.tridentItem = stack.copy();
-        this.entityData.set(ID_LOYALTY, (byte)EnchantmentHelper.getLoyalty(stack));
+        this.entityData.set(ID_LOYALTY, (byte) EnchantmentHelper.getLoyalty(stack));
         this.entityData.set(ID_FOIL, stack.hasFoil());
     }
 
@@ -63,7 +63,7 @@ public class FluxTridentEntity extends AbstractArrowEntity {
     protected void defineSynchedData() {
 
         super.defineSynchedData();
-        this.entityData.define(ID_LOYALTY, (byte)0);
+        this.entityData.define(ID_LOYALTY, (byte) 0);
         this.entityData.define(ID_FOIL, false);
     }
 
@@ -96,12 +96,12 @@ public class FluxTridentEntity extends AbstractArrowEntity {
             } else if (i > 0) {
                 this.setNoPhysics(true);
                 Vector3d vector3d = new Vector3d(entity.getX() - this.getX(), entity.getEyeY() - this.getY(), entity.getZ() - this.getZ());
-                this.setPosRaw(this.getX(), this.getY() + vector3d.y * 0.015D * (double)i, this.getZ());
+                this.setPosRaw(this.getX(), this.getY() + vector3d.y * 0.015D * (double) i, this.getZ());
                 if (this.level.isClientSide) {
                     this.yOld = this.getY();
                 }
 
-                double d0 = 0.05D * (double)i;
+                double d0 = 0.05D * (double) i;
                 this.setDeltaMovement(this.getDeltaMovement().scale(0.95D).add(vector3d.normalize().scale(d0)));
                 if (this.clientSideReturnTridentTickCount == 0) {
                     this.playSound(SoundEvents.TRIDENT_RETURN, 10.0F, 1.0F);
@@ -115,6 +115,7 @@ public class FluxTridentEntity extends AbstractArrowEntity {
     }
 
     private boolean isAcceptableReturnOwner() {
+
         Entity entity = this.getOwner();
         if (entity != null && entity.isAlive()) {
             return !(entity instanceof ServerPlayerEntity) || !entity.isSpectator();
@@ -124,29 +125,33 @@ public class FluxTridentEntity extends AbstractArrowEntity {
     }
 
     protected ItemStack getPickupItem() {
+
         return this.tridentItem.copy();
     }
 
     @OnlyIn(Dist.CLIENT)
     public boolean isFoil() {
+
         return this.entityData.get(ID_FOIL);
     }
 
     @Nullable
     protected EntityRayTraceResult findHitEntity(Vector3d p_213866_1_, Vector3d p_213866_2_) {
+
         return this.dealtDamage ? null : super.findHitEntity(p_213866_1_, p_213866_2_);
     }
 
     protected void onHitEntity(EntityRayTraceResult p_213868_1_) {
+
         Entity entity = p_213868_1_.getEntity();
         float f = 8.0F;
         if (entity instanceof LivingEntity) {
-            LivingEntity livingentity = (LivingEntity)entity;
+            LivingEntity livingentity = (LivingEntity) entity;
             f += EnchantmentHelper.getDamageBonus(this.tridentItem, livingentity.getMobType());
         }
 
         Entity entity1 = this.getOwner();
-        DamageSource damagesource = DamageSource.trident(this, (Entity)(entity1 == null ? this : entity1));
+        DamageSource damagesource = DamageSource.trident(this, (Entity) (entity1 == null ? this : entity1));
         this.dealtDamage = true;
         SoundEvent soundevent = SoundEvents.TRIDENT_HIT;
         if (entity.hurt(damagesource, f)) {
@@ -155,10 +160,10 @@ public class FluxTridentEntity extends AbstractArrowEntity {
             }
 
             if (entity instanceof LivingEntity) {
-                LivingEntity livingentity1 = (LivingEntity)entity;
+                LivingEntity livingentity1 = (LivingEntity) entity;
                 if (entity1 instanceof LivingEntity) {
                     EnchantmentHelper.doPostHurtEffects(livingentity1, entity1);
-                    EnchantmentHelper.doPostDamageEffects((LivingEntity)entity1, livingentity1);
+                    EnchantmentHelper.doPostDamageEffects((LivingEntity) entity1, livingentity1);
                 }
 
                 this.doPostHurtEffects(livingentity1);
@@ -172,7 +177,7 @@ public class FluxTridentEntity extends AbstractArrowEntity {
             if (this.level.canSeeSky(blockpos)) {
                 LightningBoltEntity lightningboltentity = EntityType.LIGHTNING_BOLT.create(this.level);
                 lightningboltentity.moveTo(Vector3d.atBottomCenterOf(blockpos));
-                lightningboltentity.setCause(entity1 instanceof ServerPlayerEntity ? (ServerPlayerEntity)entity1 : null);
+                lightningboltentity.setCause(entity1 instanceof ServerPlayerEntity ? (ServerPlayerEntity) entity1 : null);
                 this.level.addFreshEntity(lightningboltentity);
                 soundevent = SoundEvents.TRIDENT_THUNDER;
                 f1 = 5.0F;
@@ -183,10 +188,12 @@ public class FluxTridentEntity extends AbstractArrowEntity {
     }
 
     protected SoundEvent getDefaultHitGroundSoundEvent() {
+
         return SoundEvents.TRIDENT_HIT_GROUND;
     }
 
     public void playerTouch(PlayerEntity p_70100_1_) {
+
         Entity entity = this.getOwner();
         if (entity == null || entity.getUUID() == p_70100_1_.getUUID()) {
             super.playerTouch(p_70100_1_);
@@ -194,22 +201,25 @@ public class FluxTridentEntity extends AbstractArrowEntity {
     }
 
     public void readAdditionalSaveData(CompoundNBT p_70037_1_) {
+
         super.readAdditionalSaveData(p_70037_1_);
         if (p_70037_1_.contains("Trident", 10)) {
             this.tridentItem = ItemStack.of(p_70037_1_.getCompound("Trident"));
         }
 
         this.dealtDamage = p_70037_1_.getBoolean("DealtDamage");
-        this.entityData.set(ID_LOYALTY, (byte)EnchantmentHelper.getLoyalty(this.tridentItem));
+        this.entityData.set(ID_LOYALTY, (byte) EnchantmentHelper.getLoyalty(this.tridentItem));
     }
 
     public void addAdditionalSaveData(CompoundNBT p_213281_1_) {
+
         super.addAdditionalSaveData(p_213281_1_);
         p_213281_1_.put("Trident", this.tridentItem.save(new CompoundNBT()));
         p_213281_1_.putBoolean("DealtDamage", this.dealtDamage);
     }
 
     public void tickDespawn() {
+
         int i = this.entityData.get(ID_LOYALTY);
         if (this.pickup != AbstractArrowEntity.PickupStatus.ALLOWED || i <= 0) {
             super.tickDespawn();
@@ -218,11 +228,14 @@ public class FluxTridentEntity extends AbstractArrowEntity {
     }
 
     protected float getWaterInertia() {
+
         return 0.99F;
     }
 
     @OnlyIn(Dist.CLIENT)
     public boolean shouldRender(double p_145770_1_, double p_145770_3_, double p_145770_5_) {
+
         return true;
     }
+
 }

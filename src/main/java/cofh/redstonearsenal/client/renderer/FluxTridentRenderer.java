@@ -27,6 +27,7 @@ public class FluxTridentRenderer extends EntityRenderer<FluxTridentEntity> {
     }
 
     public void render(FluxTridentEntity p_225623_1_, float p_225623_2_, float p_225623_3_, MatrixStack p_225623_4_, IRenderTypeBuffer p_225623_5_, int p_225623_6_) {
+
         p_225623_4_.pushPose();
         p_225623_4_.mulPose(Vector3f.YP.rotationDegrees(MathHelper.lerp(p_225623_3_, p_225623_1_.yRotO, p_225623_1_.yRot) - 90.0F));
         p_225623_4_.mulPose(Vector3f.ZP.rotationDegrees(MathHelper.lerp(p_225623_3_, p_225623_1_.xRotO, p_225623_1_.xRot) + 90.0F));
@@ -40,4 +41,5 @@ public class FluxTridentRenderer extends EntityRenderer<FluxTridentEntity> {
 
         return trident.isEmpowered() ? EMPOWERED : CHARGED;
     }
+
 }

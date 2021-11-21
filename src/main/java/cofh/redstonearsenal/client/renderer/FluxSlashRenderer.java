@@ -82,5 +82,7 @@ public class FluxSlashRenderer extends EntityRenderer<FluxSlashEntity> {
                             .setDepthTestState(LEQUAL_DEPTH_TEST)
                             .createCompositeState(true));
         }
+
     }
+
 }

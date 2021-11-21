@@ -113,8 +113,7 @@ public class FluxExcavatorItem extends ExcavatorItem implements IFluxItem {
                         world.setBlock(fillPos, world.getBlockState(pos).getBlock().defaultBlockState(), 2);
                     }
                 }
-            }
-            else {
+            } else {
                 ImmutableList<BlockPos> blocks = AreaEffectHelper.getPlaceableBlocksRadius(tool, clickPos, player, 1 + getMode(tool));
                 Map<Block, List<BlockPos>> sorted = new HashMap<>();
                 for (BlockPos pos : blocks) {
@@ -149,8 +148,7 @@ public class FluxExcavatorItem extends ExcavatorItem implements IFluxItem {
                     }
                 }
             }
-        }
-        else {
+        } else {
             SoundEvent sound = world.getBlockState(clickPos).getSoundType().getPlaceSound();
             world.playLocalSound(clickPos.getX() + 0.5, clickPos.getY() + 0.5, clickPos.getZ() + 0.5, sound, SoundCategory.BLOCKS, 1.0F, 1.0F, false);
         }

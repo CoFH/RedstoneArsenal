@@ -158,24 +158,23 @@ public class FluxWrenchItem extends ItemCoFH implements IFluxItem {
         BlockState state = world.getBlockState(pos);
         Block block = state.getBlock();
 
-//        if (player.isSecondaryUseActive() && block instanceof IDismantleable && ((IDismantleable) block).canDismantle(world, pos, state, player)) {
-//            if (Utils.isServerWorld(world)) {
-//                BlockRayTraceResult target = new BlockRayTraceResult(context.getClickLocation(), context.getClickedFace(), context.getClickedPos(), context.isInside());
-//                ((IDismantleable) block).dismantleBlock(world, pos, state, target, player, false);
-//            }
-//            player.swing(context.getHand());
-//            return true;
-//        } else if (!player.isSecondaryUseActive()) {
-            if (block instanceof IWrenchable && ((IWrenchable) block).canWrench(world, pos, state, player)) {
-                ((IWrenchable) block).wrenchBlock(world, pos, state, result, player);
-                useEnergy(stack, false, player.abilities.instabuild);
-                return true;
-            }
-            else if (BlockHelper.attemptRotateBlock(state, world, pos)) {
-                useEnergy(stack, false, player.abilities.instabuild);
-                return true;
-            }
-//        }
+        //        if (player.isSecondaryUseActive() && block instanceof IDismantleable && ((IDismantleable) block).canDismantle(world, pos, state, player)) {
+        //            if (Utils.isServerWorld(world)) {
+        //                BlockRayTraceResult target = new BlockRayTraceResult(context.getClickLocation(), context.getClickedFace(), context.getClickedPos(), context.isInside());
+        //                ((IDismantleable) block).dismantleBlock(world, pos, state, target, player, false);
+        //            }
+        //            player.swing(context.getHand());
+        //            return true;
+        //        } else if (!player.isSecondaryUseActive()) {
+        if (block instanceof IWrenchable && ((IWrenchable) block).canWrench(world, pos, state, player)) {
+            ((IWrenchable) block).wrenchBlock(world, pos, state, result, player);
+            useEnergy(stack, false, player.abilities.instabuild);
+            return true;
+        } else if (BlockHelper.attemptRotateBlock(state, world, pos)) {
+            useEnergy(stack, false, player.abilities.instabuild);
+            return true;
+        }
+        //        }
         return false;
     }
 

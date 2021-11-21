@@ -189,8 +189,7 @@ public class FluxBowItem extends BowItemCoFH implements IFluxItem {
                     for (; amount > 0; amount -= maxExtract) {
                         useEnergy(bowItem, Math.min(maxExtract, amount), false);
                     }
-                }
-                else {
+                } else {
                     useEnergy(bowItem, false, false);
                 }
             }

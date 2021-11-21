@@ -83,6 +83,7 @@ public class FluxSlashEntity extends ProjectileEntity {
 
     @OnlyIn(Dist.CLIENT)
     public boolean shouldRenderAtSqrDistance(double p_70112_1_) {
+
         double d0 = this.getBoundingBox().getSize() * 10.0D;
         if (Double.isNaN(d0)) {
             d0 = 1.0D;
@@ -119,14 +120,12 @@ public class FluxSlashEntity extends ProjectileEntity {
             BlockState blockstate = world.getBlockState(blockpos);
             if (blockstate.is(Blocks.NETHER_PORTAL)) {
                 this.handleInsidePortal(blockpos);
-            }
-            else if (blockstate.is(Blocks.END_GATEWAY)) {
+            } else if (blockstate.is(Blocks.END_GATEWAY)) {
                 TileEntity tileentity = world.getBlockEntity(blockpos);
                 if (tileentity instanceof EndGatewayTileEntity && EndGatewayTileEntity.canEntityTeleport(this)) {
-                    ((EndGatewayTileEntity)tileentity).teleportEntity(this);
+                    ((EndGatewayTileEntity) tileentity).teleportEntity(this);
                 }
-            }
-            else {
+            } else {
                 blockCollision = true;
             }
         }
@@ -165,4 +164,5 @@ public class FluxSlashEntity extends ProjectileEntity {
 
         compound.putFloat("damage", damage);
     }
+
 }

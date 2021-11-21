@@ -37,4 +37,5 @@ public class FluxElytraLayer<T extends LivingEntity, M extends EntityModel<T>> e
         }
         return UNCHARGED;
     }
+
 }

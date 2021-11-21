@@ -55,7 +55,7 @@ public class FluxWrenchEntity extends ProjectileEntity {
 
     public FluxWrenchEntity(World worldIn, LivingEntity livingEntityIn, ItemStack stackIn) {
 
-        this(worldIn, livingEntityIn.getX(), livingEntityIn.getEyeY() - 0.1F , livingEntityIn.getZ());
+        this(worldIn, livingEntityIn.getX(), livingEntityIn.getEyeY() - 0.1F, livingEntityIn.getZ());
         this.setOwner(livingEntityIn);
         this.setItem(stackIn);
         this.shootFromRotation(livingEntityIn, livingEntityIn.xRot, livingEntityIn.yRot, 0.0F, SPEED, 0.5F);
@@ -124,17 +124,16 @@ public class FluxWrenchEntity extends ProjectileEntity {
             if (this.hitSomething) {
                 if (distance < 1.5) {
                     returnToInventory();
-                }
-                else {
+                } else {
                     this.setDeltaMovement(relPos.scale(SPEED / distance));
                 }
-//                Vector3d acceleration = relPos.scale(Math.min(1, 0.05 * tickCount) / distance);
-//                velocity = velocity.add(acceleration).normalize().scale(SPEED);
+                //                Vector3d acceleration = relPos.scale(Math.min(1, 0.05 * tickCount) / distance);
+                //                velocity = velocity.add(acceleration).normalize().scale(SPEED);
             }
         }
 
         if (this.isInWater()) {
-            for(int i = 0; i < 4; ++i) {
+            for (int i = 0; i < 4; ++i) {
                 level.addParticle(ParticleTypes.BUBBLE, getX() + velocity.x * 0.75D, getY() + velocity.y * 0.75D, getZ() + velocity.z * 0.75D, velocity.x, velocity.y, velocity.z);
             }
         }
@@ -154,14 +153,12 @@ public class FluxWrenchEntity extends ProjectileEntity {
             BlockState blockstate = world.getBlockState(blockpos);
             if (blockstate.is(Blocks.NETHER_PORTAL)) {
                 this.handleInsidePortal(blockpos);
-            }
-            else if (blockstate.is(Blocks.END_GATEWAY)) {
+            } else if (blockstate.is(Blocks.END_GATEWAY)) {
                 TileEntity tileentity = world.getBlockEntity(blockpos);
                 if (tileentity instanceof EndGatewayTileEntity && EndGatewayTileEntity.canEntityTeleport(this)) {
-                    ((EndGatewayTileEntity)tileentity).teleportEntity(this);
+                    ((EndGatewayTileEntity) tileentity).teleportEntity(this);
                 }
-            }
-            else {
+            } else {
                 blockCollision = true;
             }
         }
@@ -195,12 +192,10 @@ public class FluxWrenchEntity extends ProjectileEntity {
                 double distance = relPos.length();
                 if (distance < 1.5) {
                     returnToInventory();
-                }
-                else {
+                } else {
                     this.setDeltaMovement(relPos.scale(SPEED * 0.5 / distance));
                 }
-            }
-            else {
+            } else {
                 this.setDeltaMovement(getDeltaMovement().scale(-0.5));
             }
             this.hitSomething = true;
@@ -229,8 +224,7 @@ public class FluxWrenchEntity extends ProjectileEntity {
         Entity owner = this.getOwner();
         if (target.equals(owner)) {
             this.returnToInventory();
-        }
-        else {
+        } else {
             if (result.getEntity().hurt(IFluxItem.fluxRangedDamage(this, owner), calculateDamage(target)) && target.getType() != EntityType.ENDERMAN) {
                 int fireAspect = Utils.getItemEnchantmentLevel(Enchantments.FIRE_ASPECT, this.getItem());
                 if (this.isOnFire() || fireAspect > 0) {
@@ -251,8 +245,7 @@ public class FluxWrenchEntity extends ProjectileEntity {
             if (owner instanceof LivingEntity) {
                 stack.getItem().hurtEnemy(stack, (LivingEntity) target, (LivingEntity) owner);
             }
-        }
-        else {
+        } else {
             damage += EnchantmentHelper.getDamageBonus(stack, CreatureAttribute.UNDEFINED);
         }
         return damage;
@@ -295,4 +288,5 @@ public class FluxWrenchEntity extends ProjectileEntity {
         }
         nbt.putBoolean("hit", hitSomething);
     }
+
 }

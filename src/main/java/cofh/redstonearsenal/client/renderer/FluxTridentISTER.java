@@ -29,8 +29,7 @@ public class FluxTridentISTER extends ItemStackTileEntityRenderer {
             IVertexBuilder ivertexbuilder1 = ItemRenderer.getFoilBufferDirect(buffer, tridentModel.renderType(getTextureLocation(stack)), false, stack.hasFoil());
             tridentModel.renderToBuffer(matrixStack, ivertexbuilder1, p_239207_5_, p_239207_6_, 1.0F, 1.0F, 1.0F, 1.0F);
             matrixStack.popPose();
-        }
-        else {
+        } else {
             super.renderByItem(stack, transformType, matrixStack, buffer, p_239207_5_, p_239207_6_);
         }
     }
@@ -43,4 +42,5 @@ public class FluxTridentISTER extends ItemStackTileEntityRenderer {
         }
         return UNCHARGED;
     }
+
 }

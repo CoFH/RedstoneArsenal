@@ -22,4 +22,5 @@ public class RSAEntities {
         ENTITIES.register(ID_SHOCKWAVE, () -> EntityType.Builder.<ShockwaveEntity>of(ShockwaveEntity::new, EntityClassification.MISC).sized(0.1F, 0.1F).fireImmune().build(ID_SHOCKWAVE));
 
     }
+
 }

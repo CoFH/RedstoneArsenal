@@ -107,12 +107,10 @@ public class FluxElytraItem extends ArmorItemCoFH implements IFluxItem {
             useEnergy(stack, true, !shouldExtract);
             propelTime = 0;
             brake(entity);
-        }
-        else if (propelTime > 0) {
+        } else if (propelTime > 0) {
             propel(entity);
             --propelTime;
-        }
-        else if (isEmpowered(stack) && useEnergy(stack, true, !shouldExtract)) {
+        } else if (isEmpowered(stack) && useEnergy(stack, true, !shouldExtract)) {
             propel(entity);
         }
 

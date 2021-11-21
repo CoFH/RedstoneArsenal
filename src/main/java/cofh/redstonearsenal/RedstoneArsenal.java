@@ -2,14 +2,9 @@ package cofh.redstonearsenal;
 
 import cofh.lib.util.DeferredRegisterCoFH;
 import cofh.redstonearsenal.client.renderer.*;
-import cofh.redstonearsenal.init.RSABlocks;
-import cofh.redstonearsenal.init.RSAConfig;
-import cofh.redstonearsenal.init.RSAEntities;
-import cofh.redstonearsenal.init.RSAItems;
+import cofh.redstonearsenal.init.*;
 import cofh.redstonearsenal.network.packet.server.LeftClickPacket;
 import net.minecraft.block.Block;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.entity.PlayerRenderer;
 import net.minecraft.entity.EntityType;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
@@ -82,12 +77,12 @@ public class RedstoneArsenal {
         //            };
         //        }
 
-        registerEntityRenderingHandlers();
-        registerRenderLayers();
+        this.registerEntityRenderingHandlers();
+        RSAClient.registerRenderLayers();
     }
     // endregion
 
-    //region HELPERS
+    // region HELPERS
     private void registerEntityRenderingHandlers() {
 
         RenderingRegistry.registerEntityRenderingHandler(FLUX_SLASH_ENTITY, FluxSlashRenderer::new);
@@ -95,13 +90,6 @@ public class RedstoneArsenal {
         RenderingRegistry.registerEntityRenderingHandler(FLUX_TRIDENT_ENTITY, FluxTridentRenderer::new);
         RenderingRegistry.registerEntityRenderingHandler(FLUX_WRENCH_ENTITY, FluxWrenchRenderer::new);
         RenderingRegistry.registerEntityRenderingHandler(SHOCKWAVE_ENTITY, ShockwaveRenderer::new);
-    }
-
-    private void registerRenderLayers() {
-
-        for (PlayerRenderer renderer : Minecraft.getInstance().getEntityRenderDispatcher().getSkinMap().values()) {
-            renderer.addLayer(new FluxElytraLayer<>(renderer));
-        }
     }
     //endregion
 }

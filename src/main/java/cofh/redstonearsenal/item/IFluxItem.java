@@ -56,10 +56,10 @@ public interface IFluxItem extends ICoFHItem, IEnergyContainerItem, IMultiModeIt
             return true;
         }
         if (hasEnergy(stack, amount)) {
-//            int unbreakingLevel = MathHelper.clamp(EnchantmentHelper.getItemEnchantmentLevel(Enchantments.UNBREAKING, stack), 0, 10);
-//            if (MathHelper.RANDOM.nextInt(2 + unbreakingLevel) < 2) {
-//                extractEnergy(stack, amount, false);
-//            }
+            //            int unbreakingLevel = MathHelper.clamp(EnchantmentHelper.getItemEnchantmentLevel(Enchantments.UNBREAKING, stack), 0, 10);
+            //            if (MathHelper.RANDOM.nextInt(2 + unbreakingLevel) < 2) {
+            //                extractEnergy(stack, amount, false);
+            //            }
             extractEnergy(stack, amount, false);
             return true;
         }
@@ -110,8 +110,7 @@ public interface IFluxItem extends ICoFHItem, IEnergyContainerItem, IMultiModeIt
 
         if (isEmpowered(stack)) {
             player.level.playSound(null, player.blockPosition(), SoundEvents.LIGHTNING_BOLT_THUNDER, SoundCategory.PLAYERS, 0.4F, 1.0F);
-        }
-        else {
+        } else {
             player.level.playSound(null, player.blockPosition(), SoundEvents.EXPERIENCE_ORB_PICKUP, SoundCategory.PLAYERS, 0.2F, 0.6F);
         }
     }
@@ -137,10 +136,13 @@ public interface IFluxItem extends ICoFHItem, IEnergyContainerItem, IMultiModeIt
     }
 
     static DamageSource fluxDirectDamage(LivingEntity attacker) {
+
         return (new EntityDamageSource("flux", attacker)).bypassArmor();
     }
 
-    static DamageSource fluxRangedDamage (ProjectileEntity projectile, @Nullable Entity shooter) {
+    static DamageSource fluxRangedDamage(ProjectileEntity projectile, @Nullable Entity shooter) {
+
         return (new IndirectEntityDamageSource("flux", projectile, shooter)).setProjectile().bypassArmor();
     }
+
 }

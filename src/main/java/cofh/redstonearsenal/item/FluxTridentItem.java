@@ -124,7 +124,7 @@ public class FluxTridentItem extends TridentItemCoFH implements IFluxItem {
     public void releaseUsing(ItemStack stack, World world, LivingEntity entity, int remainingDuration) {
 
         if (entity instanceof PlayerEntity) {
-            PlayerEntity player = (PlayerEntity)entity;
+            PlayerEntity player = (PlayerEntity) entity;
             int i = this.getUseDuration(stack) - remainingDuration;
             if (i >= 10) {
                 int riptideLevel = EnchantmentHelper.getRiptide(stack);
@@ -147,7 +147,7 @@ public class FluxTridentItem extends TridentItemCoFH implements IFluxItem {
 
                     player.awardStat(Stats.ITEM_USED.get(this));
                     if (riptideLevel > 0) {
-                        float degToRad = (float)Math.PI / 180F;
+                        float degToRad = (float) Math.PI / 180F;
                         float xRotRad = player.xRot * degToRad;
                         float yRotRad = player.yRot * degToRad;
                         float xPush = -MathHelper.sin(yRotRad) * MathHelper.cos(xRotRad);

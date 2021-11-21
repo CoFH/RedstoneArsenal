@@ -21,4 +21,5 @@ public class FluxArrowRenderer<T> extends ArrowRenderer {
 
         return TEXTURE;
     }
+
 }

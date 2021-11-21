@@ -78,7 +78,7 @@ public class FluxSwordItem extends SwordItemCoFH implements IFluxItem {
         return true;
     }
 
-   public void shootFluxSlash(ItemStack stack, PlayerEntity player) {
+    public void shootFluxSlash(ItemStack stack, PlayerEntity player) {
 
         if (useEnergy(stack, true, player.abilities.instabuild)) {
             World world = player.level;

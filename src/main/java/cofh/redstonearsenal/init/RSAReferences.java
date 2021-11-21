@@ -11,7 +11,6 @@ import static cofh.redstonearsenal.init.RSAIDs.*;
 @ObjectHolder(ID_REDSTONE_ARSENAL)
 public class RSAReferences {
 
-
     private RSAReferences() {
 
     }
@@ -35,7 +34,7 @@ public class RSAReferences {
     // endregion
 
     // region ITEMS
-//    @ObjectHolder(ID_FLUX_SWORD)
-//    public static final Item FLUX_SWORD_ITEM = null;
+    //    @ObjectHolder(ID_FLUX_SWORD)
+    //    public static final Item FLUX_SWORD_ITEM = null;
     // endregion
 }

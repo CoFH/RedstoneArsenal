@@ -75,18 +75,15 @@ public class FluxFishingRodItem extends FishingRodItemCoFH implements IFluxItem 
             if (isEmpowered(stack) && player.fishing.getHookedIn() != null) {
                 if (player.isCrouching()) {
                     player.fishing.remove();
-                }
-                else {
+                } else {
                     player.startUsingItem(hand);
                 }
-            }
-            else {
+            } else {
                 player.fishing.retrieve(stack);
                 useEnergy(stack, false, player.abilities.instabuild);
                 world.playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.FISHING_BOBBER_RETRIEVE, SoundCategory.NEUTRAL, 1.0F, 0.4F / (random.nextFloat() * 0.4F + 0.8F));
             }
-        }
-        else if (hasEnergy(stack, false)) {
+        } else if (hasEnergy(stack, false)) {
             world.playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.FISHING_BOBBER_THROW, SoundCategory.NEUTRAL, 0.5F, 0.4F / (random.nextFloat() * 0.4F + 0.8F));
             if (!world.isClientSide) {
                 int luck = EnchantmentHelper.getFishingLuckBonus(stack) + luckModifier;
@@ -94,8 +91,7 @@ public class FluxFishingRodItem extends FishingRodItemCoFH implements IFluxItem 
                 world.addFreshEntity(new FishingBobberEntity(player, world, luck, speed));
             }
             player.awardStat(Stats.ITEM_USED.get(this));
-        }
-        else {
+        } else {
             return ActionResult.fail(stack);
         }
         return ActionResult.sidedSuccess(stack, world.isClientSide());
@@ -109,8 +105,7 @@ public class FluxFishingRodItem extends FishingRodItemCoFH implements IFluxItem 
             if (player.fishing != null && player.fishing.getHookedIn() != null && isEmpowered(stack)) {
                 if (living.isCrouching()) {
                     player.fishing.remove();
-                }
-                else if (useEnergy(stack, true, useDuration % REEL_EXTRACT_INTERVAL != 0 || player.abilities.instabuild)) {
+                } else if (useEnergy(stack, true, useDuration % REEL_EXTRACT_INTERVAL != 0 || player.abilities.instabuild)) {
                     reelIn(stack, player.fishing);
                     return;
                 }
@@ -118,7 +113,7 @@ public class FluxFishingRodItem extends FishingRodItemCoFH implements IFluxItem 
         }
         living.releaseUsingItem();
     }
-    
+
     public void reelIn(ItemStack stack, FishingBobberEntity bobber) {
 
         Entity owner = bobber.getOwner();

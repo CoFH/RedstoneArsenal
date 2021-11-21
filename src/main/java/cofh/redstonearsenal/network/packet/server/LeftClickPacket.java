@@ -27,8 +27,7 @@ public class LeftClickPacket extends PacketBase implements IPacketServer {
             if (sword.isEmpowered(stack)) {
                 sword.shootFluxSlash(stack, player);
             }
-        }
-        else if (stack.getItem() instanceof FluxTridentItem) {
+        } else if (stack.getItem() instanceof FluxTridentItem) {
             FluxTridentItem trident = (FluxTridentItem) stack.getItem();
             if (trident.isEmpowered(stack) && trident.hasEnergy(stack, true)) {
                 trident.startPlunge(player);

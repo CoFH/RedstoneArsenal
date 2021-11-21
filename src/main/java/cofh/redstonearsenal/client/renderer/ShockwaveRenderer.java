@@ -122,4 +122,5 @@ public class ShockwaveRenderer extends EntityRenderer<ShockwaveEntity> {
             }
         }
     }
+
 }

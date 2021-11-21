@@ -41,4 +41,5 @@ public class FluxWrenchRenderer extends EntityRenderer<FluxWrenchEntity> {
 
         return PlayerContainer.BLOCK_ATLAS;
     }
+
 }

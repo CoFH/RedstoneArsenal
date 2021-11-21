@@ -127,14 +127,13 @@ public class FluxHammerItem extends HammerItem implements IFluxItem {
                     if ((isEmpowered(stack) || this.canHarvestBlock(stack, state)) && useEnergy(stack, true, player.abilities.instabuild)) {
                         if (isEmpowered(stack)) {
                             world.addFreshEntity(new ShockwaveEntity(world, living, Vector3d.atCenterOf(pos), living.yRot));
-                        }
-                        else {
+                        } else {
                             world.addFreshEntity(new FallingBlockEntity(world, pos.getX() + 0.5D, pos.getY(), pos.getZ() + 0.5D, state));
                         }
                         player.getCooldowns().addCooldown(this, COOLDOWN);
                     }
                 }
-//                world.playSound(player, pos, SoundEvents.RAVAGER_STEP, SoundCategory.BLOCKS, 1.0F, 1.0F);
+                //                world.playSound(player, pos, SoundEvents.RAVAGER_STEP, SoundCategory.BLOCKS, 1.0F, 1.0F);
                 world.playSound(player, pos, state.getSoundType(world, pos, player).getBreakSound(), SoundCategory.BLOCKS, 1.0F, 1.0F);
             }
         }

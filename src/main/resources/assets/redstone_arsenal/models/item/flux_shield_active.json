@@ -1,7 +1,7 @@
 {
   "parent": "redstone_arsenal:item/flux_shield",
-  "textures":{
-		"all":"redstone_arsenal:item/flux_shield_active"
-	}
+  "textures": {
+    "all": "redstone_arsenal:item/flux_shield_active"
+  }
 }
 	

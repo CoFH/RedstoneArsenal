@@ -68,23 +68,22 @@ public class ShockwaveEntity extends Entity {
         if (!level.isClientSide()) {
             if (tickCount > LIFESPAN + ANIM_DURATION) {
                 this.remove();
-            }
-            else if (tickCount < LIFESPAN) {
-//                BlockPos origin = this.blockPosition();
-//                List<int[]> offsets = offsetsByTick.get(tickCount);
-//                for (int[] offset : offsets) {
-//                    for (int y = 1; y >= -1; --y) {
-//                        BlockPos pos = origin.offset(offset[0], y, offset[1]);
-//                        BlockState state = level.getBlockState(pos);
-//                        if (!state.isAir(level, pos) && state.isRedstoneConductor(level, pos) &&
-//                                state.isCollisionShapeFullBlock(level, pos) && !state.hasTileEntity()) { // && !level.getBlockState(pos.above()).isCollisionShapeFullBlock(level, pos.above())
-//                            FallingBlockEntity entity = new FallingBlockEntity(level, pos.getX() + 0.5D, pos.getY() + 0.5D, pos.getZ() + 0.5D, state);
-//                            entity.setDeltaMovement(0, 0.1, 0);
-//                            level.addFreshEntity(entity);
-//                            break;
-//                        }
-//                    }
-//                }
+            } else if (tickCount < LIFESPAN) {
+                //                BlockPos origin = this.blockPosition();
+                //                List<int[]> offsets = offsetsByTick.get(tickCount);
+                //                for (int[] offset : offsets) {
+                //                    for (int y = 1; y >= -1; --y) {
+                //                        BlockPos pos = origin.offset(offset[0], y, offset[1]);
+                //                        BlockState state = level.getBlockState(pos);
+                //                        if (!state.isAir(level, pos) && state.isRedstoneConductor(level, pos) &&
+                //                                state.isCollisionShapeFullBlock(level, pos) && !state.hasTileEntity()) { // && !level.getBlockState(pos.above()).isCollisionShapeFullBlock(level, pos.above())
+                //                            FallingBlockEntity entity = new FallingBlockEntity(level, pos.getX() + 0.5D, pos.getY() + 0.5D, pos.getZ() + 0.5D, state);
+                //                            entity.setDeltaMovement(0, 0.1, 0);
+                //                            level.addFreshEntity(entity);
+                //                            break;
+                //                        }
+                //                    }
+                //                }
                 float lower = Math.max((tickCount - 1) * DISTANCE_PER_TICK, 0);
                 float upper = lower + DISTANCE_PER_TICK * 1.5F;
                 float lowerSqr = lower * lower;
@@ -110,4 +109,5 @@ public class ShockwaveEntity extends Entity {
         }
         super.tick();
     }
+
 }

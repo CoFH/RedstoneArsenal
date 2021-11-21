@@ -136,15 +136,13 @@ public class FluxPickaxeItem extends PickaxeItemCoFH implements IFluxItem {
                     }
                 }
                 return ActionResultType.SUCCESS;
-            }
-            else {
+            } else {
                 BlockPos pos = context.getClickedPos().relative(context.getClickedFace());
                 BlockState state = world.getBlockState(pos);
                 if (state.getBlock().equals(FLUX_GLOW_AIR)) {
                     world.setBlockAndUpdate(pos, AIR.defaultBlockState());
                     return ActionResultType.SUCCESS;
-                }
-                else if (state.isAir()) {
+                } else if (state.isAir()) {
                     world.setBlockAndUpdate(pos, FLUX_GLOW_AIR.defaultBlockState());
                     return ActionResultType.SUCCESS;
                 }

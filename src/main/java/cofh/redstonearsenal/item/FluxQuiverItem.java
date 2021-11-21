@@ -131,8 +131,7 @@ public class FluxQuiverItem extends ItemCoFH implements IFluxItem {
                 if (!weapon.isEmpty()) {
                     if (ArcheryHelper.validBow(weapon)) {
                         arrow.setNoGravity(true);
-                    }
-                    else if (weapon.getItem() instanceof CrossbowItem) {
+                    } else if (weapon.getItem() instanceof CrossbowItem) {
                         arrow.setExplodeArrow(true);
                         arrow.setBaseDamage(8);
                     }

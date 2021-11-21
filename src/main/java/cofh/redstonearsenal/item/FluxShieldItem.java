@@ -98,8 +98,7 @@ public class FluxShieldItem extends ShieldItemCoFH implements IFluxItem {
                 if (living.distanceToSqr(entity) < r2) {
                     if (entity.getDeltaMovement().lengthSqr() < REPEL_STRENGTH * REPEL_STRENGTH) {
                         entity.setDeltaMovement(entity.position().subtract(living.position()).normalize().scale(REPEL_STRENGTH));
-                    }
-                    else {
+                    } else {
                         entity.setDeltaMovement(entity.getDeltaMovement().reverse());
                     }
                 }
@@ -146,7 +145,6 @@ public class FluxShieldItem extends ShieldItemCoFH implements IFluxItem {
         return getMaxStored(container, maxEnergy);
     }
     // endregion
-
 
     // region CAPABILITY WRAPPER
     protected class FluxShieldItemWrapper extends EnergyContainerItemWrapper implements IShieldItem {

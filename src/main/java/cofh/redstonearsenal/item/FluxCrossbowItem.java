@@ -113,8 +113,7 @@ public class FluxCrossbowItem extends CrossbowItemCoFH implements IFluxItem {
             int prev = next - interval;
 
             return MathHelper.clamp(((float) duration - prev) / (next - prev), 0.0F, 1.0F);
-        }
-        else {
+        } else {
             return MathHelper.clamp((float) (duration) / baseDuration, 0.0F, 1.0F);
         }
     }
@@ -132,8 +131,7 @@ public class FluxCrossbowItem extends CrossbowItemCoFH implements IFluxItem {
         if (hasEnergy(stack, false)) {
             if (!isEmpowered(stack) && isCharged(stack)) {
                 setCharged(stack, !shootLoadedAmmo(world, player, stack));
-            }
-            else if (!ArcheryHelper.findAmmo(player, stack).isEmpty()) {
+            } else if (!ArcheryHelper.findAmmo(player, stack).isEmpty()) {
                 repeats = 1;
                 player.startUsingItem(hand);
             }
@@ -170,15 +168,13 @@ public class FluxCrossbowItem extends CrossbowItemCoFH implements IFluxItem {
                             living.releaseUsingItem();
                             return;
                         }
-                    }
-                    else if (duration == next) {
+                    } else if (duration == next) {
                         if (!world.isClientSide()) {
                             ++repeats;
                         }
                         if (useEnergy(stack, true, living instanceof PlayerEntity && ((PlayerEntity) living).abilities.instabuild)) {
                             shootLoadedAmmo(world, living, stack);
-                        }
-                        else {
+                        } else {
                             living.releaseUsingItem();
                             return;
                         }
@@ -283,19 +279,17 @@ public class FluxCrossbowItem extends CrossbowItemCoFH implements IFluxItem {
             if (!ammo.isEmpty()) {
                 int multishot = Utils.getItemEnchantmentLevel(Enchantments.MULTISHOT, crossbow);
                 int damage = 0;
-                for(int i = -multishot; i <= multishot; ++i) {
+                for (int i = -multishot; i <= multishot; ++i) {
                     if (!ammo.isEmpty()) {
                         ProjectileEntity projectile;
                         if (ammo.getCapability(AMMO_ITEM_CAPABILITY).isPresent() || ammo.getItem() instanceof ArrowItem) {
                             AbstractArrowEntity arrow = ArcheryHelper.createArrow(world, ammo, shooter);
                             projectile = adjustArrow(crossbow, arrow, shooter.abilities.instabuild || i != 0);
                             ++damage;
-                        }
-                        else if (ammo.getItem() instanceof FireworkRocketItem) {
-                            projectile = new FireworkRocketEntity(world, ammo, shooter, shooter.getX(), shooter.getEyeY() - (double)0.15F, shooter.getZ(), true);
+                        } else if (ammo.getItem() instanceof FireworkRocketItem) {
+                            projectile = new FireworkRocketEntity(world, ammo, shooter, shooter.getX(), shooter.getEyeY() - (double) 0.15F, shooter.getZ(), true);
                             damage += 3;
-                        }
-                        else {
+                        } else {
                             return false;
                         }
 
@@ -380,140 +374,139 @@ public class FluxCrossbowItem extends CrossbowItemCoFH implements IFluxItem {
         if (isEmpowered(stack)) {
             player.level.playSound(null, player.blockPosition(), SoundEvents.LIGHTNING_BOLT_THUNDER, SoundCategory.PLAYERS, 0.4F, 1.0F);
             setCharged(stack, true);
-        }
-        else {
+        } else {
             player.level.playSound(null, player.blockPosition(), SoundEvents.EXPERIENCE_ORB_PICKUP, SoundCategory.PLAYERS, 0.2F, 0.6F);
             setCharged(stack, !getLoadedAmmo(stack).isEmpty());
         }
     }
 
-//    // region CAPABILITY WRAPPER
-//    protected class FluxCrossbowItemWrapper extends EnergyContainerItemWrapper implements IArcheryBowItem {
-//
-//        private final LazyOptional<IArcheryBowItem> holder = LazyOptional.of(() -> this);
-//        private final float accuracyModifier;
-//        private final float damageModifier;
-//        private final float velocityModifier;
-//
-//        final ItemStack crossbowItem;
-//
-//        FluxCrossbowItemWrapper(ItemStack bowItemContainer, float accuracyModifier, float damageModifier, float velocityModifier) {
-//
-//            super(bowItemContainer, (IEnergyContainerItem) bowItemContainer.getItem());
-//            this.crossbowItem = bowItemContainer;
-//
-//            this.accuracyModifier = MathHelper.clamp(accuracyModifier, 0.1F, 10.0F);
-//            this.damageModifier = MathHelper.clamp(damageModifier, 0.1F, 10.0F);
-//            this.velocityModifier = MathHelper.clamp(velocityModifier, 0.1F, 10.0F);
-//        }
-//
-//        FluxCrossbowItemWrapper(ItemStack bowItemContainer) {
-//
-//            this(bowItemContainer, 1.0F, 1.0F, 1.0F);
-//        }
-//
-//        @Override
-//        public float getAccuracyModifier(PlayerEntity shooter) {
-//
-//            return accuracyModifier;
-//        }
-//
-//        @Override
-//        public float getDamageModifier(PlayerEntity shooter) {
-//
-//            return damageModifier;
-//        }
-//
-//        @Override
-//        public float getVelocityModifier(PlayerEntity shooter) {
-//
-//            return velocityModifier;
-//        }
-//
-//        @Override
-//        public void onArrowLoosed(PlayerEntity shooter) {
-//
-//        }
-//
-//        @Override
-//        public boolean fireArrow(ItemStack ammo, PlayerEntity shooter, int charge, World world) {
-//
-//            int multishot = Utils.getItemEnchantmentLevel(Enchantments.MULTISHOT, crossbowItem);
-//            int damage = 0;
-//            for(int i = -multishot; i <= multishot; ++i) {
-//                if (!ammo.isEmpty()) {
-//                    ProjectileEntity projectile;
-//                    if (ammo.getCapability(AMMO_ITEM_CAPABILITY).isPresent() || ammo.getItem() instanceof ArrowItem) {
-//                        AbstractArrowEntity arrow = ArcheryHelper.createArrow(world, ammo, shooter);
-//                        projectile = adjustArrow(arrow, shooter.abilities.instabuild || i != 0);
-//                        ++damage;
-//                    }
-//                    else if (ammo.getItem() instanceof FireworkRocketItem) {
-//                        projectile = new FireworkRocketEntity(world, ammo, shooter, shooter.getX(), shooter.getEyeY() - (double)0.15F, shooter.getZ(), true);
-//                        damage += 3;
-//                    }
-//                    else {
-//                        return false;
-//                    }
-//
-//                    shootProjectile(shooter, projectile, getBaseSpeed(ammo) * getVelocityModifier(shooter), getAccuracyModifier(shooter), i * 10.F);
-//                    world.addFreshEntity(projectile);
-//                    float pitch = random.nextFloat() * 0.32F + 0.865F;
-//                    world.playSound(null, shooter.getX(), shooter.getY(), shooter.getZ(), SoundEvents.CROSSBOW_SHOOT, SoundCategory.PLAYERS, 1.0F, pitch);
-//                }
-//            }
-//
-//            crossbowItem.removeTagKey("ammo");
-//            useEnergy(crossbowItem, Math.min(ENERGY_PER_USE_EMPOWERED * damage, getEnergyStored()), shooter.abilities.instabuild);
-//
-//            if (shooter instanceof ServerPlayerEntity) {
-//                if (!world.isClientSide) {
-//                    CriteriaTriggers.SHOT_CROSSBOW.trigger((ServerPlayerEntity) shooter, crossbowItem);
-//                }
-//                shooter.awardStat(Stats.ITEM_USED.get(crossbowItem.getItem()));
-//            }
-//            return true;
-//        }
-//
-//        public float getBaseSpeed(ItemStack ammo) {
-//
-//            return ammo.getItem() instanceof FireworkRocketItem ? 1.6F : 3.15F;
-//        }
-//
-//        public ProjectileEntity shootProjectile(PlayerEntity shooter, ProjectileEntity projectile, float speed, float inaccuracy, float angle) {
-//
-//            Vector3f vector3f = new Vector3f(shooter.getViewVector(1.0F));
-//            vector3f.transform(new Quaternion(new Vector3f(shooter.getUpVector(1.0F)), angle, true));
-//            projectile.shoot(vector3f.x(), vector3f.y(), vector3f.z(), speed, inaccuracy);
-//            return projectile;
-//        }
-//
-//        public AbstractArrowEntity adjustArrow(AbstractArrowEntity arrow, boolean creativePickup) {
-//
-//            arrow.setCritArrow(true);
-//            arrow.setSoundEvent(SoundEvents.CROSSBOW_HIT);
-//            arrow.setShotFromCrossbow(true);
-//            int pierce = EnchantmentHelper.getItemEnchantmentLevel(Enchantments.PIERCING, crossbowItem);
-//            if (pierce > 0) {
-//                arrow.setPierceLevel((byte) pierce);
-//            }
-//            if (creativePickup) {
-//                arrow.pickup = AbstractArrowEntity.PickupStatus.CREATIVE_ONLY;
-//            }
-//            return arrow;
-//        }
-//
-//        // region ICapabilityProvider
-//        @Override
-//        @Nonnull
-//        public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, @Nullable Direction side) {
-//
-//            if (cap == CROSSBOW_ITEM_CAPABILITY) {
-//                return CROSSBOW_ITEM_CAPABILITY.orEmpty(cap, holder);
-//            }
-//            return super.getCapability(cap, side);
-//        }
-//        // endregion
-//    }
-//    // endregion
+    //    // region CAPABILITY WRAPPER
+    //    protected class FluxCrossbowItemWrapper extends EnergyContainerItemWrapper implements IArcheryBowItem {
+    //
+    //        private final LazyOptional<IArcheryBowItem> holder = LazyOptional.of(() -> this);
+    //        private final float accuracyModifier;
+    //        private final float damageModifier;
+    //        private final float velocityModifier;
+    //
+    //        final ItemStack crossbowItem;
+    //
+    //        FluxCrossbowItemWrapper(ItemStack bowItemContainer, float accuracyModifier, float damageModifier, float velocityModifier) {
+    //
+    //            super(bowItemContainer, (IEnergyContainerItem) bowItemContainer.getItem());
+    //            this.crossbowItem = bowItemContainer;
+    //
+    //            this.accuracyModifier = MathHelper.clamp(accuracyModifier, 0.1F, 10.0F);
+    //            this.damageModifier = MathHelper.clamp(damageModifier, 0.1F, 10.0F);
+    //            this.velocityModifier = MathHelper.clamp(velocityModifier, 0.1F, 10.0F);
+    //        }
+    //
+    //        FluxCrossbowItemWrapper(ItemStack bowItemContainer) {
+    //
+    //            this(bowItemContainer, 1.0F, 1.0F, 1.0F);
+    //        }
+    //
+    //        @Override
+    //        public float getAccuracyModifier(PlayerEntity shooter) {
+    //
+    //            return accuracyModifier;
+    //        }
+    //
+    //        @Override
+    //        public float getDamageModifier(PlayerEntity shooter) {
+    //
+    //            return damageModifier;
+    //        }
+    //
+    //        @Override
+    //        public float getVelocityModifier(PlayerEntity shooter) {
+    //
+    //            return velocityModifier;
+    //        }
+    //
+    //        @Override
+    //        public void onArrowLoosed(PlayerEntity shooter) {
+    //
+    //        }
+    //
+    //        @Override
+    //        public boolean fireArrow(ItemStack ammo, PlayerEntity shooter, int charge, World world) {
+    //
+    //            int multishot = Utils.getItemEnchantmentLevel(Enchantments.MULTISHOT, crossbowItem);
+    //            int damage = 0;
+    //            for(int i = -multishot; i <= multishot; ++i) {
+    //                if (!ammo.isEmpty()) {
+    //                    ProjectileEntity projectile;
+    //                    if (ammo.getCapability(AMMO_ITEM_CAPABILITY).isPresent() || ammo.getItem() instanceof ArrowItem) {
+    //                        AbstractArrowEntity arrow = ArcheryHelper.createArrow(world, ammo, shooter);
+    //                        projectile = adjustArrow(arrow, shooter.abilities.instabuild || i != 0);
+    //                        ++damage;
+    //                    }
+    //                    else if (ammo.getItem() instanceof FireworkRocketItem) {
+    //                        projectile = new FireworkRocketEntity(world, ammo, shooter, shooter.getX(), shooter.getEyeY() - (double)0.15F, shooter.getZ(), true);
+    //                        damage += 3;
+    //                    }
+    //                    else {
+    //                        return false;
+    //                    }
+    //
+    //                    shootProjectile(shooter, projectile, getBaseSpeed(ammo) * getVelocityModifier(shooter), getAccuracyModifier(shooter), i * 10.F);
+    //                    world.addFreshEntity(projectile);
+    //                    float pitch = random.nextFloat() * 0.32F + 0.865F;
+    //                    world.playSound(null, shooter.getX(), shooter.getY(), shooter.getZ(), SoundEvents.CROSSBOW_SHOOT, SoundCategory.PLAYERS, 1.0F, pitch);
+    //                }
+    //            }
+    //
+    //            crossbowItem.removeTagKey("ammo");
+    //            useEnergy(crossbowItem, Math.min(ENERGY_PER_USE_EMPOWERED * damage, getEnergyStored()), shooter.abilities.instabuild);
+    //
+    //            if (shooter instanceof ServerPlayerEntity) {
+    //                if (!world.isClientSide) {
+    //                    CriteriaTriggers.SHOT_CROSSBOW.trigger((ServerPlayerEntity) shooter, crossbowItem);
+    //                }
+    //                shooter.awardStat(Stats.ITEM_USED.get(crossbowItem.getItem()));
+    //            }
+    //            return true;
+    //        }
+    //
+    //        public float getBaseSpeed(ItemStack ammo) {
+    //
+    //            return ammo.getItem() instanceof FireworkRocketItem ? 1.6F : 3.15F;
+    //        }
+    //
+    //        public ProjectileEntity shootProjectile(PlayerEntity shooter, ProjectileEntity projectile, float speed, float inaccuracy, float angle) {
+    //
+    //            Vector3f vector3f = new Vector3f(shooter.getViewVector(1.0F));
+    //            vector3f.transform(new Quaternion(new Vector3f(shooter.getUpVector(1.0F)), angle, true));
+    //            projectile.shoot(vector3f.x(), vector3f.y(), vector3f.z(), speed, inaccuracy);
+    //            return projectile;
+    //        }
+    //
+    //        public AbstractArrowEntity adjustArrow(AbstractArrowEntity arrow, boolean creativePickup) {
+    //
+    //            arrow.setCritArrow(true);
+    //            arrow.setSoundEvent(SoundEvents.CROSSBOW_HIT);
+    //            arrow.setShotFromCrossbow(true);
+    //            int pierce = EnchantmentHelper.getItemEnchantmentLevel(Enchantments.PIERCING, crossbowItem);
+    //            if (pierce > 0) {
+    //                arrow.setPierceLevel((byte) pierce);
+    //            }
+    //            if (creativePickup) {
+    //                arrow.pickup = AbstractArrowEntity.PickupStatus.CREATIVE_ONLY;
+    //            }
+    //            return arrow;
+    //        }
+    //
+    //        // region ICapabilityProvider
+    //        @Override
+    //        @Nonnull
+    //        public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, @Nullable Direction side) {
+    //
+    //            if (cap == CROSSBOW_ITEM_CAPABILITY) {
+    //                return CROSSBOW_ITEM_CAPABILITY.orEmpty(cap, holder);
+    //            }
+    //            return super.getCapability(cap, side);
+    //        }
+    //        // endregion
+    //    }
+    //    // endregion
 }

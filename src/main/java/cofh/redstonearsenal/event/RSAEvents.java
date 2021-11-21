@@ -2,10 +2,7 @@ package cofh.redstonearsenal.event;
 
 import cofh.redstonearsenal.item.FluxAxeItem;
 import cofh.redstonearsenal.item.FluxCrossbowItem;
-import cofh.redstonearsenal.item.FluxSwordItem;
 import cofh.redstonearsenal.item.FluxTridentItem;
-import cofh.redstonearsenal.network.packet.server.LeftClickPacket;
-import net.minecraft.client.Minecraft;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.EquipmentSlotType;
@@ -20,38 +17,9 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
 import static cofh.lib.util.constants.Constants.ID_REDSTONE_ARSENAL;
-import static net.minecraftforge.client.event.InputEvent.ClickInputEvent;
 
 @Mod.EventBusSubscriber(modid = ID_REDSTONE_ARSENAL)
 public class RSAEvents {
-
-    @SubscribeEvent(priority = EventPriority.LOWEST)
-    public static void handleClickInputEvent(ClickInputEvent event) {
-
-        if (event.isCanceled() || !event.isAttack()) {
-            return;
-        }
-        PlayerEntity player = Minecraft.getInstance().player;
-        if (player == null) {
-            return;
-        }
-        ItemStack stack = player.getMainHandItem();
-        if (stack.isEmpty()) {
-            return;
-        }
-        if (stack.getItem() instanceof FluxSwordItem) {
-            LeftClickPacket.createAndSend();
-        }
-        if (stack.getItem() instanceof FluxTridentItem) {
-            FluxTridentItem trident = (FluxTridentItem) stack.getItem();
-            if (trident.isEmpowered(stack) && trident.hasEnergy(stack, true) && trident.startPlunge(player)) {
-                if (event.isCancelable()) {
-                    event.setCanceled(true);
-                }
-                LeftClickPacket.createAndSend();
-            }
-        }
-    }
 
     @SubscribeEvent(priority = EventPriority.LOWEST)
     public static void handleAttackEntityEvent(AttackEntityEvent event) {
@@ -82,8 +50,7 @@ public class RSAEvents {
                 if (event.isCancelable()) {
                     event.setCanceled(true);
                 }
-            }
-            else {
+            } else {
                 event.setDamageMultiplier(0.4F);
             }
         }
@@ -113,8 +80,7 @@ public class RSAEvents {
                     && to.getEnchantmentTags().equals(from.getEnchantmentTags()) && from.getBaseRepairCost() == to.getBaseRepairCost())) {
                 ((FluxCrossbowItem) from.getItem()).startCooldown(event.getEntityLiving(), from);
             }
-        }
-        else if (event.getSlot().equals(EquipmentSlotType.MAINHAND) && event.getEntityLiving().isAutoSpinAttack()
+        } else if (event.getSlot().equals(EquipmentSlotType.MAINHAND) && event.getEntityLiving().isAutoSpinAttack()
                 && from.getItem() instanceof FluxTridentItem && !(to.getItem() instanceof FluxTridentItem)) {
             FluxTridentItem.stopSpinAttack(event.getEntityLiving());
         }
@@ -128,4 +94,5 @@ public class RSAEvents {
             ((FluxCrossbowItem) stack.getItem()).startCooldown(event.getEntityLiving(), stack);
         }
     }
+
 }
