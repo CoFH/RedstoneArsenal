@@ -13,6 +13,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.*;
 import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.world.World;
 import net.minecraftforge.api.distmarker.Dist;
@@ -65,25 +66,13 @@ public class FluxShieldItem extends ShieldItemCoFH implements IFluxItem {
     }
 
     @Override
-    public boolean isDamageable(ItemStack stack) {
-
-        return hasEnergy(stack, false);
-    }
-
-    @Override
-    public <T extends LivingEntity> int damageItem(ItemStack stack, int amount, T entity, Consumer<T> onBroken) {
-
-        amount = Math.min(getEnergyStored(stack), amount * getEnergyPerUse(false));
-        useEnergy(stack, amount, entity instanceof PlayerEntity && ((PlayerEntity) entity).abilities.instabuild);
-        return -1;
-    }
-
-    @Override
     public ActionResult<ItemStack> use(World world, PlayerEntity player, Hand hand) {
 
         ItemStack stack = player.getItemInHand(hand);
-        if (hasEnergy(stack, false)) {
+        if (isEmpowered(stack)) {
             repel(world, player, stack);
+        }
+        if (hasEnergy(stack, true)) {
             return super.use(world, player, hand);
         }
         return ActionResult.fail(stack);
@@ -91,7 +80,7 @@ public class FluxShieldItem extends ShieldItemCoFH implements IFluxItem {
 
     public void repel(World world, LivingEntity living, ItemStack stack) {
 
-        if (isEmpowered(stack) && useEnergy(stack, true, living instanceof PlayerEntity && ((PlayerEntity) living).abilities.instabuild)) {
+        if (useEnergy(stack, true, living instanceof PlayerEntity && ((PlayerEntity) living).abilities.instabuild)) {
             double r2 = RANGE * RANGE;
             AxisAlignedBB searchArea = living.getBoundingBox().inflate(RANGE);
             for (Entity entity : world.getEntities(living, searchArea, EntityPredicates.NO_CREATIVE_OR_SPECTATOR)) {
@@ -109,7 +98,7 @@ public class FluxShieldItem extends ShieldItemCoFH implements IFluxItem {
     @Override
     public void onUseTick(World world, LivingEntity living, ItemStack stack, int useDuration) {
 
-        if (!isShield(stack, living)) {
+        if (!hasEnergy(stack, true)) {
             living.releaseUsingItem();
         }
     }
@@ -117,7 +106,7 @@ public class FluxShieldItem extends ShieldItemCoFH implements IFluxItem {
     @Override
     public boolean isShield(ItemStack stack, @Nullable LivingEntity entity) {
 
-        return stack.getItem() instanceof FluxShieldItem && hasEnergy(stack, false);
+        return stack.getItem() instanceof FluxShieldItem; // && !(entity != null && entity.getUseItem().equals(stack) && !hasEnergy(stack, true));
     }
 
     @Override
@@ -160,9 +149,18 @@ public class FluxShieldItem extends ShieldItemCoFH implements IFluxItem {
         }
 
         @Override
-        public void onBlock(LivingEntity entity, DamageSource source) {
+        public void onBlock(LivingEntity entity, DamageSource source, float amount) {
 
-            repel(entity.level, entity, shieldItem);
+            if (isEmpowered(shieldItem)) {
+                repel(entity.level, entity, shieldItem);
+            }
+            if (amount >= 3.0F && !(entity instanceof PlayerEntity && ((PlayerEntity) entity).abilities.instabuild)) {
+                int energy = Math.min(getEnergyStored(), MathHelper.ceil(amount) * getEnergyPerUse(false));
+                int extract = getExtract(shieldItem);
+                for (; energy > 0; energy -= extract) {
+                    useEnergy(shieldItem, Math.min(extract, energy), false);
+                }
+            }
         }
 
         // region ICapabilityProvider

@@ -100,7 +100,7 @@ public class FluxExcavatorItem extends ExcavatorItem implements IFluxItem {
         if (!world.isClientSide()) {
             ItemStack tool = context.getItemInHand();
             PlayerEntity player = context.getPlayer();
-            if (player == null) {
+            if (player == null || !player.mayUseItemAt(clickPos, context.getClickedFace(), tool)) {
                 return ActionResultType.PASS;
             }
             BlockItemUseContext blockContext = new BlockItemUseContext(context);

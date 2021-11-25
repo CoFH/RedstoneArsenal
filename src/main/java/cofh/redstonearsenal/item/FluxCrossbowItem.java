@@ -18,10 +18,7 @@ import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.entity.projectile.AbstractArrowEntity;
 import net.minecraft.entity.projectile.FireworkRocketEntity;
 import net.minecraft.entity.projectile.ProjectileEntity;
-import net.minecraft.item.ArrowItem;
-import net.minecraft.item.FireworkRocketItem;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
+import net.minecraft.item.*;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.stats.Stats;
 import net.minecraft.util.*;
@@ -130,8 +127,8 @@ public class FluxCrossbowItem extends CrossbowItemCoFH implements IFluxItem {
         ItemStack stack = player.getItemInHand(hand);
         if (hasEnergy(stack, false)) {
             if (!isEmpowered(stack) && isCharged(stack)) {
-                setCharged(stack, !shootLoadedAmmo(world, player, stack));
-            } else if (!ArcheryHelper.findAmmo(player, stack).isEmpty()) {
+                setCharged(stack, shootLoadedAmmo(world, player, stack));
+            } else if (!ArcheryHelper.findAmmo(player, stack).isEmpty() || player.abilities.instabuild) {
                 repeats = 1;
                 player.startUsingItem(hand);
             }
@@ -248,6 +245,9 @@ public class FluxCrossbowItem extends CrossbowItemCoFH implements IFluxItem {
                     || ammoCap.isInfinite(crossbow, player)
                     || (ArcheryHelper.isArrow(ammo) && ((ArrowItem) ammo.getItem()).isInfinite(ammo, crossbow, player));
             if (!ammo.isEmpty() || infinite) {
+                if (ammo.isEmpty()) {
+                    ammo = new ItemStack(Items.ARROW);
+                }
                 crossbow.getOrCreateTag().put("ammo", ammo.save(new CompoundNBT()));
                 setCharged(crossbow, true);
                 if (!infinite) {
@@ -271,6 +271,7 @@ public class FluxCrossbowItem extends CrossbowItemCoFH implements IFluxItem {
         return ItemStack.EMPTY;
     }
 
+    //Returns true if the crossbow should still be charged after this method is called.
     public boolean shootLoadedAmmo(World world, LivingEntity living, ItemStack crossbow) {
 
         if (living instanceof PlayerEntity) {
@@ -290,7 +291,7 @@ public class FluxCrossbowItem extends CrossbowItemCoFH implements IFluxItem {
                             projectile = new FireworkRocketEntity(world, ammo, shooter, shooter.getX(), shooter.getEyeY() - (double) 0.15F, shooter.getZ(), true);
                             damage += 3;
                         } else {
-                            return false;
+                            return true;
                         }
 
                         shootProjectile(shooter, projectile, getBaseSpeed(ammo), 1.0F, i * 10.F);
@@ -300,7 +301,6 @@ public class FluxCrossbowItem extends CrossbowItemCoFH implements IFluxItem {
                     }
                 }
 
-                crossbow.removeTagKey("ammo");
                 useEnergy(crossbow, Math.min(getEnergyPerUse(true) * damage, getEnergyStored(crossbow)), shooter.abilities.instabuild);
 
                 if (shooter instanceof ServerPlayerEntity) {
@@ -309,9 +309,9 @@ public class FluxCrossbowItem extends CrossbowItemCoFH implements IFluxItem {
                     }
                     shooter.awardStat(Stats.ITEM_USED.get(crossbow.getItem()));
                 }
-                return true;
             }
         }
+        crossbow.removeTagKey("ammo");
         return false;
     }
 

@@ -7,9 +7,13 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.EquipmentSlotType;
 import net.minecraft.item.ItemStack;
+import net.minecraft.potion.EffectInstance;
+import net.minecraft.potion.Effects;
+import net.minecraft.util.math.vector.Vector3d;
 import net.minecraftforge.event.entity.living.LivingEntityUseItemEvent;
 import net.minecraftforge.event.entity.living.LivingEquipmentChangeEvent;
 import net.minecraftforge.event.entity.living.LivingFallEvent;
+import net.minecraftforge.event.entity.living.LivingHurtEvent;
 import net.minecraftforge.event.entity.player.AttackEntityEvent;
 import net.minecraftforge.event.entity.player.CriticalHitEvent;
 import net.minecraftforge.eventbus.api.EventPriority;
@@ -31,8 +35,10 @@ public class RSAEvents {
                 FluxTridentItem trident = (FluxTridentItem) stack.getItem();
                 if (trident.plungeAttack(player.level, player, stack)) {
                     FluxTridentItem.stopSpinAttack(player);
+                    player.addEffect(new EffectInstance(Effects.SLOW_FALLING, 35));
                     player.fallDistance = 0;
                     event.getTarget().invulnerableTime = 0;
+                    player.attackStrengthTicker = 100;
                 }
             }
         }

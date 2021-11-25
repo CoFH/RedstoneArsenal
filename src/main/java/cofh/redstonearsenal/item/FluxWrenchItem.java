@@ -4,6 +4,7 @@ import cofh.core.item.ItemCoFH;
 import cofh.core.util.ProxyUtils;
 import cofh.lib.block.IDismantleable;
 import cofh.lib.block.IWrenchable;
+import cofh.lib.enchantment.EnchantmentCoFH;
 import cofh.lib.util.Utils;
 import cofh.lib.util.helpers.BlockHelper;
 import cofh.redstonearsenal.entity.FluxWrenchEntity;
@@ -49,15 +50,11 @@ public class FluxWrenchItem extends ItemCoFH implements IFluxItem {
     protected static final Set<Enchantment> VALID_ENCHANTS = new ObjectOpenHashSet<>();
     protected final float damage;
     protected final float attackSpeed;
+    protected final int throwCooldown;
 
     protected final int maxEnergy;
     protected final int extract;
     protected final int receive;
-
-    static {
-        VALID_ENCHANTS.add(Enchantments.SHARPNESS);
-        VALID_ENCHANTS.add(Enchantments.FIRE_ASPECT);
-    }
 
     public FluxWrenchItem(IItemTier tier, float attackDamageIn, float attackSpeedIn, Properties builder, int energy, int xfer) {
 
@@ -65,6 +62,7 @@ public class FluxWrenchItem extends ItemCoFH implements IFluxItem {
 
         this.damage = tier.getAttackDamageBonus() + attackDamageIn;
         this.attackSpeed = attackSpeedIn;
+        this.throwCooldown = (int) (20 / attackSpeedIn) + 2;
         setEnchantability(tier.getEnchantmentValue());
 
         this.maxEnergy = energy;
@@ -88,6 +86,12 @@ public class FluxWrenchItem extends ItemCoFH implements IFluxItem {
         IFluxItem.super.tooltipDelegate(stack, worldIn, tooltip, flagIn);
     }
 
+    public static void initEnchants() {
+
+        VALID_ENCHANTS.add(Enchantments.SHARPNESS);
+        VALID_ENCHANTS.add(Enchantments.FIRE_ASPECT);
+    }
+
     @Override
     public boolean canApplyAtEnchantingTable(ItemStack stack, Enchantment enchantment) {
 
@@ -108,7 +112,7 @@ public class FluxWrenchItem extends ItemCoFH implements IFluxItem {
             if (!world.isClientSide()) {
                 world.addFreshEntity(new FluxWrenchEntity(world, player, stack));
                 player.inventory.removeItem(stack);
-                player.getCooldowns().addCooldown(this, 12);
+                player.getCooldowns().addCooldown(this, getRangedAttackCooldown(stack));
             }
             player.awardStat(Stats.ITEM_USED.get(this));
             return ActionResult.success(stack);
@@ -152,7 +156,7 @@ public class FluxWrenchItem extends ItemCoFH implements IFluxItem {
             return false;
         }
         BlockPos pos = result.getBlockPos();
-        if (player == null || world.isEmptyBlock(pos) || !(hasEnergy(stack, false) || player.abilities.instabuild)) {
+        if (player == null || world.isEmptyBlock(pos) || !(hasEnergy(stack, false) || player.abilities.instabuild) || !player.mayUseItemAt(pos, result.getDirection(), stack)) {
             return false;
         }
         BlockState state = world.getBlockState(pos);
@@ -185,7 +189,7 @@ public class FluxWrenchItem extends ItemCoFH implements IFluxItem {
         if (player == null) {
             return ActionResultType.FAIL;
         }
-        return hasEnergy(context.getItemInHand(), false) && player.mayUseItemAt(context.getClickedPos(), context.getClickedFace(), context.getItemInHand()) ? ActionResultType.SUCCESS : ActionResultType.FAIL;
+        return player.mayUseItemAt(context.getClickedPos(), context.getClickedFace(), context.getItemInHand()) ? ActionResultType.SUCCESS : ActionResultType.FAIL;
     }
 
     @Override
@@ -239,6 +243,11 @@ public class FluxWrenchItem extends ItemCoFH implements IFluxItem {
     protected float getAttackSpeed(ItemStack stack) {
 
         return attackSpeed;
+    }
+
+    protected int getRangedAttackCooldown(ItemStack stack) {
+
+        return throwCooldown;
     }
 
     // region IEnergyContainerItem

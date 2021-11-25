@@ -51,6 +51,8 @@ public class RedstoneArsenal {
     private void commonSetup(final FMLCommonSetupEvent event) {
 
         RSAConfig.register();
+
+        event.enqueueWork(RSAItems::setup);
     }
 
     private void clientSetup(final FMLClientSetupEvent event) {

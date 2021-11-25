@@ -124,16 +124,16 @@ public class FluxHammerItem extends HammerItem implements IFluxItem {
                 BlockPos pos = result.getBlockPos();
                 BlockState state = world.getBlockState(pos);
                 if (!world.isClientSide()) {
-                    if ((isEmpowered(stack) || this.canHarvestBlock(stack, state)) && useEnergy(stack, true, player.abilities.instabuild)) {
+                    if ((isEmpowered(stack) || (this.canHarvestBlock(stack, state) && player.mayUseItemAt(pos, result.getDirection(), stack))) && useEnergy(stack, true, player.abilities.instabuild)) {
                         if (isEmpowered(stack)) {
                             world.addFreshEntity(new ShockwaveEntity(world, living, Vector3d.atCenterOf(pos), living.yRot));
                         } else {
                             world.addFreshEntity(new FallingBlockEntity(world, pos.getX() + 0.5D, pos.getY(), pos.getZ() + 0.5D, state));
                         }
-                        player.getCooldowns().addCooldown(this, COOLDOWN);
+                        player.getCooldowns().addCooldown(this, getUseCooldown(stack));
                     }
                 }
-                //                world.playSound(player, pos, SoundEvents.RAVAGER_STEP, SoundCategory.BLOCKS, 1.0F, 1.0F);
+                //world.playSound(player, pos, SoundEvents.RAVAGER_STEP, SoundCategory.BLOCKS, 1.0F, 1.0F);
                 world.playSound(player, pos, state.getSoundType(world, pos, player).getBreakSound(), SoundCategory.BLOCKS, 1.0F, 1.0F);
             }
         }
@@ -143,6 +143,11 @@ public class FluxHammerItem extends HammerItem implements IFluxItem {
     public int getUseDuration(ItemStack stack) {
 
         return 72000;
+    }
+
+    protected int getUseCooldown(ItemStack stack) {
+
+        return COOLDOWN;
     }
 
     protected float getEfficiency(ItemStack stack) {
