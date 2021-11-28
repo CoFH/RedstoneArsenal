@@ -1,5 +1,6 @@
 package cofh.redstonearsenal.item;
 
+import cofh.core.init.CoreConfig;
 import cofh.core.util.ProxyUtils;
 import cofh.lib.capability.IArcheryAmmoItem;
 import cofh.lib.capability.templates.ArcheryAmmoItemWrapper;
@@ -8,6 +9,7 @@ import cofh.lib.item.impl.CrossbowItemCoFH;
 import cofh.lib.util.Utils;
 import cofh.lib.util.helpers.ArcheryHelper;
 import net.minecraft.advancements.CriteriaTriggers;
+import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
@@ -36,6 +38,8 @@ import javax.annotation.Nullable;
 import java.util.List;
 
 import static cofh.lib.capability.CapabilityArchery.AMMO_ITEM_CAPABILITY;
+import static cofh.lib.util.helpers.StringHelper.getTextComponent;
+import static net.minecraft.util.text.TextFormatting.GRAY;
 
 public class FluxCrossbowItem extends CrossbowItemCoFH implements IFluxItem {
 
@@ -69,9 +73,13 @@ public class FluxCrossbowItem extends CrossbowItemCoFH implements IFluxItem {
     @OnlyIn(Dist.CLIENT)
     public void appendHoverText(ItemStack stack, @Nullable World worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn) {
 
-        tooltipDelegate(stack, worldIn, tooltip, flagIn);
         if (!getLoadedAmmo(stack).isEmpty()) {
             tooltip.add((new TranslationTextComponent("item.redstone_arsenal.flux_crossbow.loaded_from")).append(" ").append(getLoadedAmmo(stack).getDisplayName()));
+        }
+        if (Screen.hasShiftDown() || CoreConfig.alwaysShowDetails) {
+            tooltipDelegate(stack, worldIn, tooltip, flagIn);
+        } else if (CoreConfig.holdShiftForDetails) {
+            tooltip.add(getTextComponent("info.cofh.hold_shift_for_details").withStyle(GRAY));
         }
     }
 

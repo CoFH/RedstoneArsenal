@@ -1,11 +1,13 @@
 package cofh.redstonearsenal.item;
 
+import cofh.core.init.CoreConfig;
 import cofh.core.util.ProxyUtils;
 import cofh.lib.item.impl.PickaxeItemCoFH;
 import cofh.lib.util.Utils;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 import net.minecraft.block.BlockState;
+import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.entity.Entity;
@@ -29,8 +31,10 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 import javax.annotation.Nullable;
 import java.util.List;
 
+import static cofh.lib.util.helpers.StringHelper.getTextComponent;
 import static cofh.redstonearsenal.init.RSAReferences.FLUX_GLOW_AIR;
 import static net.minecraft.block.Blocks.AIR;
+import static net.minecraft.util.text.TextFormatting.GRAY;
 
 public class FluxPickaxeItem extends PickaxeItemCoFH implements IFluxItem {
 
@@ -58,16 +62,15 @@ public class FluxPickaxeItem extends PickaxeItemCoFH implements IFluxItem {
         ProxyUtils.registerItemModelProperty(this, new ResourceLocation("active"), (stack, world, entity) -> getEnergyStored(stack) > 0 && isEmpowered(stack) ? 1F : 0F);
     }
 
-    protected float getEfficiency(ItemStack stack) {
-
-        return hasEnergy(stack, false) ? speed : 1.0F;
-    }
-
     @Override
     @OnlyIn(Dist.CLIENT)
     public void appendHoverText(ItemStack stack, @Nullable World worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn) {
 
-        tooltipDelegate(stack, worldIn, tooltip, flagIn);
+        if (Screen.hasShiftDown() || CoreConfig.alwaysShowDetails) {
+            tooltipDelegate(stack, worldIn, tooltip, flagIn);
+        } else if (CoreConfig.holdShiftForDetails) {
+            tooltip.add(getTextComponent("info.cofh.hold_shift_for_details").withStyle(GRAY));
+        }
     }
 
     @Override
@@ -80,6 +83,11 @@ public class FluxPickaxeItem extends PickaxeItemCoFH implements IFluxItem {
     public boolean isEnchantable(ItemStack stack) {
 
         return getItemEnchantability(stack) > 0;
+    }
+
+    protected float getEfficiency(ItemStack stack) {
+
+        return hasEnergy(stack, false) ? speed : 1.0F;
     }
 
     @Override

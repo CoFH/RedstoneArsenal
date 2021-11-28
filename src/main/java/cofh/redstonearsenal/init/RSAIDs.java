@@ -21,4 +21,8 @@ public class RSAIDs {
     public static final String ID_FLUX_TRIDENT = "flux_trident";
     public static final String ID_FLUX_WRENCH = "flux_wrench";
     // endregion
+
+    // region ITEMS
+    public static final String ID_FLUX_SHIELDING = "generic.flux_shielding";
+    // endregion
 }

@@ -36,6 +36,7 @@ public class FluxElytraControllerItem extends Item implements ICoFHItem, IMultiM
         if (isEmpowered(stack)) {
             tooltip.add(getTextComponent("info.redstone_arsenal.empowered").withStyle(TextFormatting.RED));
         }
+        addIncrementModeChangeTooltip(stack, worldIn, tooltip, flagIn);
     }
 
     public boolean isEmpowered(ItemStack stack) {

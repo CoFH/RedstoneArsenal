@@ -34,7 +34,10 @@
   "item.redstone_arsenal.flux_wrench": "Flux-Infused Battle Wrench",
   "item.redstone_arsenal.flux_fishing_rod": "Flux-Infused Fishing Rod",
 
+  "item.redstone_arsenal.flux_helmet": "Flux-Infused Helmet",
+  "item.redstone_arsenal.flux_chestplate": "Flux-Infused Chestplate",
+  "item.redstone_arsenal.flux_leggings": "Flux-Infused Leggings",
+  "item.redstone_arsenal.flux_boots": "Flux-Infused Boots",
   "item.redstone_arsenal.flux_elytra": "Flux-Infused Elytra",
   "item.redstone_arsenal.flux_controller": "Flux-Infused Elytra Controller"
-
 }

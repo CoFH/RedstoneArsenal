@@ -1,15 +1,12 @@
 package cofh.redstonearsenal.item;
 
+import cofh.core.init.CoreConfig;
 import cofh.core.item.ArmorItemCoFH;
 import cofh.core.util.ProxyUtils;
-import com.google.common.collect.HashMultimap;
-import com.google.common.collect.Multimap;
+import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.ai.attributes.Attribute;
-import net.minecraft.entity.ai.attributes.AttributeModifier;
-import net.minecraft.entity.ai.attributes.Attributes;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.EquipmentSlotType;
 import net.minecraft.item.IArmorMaterial;
@@ -27,6 +24,9 @@ import javax.annotation.Nullable;
 import java.util.List;
 import java.util.UUID;
 import java.util.function.Consumer;
+
+import static cofh.lib.util.helpers.StringHelper.getTextComponent;
+import static net.minecraft.util.text.TextFormatting.GRAY;
 
 public class FluxElytraItem extends ArmorItemCoFH implements IFluxItem {
 
@@ -57,7 +57,11 @@ public class FluxElytraItem extends ArmorItemCoFH implements IFluxItem {
     @OnlyIn(Dist.CLIENT)
     public void appendHoverText(ItemStack stack, @Nullable World worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn) {
 
-        tooltipDelegate(stack, worldIn, tooltip, flagIn);
+        if (Screen.hasShiftDown() || CoreConfig.alwaysShowDetails) {
+            tooltipDelegate(stack, worldIn, tooltip, flagIn);
+        } else if (CoreConfig.holdShiftForDetails) {
+            tooltip.add(getTextComponent("info.cofh.hold_shift_for_details").withStyle(GRAY));
+        }
     }
 
     @Override
@@ -79,16 +83,16 @@ public class FluxElytraItem extends ArmorItemCoFH implements IFluxItem {
         return EquipmentSlotType.CHEST;
     }
 
-    @Override
-    public Multimap<Attribute, AttributeModifier> getAttributeModifiers(EquipmentSlotType slot, ItemStack stack) {
-
-        Multimap<Attribute, AttributeModifier> multimap = HashMultimap.create();
-        if (slot == EquipmentSlotType.CHEST && hasEnergy(stack, false)) {
-            multimap.put(Attributes.ARMOR, new AttributeModifier(CHEST_UUID, "Armor modifier", getDefense(), AttributeModifier.Operation.ADDITION));
-            multimap.put(Attributes.ARMOR_TOUGHNESS, new AttributeModifier(CHEST_UUID, "Armor toughness", getToughness(), AttributeModifier.Operation.ADDITION));
-        }
-        return multimap;
-    }
+    //@Override
+    //public Multimap<Attribute, AttributeModifier> getAttributeModifiers(EquipmentSlotType slot, ItemStack stack) {
+    //
+    //    Multimap<Attribute, AttributeModifier> multimap = HashMultimap.create();
+    //    if (slot == EquipmentSlotType.CHEST && hasEnergy(stack, false)) {
+    //        multimap.put(Attributes.ARMOR, new AttributeModifier(CHEST_UUID, "Armor modifier", getDefense(), AttributeModifier.Operation.ADDITION));
+    //        multimap.put(Attributes.ARMOR_TOUGHNESS, new AttributeModifier(CHEST_UUID, "Armor toughness", getToughness(), AttributeModifier.Operation.ADDITION));
+    //    }
+    //    return multimap;
+    //}
 
     @Override
     public boolean canElytraFly(ItemStack stack, LivingEntity entity) {

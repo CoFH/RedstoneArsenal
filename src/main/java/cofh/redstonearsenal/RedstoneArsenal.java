@@ -1,6 +1,7 @@
 package cofh.redstonearsenal;
 
 import cofh.lib.util.DeferredRegisterCoFH;
+import cofh.redstonearsenal.capability.CapabilityFluxShielding;
 import cofh.redstonearsenal.client.renderer.*;
 import cofh.redstonearsenal.init.*;
 import net.minecraft.block.Block;
@@ -45,12 +46,17 @@ public class RedstoneArsenal {
         RSABlocks.register();
         RSAItems.register();
         RSAEntities.register();
+        //if (CoFHCore.curiosLoaded) {
+        //    CuriosProxy.register();
+        //}
     }
 
     // region INITIALIZATION
     private void commonSetup(final FMLCommonSetupEvent event) {
 
         RSAConfig.register();
+
+        CapabilityFluxShielding.register();
 
         event.enqueueWork(RSAItems::setup);
     }
@@ -78,10 +84,10 @@ public class RedstoneArsenal {
     private void registerEntityRenderingHandlers() {
 
         RenderingRegistry.registerEntityRenderingHandler(FLUX_SLASH_ENTITY, FluxSlashRenderer::new);
-        //RenderingRegistry.registerEntityRenderingHandler(FLUX_ARROW_ENTITY, FluxArrowRenderer::new);
-        //RenderingRegistry.registerEntityRenderingHandler(FLUX_TRIDENT_ENTITY, FluxTridentRenderer::new);
-        //RenderingRegistry.registerEntityRenderingHandler(FLUX_WRENCH_ENTITY, FluxWrenchRenderer::new);
-        //RenderingRegistry.registerEntityRenderingHandler(SHOCKWAVE_ENTITY, ShockwaveRenderer::new);
+        RenderingRegistry.registerEntityRenderingHandler(FLUX_ARROW_ENTITY, FluxArrowRenderer::new);
+        RenderingRegistry.registerEntityRenderingHandler(FLUX_TRIDENT_ENTITY, FluxTridentRenderer::new);
+        RenderingRegistry.registerEntityRenderingHandler(FLUX_WRENCH_ENTITY, FluxWrenchRenderer::new);
+        RenderingRegistry.registerEntityRenderingHandler(SHOCKWAVE_ENTITY, ShockwaveRenderer::new);
     }
     //endregion
 }

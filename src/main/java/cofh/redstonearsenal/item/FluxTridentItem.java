@@ -1,5 +1,6 @@
 package cofh.redstonearsenal.item;
 
+import cofh.core.init.CoreConfig;
 import cofh.core.util.ProxyUtils;
 import cofh.lib.item.ILeftClickHandlerItem;
 import cofh.lib.item.impl.TridentItemCoFH;
@@ -8,6 +9,7 @@ import cofh.redstonearsenal.entity.FluxTridentEntity;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 import net.minecraft.block.BlockState;
+import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
@@ -40,7 +42,9 @@ import java.util.List;
 import java.util.function.Predicate;
 
 import static cofh.lib.util.constants.Constants.UUID_TOOL_REACH;
+import static cofh.lib.util.helpers.StringHelper.getTextComponent;
 import static cofh.lib.util.references.CoreReferences.LIGHTNING_RESISTANCE;
+import static net.minecraft.util.text.TextFormatting.GRAY;
 
 public class FluxTridentItem extends TridentItemCoFH implements IFluxItem, ILeftClickHandlerItem {
 
@@ -83,7 +87,11 @@ public class FluxTridentItem extends TridentItemCoFH implements IFluxItem, ILeft
     @OnlyIn(Dist.CLIENT)
     public void appendHoverText(ItemStack stack, @Nullable World worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn) {
 
-        tooltipDelegate(stack, worldIn, tooltip, flagIn);
+        if (Screen.hasShiftDown() || CoreConfig.alwaysShowDetails) {
+            tooltipDelegate(stack, worldIn, tooltip, flagIn);
+        } else if (CoreConfig.holdShiftForDetails) {
+            tooltip.add(getTextComponent("info.cofh.hold_shift_for_details").withStyle(GRAY));
+        }
     }
 
     @Override

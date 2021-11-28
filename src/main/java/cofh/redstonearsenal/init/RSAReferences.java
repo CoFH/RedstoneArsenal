@@ -37,4 +37,5 @@ public class RSAReferences {
     //    @ObjectHolder(ID_FLUX_SWORD)
     //    public static final Item FLUX_SWORD_ITEM = null;
     // endregion
+
 }

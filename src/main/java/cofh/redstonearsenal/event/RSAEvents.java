@@ -3,17 +3,14 @@ package cofh.redstonearsenal.event;
 import cofh.redstonearsenal.item.FluxAxeItem;
 import cofh.redstonearsenal.item.FluxCrossbowItem;
 import cofh.redstonearsenal.item.FluxTridentItem;
+import cofh.redstonearsenal.util.FluxShieldingHelper;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.EquipmentSlotType;
 import net.minecraft.item.ItemStack;
 import net.minecraft.potion.EffectInstance;
 import net.minecraft.potion.Effects;
-import net.minecraft.util.math.vector.Vector3d;
-import net.minecraftforge.event.entity.living.LivingEntityUseItemEvent;
-import net.minecraftforge.event.entity.living.LivingEquipmentChangeEvent;
-import net.minecraftforge.event.entity.living.LivingFallEvent;
-import net.minecraftforge.event.entity.living.LivingHurtEvent;
+import net.minecraftforge.event.entity.living.*;
 import net.minecraftforge.event.entity.player.AttackEntityEvent;
 import net.minecraftforge.event.entity.player.CriticalHitEvent;
 import net.minecraftforge.eventbus.api.EventPriority;
@@ -78,26 +75,54 @@ public class RSAEvents {
 
         ItemStack from = event.getFrom();
         ItemStack to = event.getTo();
+        LivingEntity entity = event.getEntityLiving();
         if (from.getItem() instanceof FluxCrossbowItem) {
             EquipmentSlotType slot = event.getSlot();
             //If the used item changes, enforce cooldown
-            if ((slot.equals(EquipmentSlotType.MAINHAND) || (slot.equals(EquipmentSlotType.OFFHAND) && !event.getEntityLiving().getMainHandItem().isEmpty()))
+            if ((slot.equals(EquipmentSlotType.MAINHAND) || (slot.equals(EquipmentSlotType.OFFHAND) && !entity.getMainHandItem().isEmpty()))
                     && !(to.getItem() instanceof FluxCrossbowItem
                     && to.getEnchantmentTags().equals(from.getEnchantmentTags()) && from.getBaseRepairCost() == to.getBaseRepairCost())) {
-                ((FluxCrossbowItem) from.getItem()).startCooldown(event.getEntityLiving(), from);
+                ((FluxCrossbowItem) from.getItem()).startCooldown(entity, from);
             }
-        } else if (event.getSlot().equals(EquipmentSlotType.MAINHAND) && event.getEntityLiving().isAutoSpinAttack()
+        } else if (event.getSlot().equals(EquipmentSlotType.MAINHAND) && entity.isAutoSpinAttack()
                 && from.getItem() instanceof FluxTridentItem && !(to.getItem() instanceof FluxTridentItem)) {
-            FluxTridentItem.stopSpinAttack(event.getEntityLiving());
+            FluxTridentItem.stopSpinAttack(entity);
         }
     }
 
     @SubscribeEvent(priority = EventPriority.LOWEST)
-    public static void handleStopEvent(LivingEntityUseItemEvent.Stop event) {
+    public static void handleUseItemStopEvent(LivingEntityUseItemEvent.Stop event) {
 
         ItemStack stack = event.getItem();
         if (stack.getItem() instanceof FluxCrossbowItem) {
             ((FluxCrossbowItem) stack.getItem()).startCooldown(event.getEntityLiving(), stack);
+        }
+    }
+
+    @SubscribeEvent(priority = EventPriority.LOWEST)
+    public static void handleLivingAttackEvent(LivingAttackEvent event) {
+
+        LivingEntity target = event.getEntityLiving();
+        if (!event.isCanceled() && event.getAmount() <= 500.0F) {
+            ItemStack shieldedItem = FluxShieldingHelper.findShieldedItem(target);
+            if (shieldedItem.isEmpty()) {
+                return;
+            }
+            if (target.invulnerableTime > 0) {
+                event.setCanceled(true);
+            }
+            else if (FluxShieldingHelper.useFluxShieldCharge(target, shieldedItem)) {
+                target.invulnerableTime = target.invulnerableDuration;
+                event.setCanceled(true);
+            }
+        }
+    }
+
+    @SubscribeEvent(priority = EventPriority.LOWEST)
+    public static void handleLivingHurtEvent(LivingHurtEvent event) {
+
+        if (!event.isCanceled() && event.getAmount() > 500.0F && FluxShieldingHelper.useFluxShieldCharge(event.getEntityLiving())) {
+            event.setAmount(event.getAmount() - 500.0F);
         }
     }
 

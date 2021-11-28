@@ -1,0 +1,20 @@
+{
+  "parent": "item/generated",
+  "textures": {
+    "layer0": "redstone_arsenal:item/flux_leggings"
+  },
+  "overrides": [
+    {
+      "predicate": {
+        "charged": 1.0
+      },
+      "model": "redstone_arsenal:item/flux_leggings_charged"
+    },
+    {
+      "predicate": {
+        "active": 1.0
+      },
+      "model": "redstone_arsenal:item/flux_leggings_active"
+    }
+  ]
+}

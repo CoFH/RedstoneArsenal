@@ -124,15 +124,19 @@ public interface IFluxItem extends ICoFHItem, IEnergyContainerItem, IMultiModeIt
 
     default void tooltipDelegate(ItemStack stack, @Nullable World worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn) {
 
+        if (isEmpowered(stack)) {
+            tooltip.add(getTextComponent("info.redstone_arsenal.empowered").withStyle(TextFormatting.RED));
+        }
+        if (getNumModes(stack) > 1) {
+            addIncrementModeChangeTooltip(stack, worldIn, tooltip, flagIn);
+        }
+
         boolean creative = isCreative(stack, ENERGY);
         tooltip.add(getTextComponent(localize("info.cofh.energy") + ": "
                 + (creative ?
                 localize("info.cofh.infinite") :
                 getScaledNumber(getEnergyStored(stack)) + " / " + getScaledNumber(getMaxEnergyStored(stack)) + " RF")));
-
-        if (isEmpowered(stack)) {
-            tooltip.add(getTextComponent("info.redstone_arsenal.empowered").withStyle(TextFormatting.RED));
-        }
+        addEnergyTooltip(stack, worldIn, tooltip, flagIn, getExtract(stack), getReceive(stack), creative);
     }
 
     static DamageSource fluxDirectDamage(LivingEntity attacker) {

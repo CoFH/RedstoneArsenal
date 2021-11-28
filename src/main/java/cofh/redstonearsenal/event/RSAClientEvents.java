@@ -1,6 +1,7 @@
 package cofh.redstonearsenal.event;
 
 import cofh.core.network.packet.server.ItemLeftClickPacket;
+import cofh.redstonearsenal.client.renderer.FluxShieldingHandler;
 import cofh.redstonearsenal.item.FluxSwordItem;
 import cofh.redstonearsenal.item.FluxTridentItem;
 import net.minecraft.client.Minecraft;
@@ -8,6 +9,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.InputEvent.ClickInputEvent;
+import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -42,6 +44,14 @@ public class RSAClientEvents {
                 }
                 ItemLeftClickPacket.createAndSend();
             }
+        }
+    }
+
+    @SubscribeEvent(priority = EventPriority.LOWEST)
+    public static void onDrawScreenPost(RenderGameOverlayEvent.Post event) {
+
+        if (event.getType() == RenderGameOverlayEvent.ElementType.ALL && Minecraft.getInstance().gameMode.canHurtPlayer()) {
+            FluxShieldingHandler.renderHUD(event.getMatrixStack());
         }
     }
 
