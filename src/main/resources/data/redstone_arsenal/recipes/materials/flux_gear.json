@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    " X ",
+    "XCX",
+    " X "
+  ],
+  "key": {
+    "C": {
+      "tag": "forge:nuggets/iron"
+    },
+    "X": {
+      "item": "redstone_arsenal:flux_ingot"
+    }
+  },
+  "result": {
+    "item": "redstone_arsenal:flux_gear"
+  }
+}

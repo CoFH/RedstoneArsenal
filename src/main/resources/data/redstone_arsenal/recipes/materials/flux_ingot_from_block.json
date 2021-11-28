@@ -1,0 +1,12 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    {
+      "item": "redstone_arsenal:flux_metal_block"
+    }
+  ],
+  "result": {
+    "item": "redstone_arsenal:flux_ingot",
+    "count": 9
+  }
+}

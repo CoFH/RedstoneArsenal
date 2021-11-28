@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "  X",
+    " C ",
+    "X  "
+  ],
+  "key": {
+    "C": {
+      "item": "minecraft:blaze_powder"
+    },
+    "X": {
+      "tag": "forge:obsidian"
+    }
+  },
+  "result": {
+    "item": "redstone_arsenal:obsidian_rod"
+  }
+}

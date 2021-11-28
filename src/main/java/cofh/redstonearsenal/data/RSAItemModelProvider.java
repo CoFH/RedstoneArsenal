@@ -11,9 +11,9 @@ import static cofh.lib.util.constants.Constants.ID_REDSTONE_ARSENAL;
 import static cofh.redstonearsenal.RedstoneArsenal.BLOCKS;
 import static cofh.redstonearsenal.RedstoneArsenal.ITEMS;
 
-public class RSAItemModels extends ItemModelProviderCoFH {
+public class RSAItemModelProvider extends ItemModelProviderCoFH {
 
-    public RSAItemModels(DataGenerator generator, ExistingFileHelper existingFileHelper) {
+    public RSAItemModelProvider(DataGenerator generator, ExistingFileHelper existingFileHelper) {
 
         super(generator, ID_REDSTONE_ARSENAL, existingFileHelper);
     }
@@ -30,6 +30,14 @@ public class RSAItemModels extends ItemModelProviderCoFH {
         registerBlockItemModels();
 
         DeferredRegisterCoFH<Item> reg = ITEMS;
+
+        generated(reg.getSup("flux_gem"));
+        generated(reg.getSup("flux_ingot"));
+        generated(reg.getSup("flux_nugget"));
+        generated(reg.getSup("flux_dust"));
+        generated(reg.getSup("flux_gear"));
+        // generated(reg.getSup("flux_plate"));
+        // generated(reg.getSup("flux_coin"));
     }
 
     // region HELPERS

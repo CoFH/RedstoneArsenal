@@ -37,7 +37,7 @@ public class RSADataGen {
         ExistingFileHelper exFileHelper = event.getExistingFileHelper();
 
         gen.addProvider(new RSABlockStates(gen, exFileHelper));
-        gen.addProvider(new RSAItemModels(gen, exFileHelper));
+        gen.addProvider(new RSAItemModelProvider(gen, exFileHelper));
     }
 
 }

@@ -1,0 +1,28 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "I I",
+    "#BS",
+    "GIG"
+  ],
+  "key": {
+    "#": {
+      "item": "redstone_arsenal:flux_obsidian_rod"
+    },
+    "S": {
+      "tag": "forge:string"
+    },
+    "G": {
+      "item": "redstone_arsenal:flux_gem"
+    },
+    "I": {
+      "item": "redstone_arsenal:flux_ingot"
+    },
+    "B": {
+      "item": "redstone_arsenal:flux_gear"
+    }
+  },
+  "result": {
+    "item": "redstone_arsenal:flux_quiver"
+  }
+}
