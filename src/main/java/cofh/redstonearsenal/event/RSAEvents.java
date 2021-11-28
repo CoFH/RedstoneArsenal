@@ -110,8 +110,7 @@ public class RSAEvents {
             }
             if (target.invulnerableTime > 0) {
                 event.setCanceled(true);
-            }
-            else if (FluxShieldingHelper.useFluxShieldCharge(target, shieldedItem)) {
+            } else if (FluxShieldingHelper.useFluxShieldCharge(target, shieldedItem)) {
                 target.invulnerableTime = target.invulnerableDuration;
                 event.setCanceled(true);
             }

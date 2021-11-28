@@ -32,4 +32,5 @@ public interface IFluxShieldedItem {
      * @return Returns false if there are no charges to use or the operation otherwise fails.
      */
     boolean useCharge(LivingEntity entity);
+
 }

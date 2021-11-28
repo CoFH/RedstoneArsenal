@@ -88,24 +88,6 @@ public class FluxSwordItem extends SwordItemCoFH implements IFluxItem, ILeftClic
         return true;
     }
 
-    public void shootFluxSlash(ItemStack stack, PlayerEntity player) {
-
-        if (!this.isEmpowered(stack)) {
-            return;
-        }
-        if (useEnergy(stack, true, player.abilities.instabuild)) {
-            World world = player.level;
-            FluxSlashEntity projectile = new FluxSlashEntity(world, player, getRangedAttackDamage(stack));
-            world.addFreshEntity(projectile);
-        }
-    }
-
-    public static boolean canSweepAttack(PlayerEntity player) {
-
-        // &&(player.isOnGround() || player.onClimbable() || player.isInWater() || player.hasEffect(Effects.BLINDNESS) || player.isPassenger())
-        return player.getAttackStrengthScale(0.5F) > 0.9F && !player.isSprinting();
-    }
-
     @Override
     public boolean mineBlock(ItemStack stack, World worldIn, BlockState state, BlockPos pos, LivingEntity entityLiving) {
 
@@ -131,14 +113,26 @@ public class FluxSwordItem extends SwordItemCoFH implements IFluxItem, ILeftClic
         return hasEnergy(stack, false) ? damage : 0.0F;
     }
 
-    protected float getRangedAttackDamage(ItemStack stack) {
-
-        return 2.0F + Utils.getItemEnchantmentLevel(Enchantments.SWEEPING_EDGE, stack);
-    }
-
     protected float getAttackSpeed(ItemStack stack) {
 
         return attackSpeed;
+    }
+
+    protected boolean canSweepAttack(PlayerEntity player) {
+
+        return player.getAttackStrengthScale(0.5F) > 0.9F && !player.isSprinting();
+    }
+
+    protected void shootFluxSlash(ItemStack stack, PlayerEntity player) {
+
+        if (!this.isEmpowered(stack)) {
+            return;
+        }
+        if (useEnergy(stack, true, player.abilities.instabuild)) {
+            World world = player.level;
+            FluxSlashEntity projectile = new FluxSlashEntity(world, player, Utils.getItemEnchantmentLevel(Enchantments.SWEEPING_EDGE, stack));
+            world.addFreshEntity(projectile);
+        }
     }
 
     // region IEnergyContainerItem

@@ -36,15 +36,18 @@ public class RSAItems {
         int energy = 320000;
         int xfer = 4000;
 
-        ITEMS.register("flux_gem", () -> new ItemCoFH(new Item.Properties().tab(misc).rarity(rarity)));
-        ITEMS.register("flux_ingot", () -> new ItemCoFH(new Item.Properties().tab(misc).rarity(rarity)));
-        ITEMS.register(ID_FLUX_METAL_BLOCK, () -> new BlockItemCoFH(BLOCKS.get(ID_FLUX_METAL_BLOCK), new Item.Properties().tab(misc).rarity(rarity)));
-        ITEMS.register("flux_nugget", () -> new ItemCoFH(new Item.Properties().tab(misc).rarity(rarity)));
-        ITEMS.register("flux_dust", () -> new ItemCoFH(new Item.Properties().tab(misc).rarity(rarity)));
-        ITEMS.register("flux_gear", () -> new ItemCoFH(new Item.Properties().tab(misc).rarity(rarity)));
+        ITEMS.register(ID_FLUX_GEM, () -> new ItemCoFH(new Item.Properties().tab(misc).rarity(rarity)));
+        ITEMS.register(ID_FLUX_INGOT, () -> new ItemCoFH(new Item.Properties().tab(misc).rarity(rarity)));
+        ITEMS.register(ID_FLUX_NUGGET, () -> new ItemCoFH(new Item.Properties().tab(misc).rarity(rarity)));
+        ITEMS.register(ID_FLUX_DUST, () -> new ItemCoFH(new Item.Properties().tab(misc).rarity(rarity)));
+        ITEMS.register(ID_FLUX_GEAR, () -> new ItemCoFH(new Item.Properties().tab(misc).rarity(rarity)));
+
         ITEMS.register("flux_plating", () -> new ItemCoFH(new Item.Properties().tab(misc).rarity(rarity)));
         ITEMS.register("obsidian_rod", () -> new ItemCoFH(new Item.Properties().tab(misc).rarity(rarity)));
         ITEMS.register("flux_obsidian_rod", () -> new ItemCoFH(new Item.Properties().tab(misc).rarity(rarity)));
+
+        ITEMS.register(ID_FLUX_METAL_BLOCK, () -> new BlockItemCoFH(BLOCKS.get(ID_FLUX_METAL_BLOCK), new Item.Properties().tab(misc).rarity(rarity)));
+        ITEMS.register(ID_FLUX_GEM_BLOCK, () -> new BlockItemCoFH(BLOCKS.get(ID_FLUX_GEM_BLOCK), new Item.Properties().tab(misc).rarity(rarity)));
 
         //ITEMS.register("flux_plate", () -> new ItemCoFH(new Item.Properties().tab(misc).rarity(rarity)));
         //ITEMS.register("flux_coin", () -> new ItemCoFH(new Item.Properties().tab(misc).rarity(rarity)));

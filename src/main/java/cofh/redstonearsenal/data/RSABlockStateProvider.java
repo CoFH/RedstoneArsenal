@@ -8,10 +8,12 @@ import net.minecraftforge.common.data.ExistingFileHelper;
 
 import static cofh.lib.util.constants.Constants.ID_REDSTONE_ARSENAL;
 import static cofh.redstonearsenal.RedstoneArsenal.BLOCKS;
+import static cofh.redstonearsenal.init.RSAIDs.ID_FLUX_GEM_BLOCK;
+import static cofh.redstonearsenal.init.RSAIDs.ID_FLUX_METAL_BLOCK;
 
-public class RSABlockStates extends BlockStateProviderCoFH {
+public class RSABlockStateProvider extends BlockStateProviderCoFH {
 
-    public RSABlockStates(DataGenerator gen, ExistingFileHelper existingFileHelper) {
+    public RSABlockStateProvider(DataGenerator gen, ExistingFileHelper existingFileHelper) {
 
         super(gen, ID_REDSTONE_ARSENAL, existingFileHelper);
     }
@@ -27,6 +29,8 @@ public class RSABlockStates extends BlockStateProviderCoFH {
 
         DeferredRegisterCoFH<Block> reg = BLOCKS;
 
+        simpleBlock(reg.getSup(ID_FLUX_METAL_BLOCK));
+        simpleBlock(reg.getSup(ID_FLUX_GEM_BLOCK));
     }
 
 }
