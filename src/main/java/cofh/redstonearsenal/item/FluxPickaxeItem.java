@@ -22,6 +22,8 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemUseContext;
 import net.minecraft.util.ActionResultType;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.SoundCategory;
+import net.minecraft.util.SoundEvents;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.world.World;
@@ -105,7 +107,7 @@ public class FluxPickaxeItem extends PickaxeItemCoFH implements IFluxItem {
     @Override
     public boolean hurtEnemy(ItemStack stack, LivingEntity target, LivingEntity attacker) {
 
-        useEnergy(stack, false, ((PlayerEntity) attacker).abilities.instabuild);
+        useEnergy(stack, false, attacker);
         return true;
     }
 
@@ -113,7 +115,7 @@ public class FluxPickaxeItem extends PickaxeItemCoFH implements IFluxItem {
     public boolean mineBlock(ItemStack stack, World worldIn, BlockState state, BlockPos pos, LivingEntity entityLiving) {
 
         if (Utils.isServerWorld(worldIn) && state.getDestroySpeed(worldIn, pos) != 0.0F) {
-            useEnergy(stack, false, entityLiving instanceof PlayerEntity && ((PlayerEntity) entityLiving).abilities.instabuild);
+            useEnergy(stack, false, entityLiving);
         }
         return true;
     }
@@ -133,26 +135,36 @@ public class FluxPickaxeItem extends PickaxeItemCoFH implements IFluxItem {
     public ActionResultType useOn(ItemUseContext context) {
 
         ItemStack tool = context.getItemInHand();
-        if (context.getPlayer() != null && useEnergy(tool, true, context.getPlayer().abilities.instabuild)) {
+        PlayerEntity player = context.getPlayer();
+        if (player != null) {
             World world = context.getLevel();
-            if (context.getPlayer().isCrouching()) {
-                int r = REMOVE_RADIUS;
-                int r2 = r * r;
-                for (BlockPos pos : BlockPos.betweenClosed(context.getClickedPos().offset(-r, -r, -r), context.getClickedPos().offset(r, r, r))) {
-                    if (pos.distSqr(context.getClickedPos()) < r2 && world.getBlockState(pos).getBlock().equals(FLUX_GLOW_AIR)) {
-                        world.setBlockAndUpdate(pos, AIR.defaultBlockState());
+            if (player.isCrouching()) {
+                if (useEnergy(tool, true, player.abilities.instabuild)) {
+                    int r = REMOVE_RADIUS;
+                    int r2 = r * r;
+                    for (BlockPos pos : BlockPos.betweenClosed(context.getClickedPos().offset(-r, -r, -r), context.getClickedPos().offset(r, r, r))) {
+                        if (pos.distSqr(context.getClickedPos()) < r2 && world.getBlockState(pos).getBlock().equals(FLUX_GLOW_AIR)) {
+                            world.playLocalSound(pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, SoundEvents.FIRE_EXTINGUISH, SoundCategory.BLOCKS, 0.5F, 1.0F, false);
+                            world.setBlockAndUpdate(pos, AIR.defaultBlockState());
+                        }
                     }
+                    return ActionResultType.SUCCESS;
                 }
-                return ActionResultType.SUCCESS;
             } else {
                 BlockPos pos = context.getClickedPos().relative(context.getClickedFace());
                 BlockState state = world.getBlockState(pos);
                 if (state.getBlock().equals(FLUX_GLOW_AIR)) {
-                    world.setBlockAndUpdate(pos, AIR.defaultBlockState());
-                    return ActionResultType.SUCCESS;
+                    if (useEnergy(tool, false, player.abilities.instabuild)) {
+                        world.playSound(player, pos, SoundEvents.FIRE_EXTINGUISH, SoundCategory.PLAYERS, 0.5F, 1.0F);
+                        world.setBlockAndUpdate(pos, AIR.defaultBlockState());
+                        return ActionResultType.SUCCESS;
+                    }
                 } else if (state.isAir()) {
-                    world.setBlockAndUpdate(pos, FLUX_GLOW_AIR.defaultBlockState());
-                    return ActionResultType.SUCCESS;
+                    if (useEnergy(tool, true, player.abilities.instabuild)) {
+                        world.playSound(player, pos, SoundEvents.FLINTANDSTEEL_USE, SoundCategory.PLAYERS, 0.5F, 1.0F);
+                        world.setBlockAndUpdate(pos, FLUX_GLOW_AIR.defaultBlockState());
+                        return ActionResultType.SUCCESS;
+                    }
                 }
             }
         }
@@ -167,7 +179,8 @@ public class FluxPickaxeItem extends PickaxeItemCoFH implements IFluxItem {
         if (!world.isClientSide() && isEmpowered(stack) && world.getGameTime() % 8 == 0) {
             BlockPos pos = entity.blockPosition();
             if (world.isEmptyBlock(pos) && world.getRawBrightness(pos, world.getSkyDarken()) <= LOW_LIGHT_THRESHOLD) {
-                if (useEnergy(stack, true, entity instanceof PlayerEntity && ((PlayerEntity) entity).abilities.instabuild)) {
+                if (useEnergy(stack, true, entity)) {
+                    world.playSound(null, pos, SoundEvents.FLINTANDSTEEL_USE, SoundCategory.PLAYERS, 0.5F, 1.0F);
                     world.setBlockAndUpdate(pos, FLUX_GLOW_AIR.defaultBlockState());
                 }
             }

@@ -177,7 +177,7 @@ public class FluxCrossbowItem extends CrossbowItemCoFH implements IFluxItem {
                         if (!world.isClientSide()) {
                             ++repeats;
                         }
-                        if (useEnergy(stack, true, living instanceof PlayerEntity && ((PlayerEntity) living).abilities.instabuild)) {
+                        if (useEnergy(stack, true, living)) {
                             shootLoadedAmmo(world, living, stack);
                         } else {
                             living.releaseUsingItem();

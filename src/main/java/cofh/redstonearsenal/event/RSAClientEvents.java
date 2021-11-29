@@ -1,7 +1,7 @@
 package cofh.redstonearsenal.event;
 
 import cofh.core.network.packet.server.ItemLeftClickPacket;
-import cofh.redstonearsenal.client.renderer.FluxShieldingHandler;
+import cofh.redstonearsenal.client.renderer.FluxShieldingHUDRenderer;
 import cofh.redstonearsenal.item.FluxSwordItem;
 import cofh.redstonearsenal.item.FluxTridentItem;
 import net.minecraft.client.Minecraft;
@@ -51,7 +51,7 @@ public class RSAClientEvents {
     public static void onDrawScreenPost(RenderGameOverlayEvent.Post event) {
 
         if (event.getType() == RenderGameOverlayEvent.ElementType.ALL && Minecraft.getInstance().gameMode.canHurtPlayer()) {
-            FluxShieldingHandler.renderHUD(event.getMatrixStack());
+            FluxShieldingHUDRenderer.render(event.getMatrixStack());
         }
     }
 

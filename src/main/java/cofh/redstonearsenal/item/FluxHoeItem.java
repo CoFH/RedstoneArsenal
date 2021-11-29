@@ -111,8 +111,7 @@ public class FluxHoeItem extends HoeItemCoFH implements IFluxItem {
     @Override
     public boolean hurtEnemy(ItemStack stack, LivingEntity target, LivingEntity attacker) {
 
-        PlayerEntity player = (PlayerEntity) attacker;
-        useEnergy(stack, false, player.abilities.instabuild);
+        useEnergy(stack, false, attacker);
         return true;
     }
 

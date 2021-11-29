@@ -52,7 +52,6 @@ import static net.minecraft.util.text.TextFormatting.GRAY;
 
 public class FluxHammerItem extends HammerItem implements IFluxItem {
 
-    public static final int CHARGE_TIME = 20;
     public static final int COOLDOWN = 160;
 
     protected final float damage;
@@ -111,41 +110,29 @@ public class FluxHammerItem extends HammerItem implements IFluxItem {
 
         ItemStack stack = player.getItemInHand(hand);
         if (hasEnergy(stack, true) || player.abilities.instabuild) {
-            player.startUsingItem(hand);
-            return ActionResult.consume(stack);
-        }
-        return ActionResult.fail(stack);
-    }
-
-    @Override
-    public UseAction getUseAnimation(ItemStack stack) {
-
-        return UseAction.BOW;
-    }
-
-    @Override
-    public void releaseUsing(ItemStack stack, World world, LivingEntity living, int durationRemaining) {
-
-        if (getUseDuration(stack) - durationRemaining > CHARGE_TIME && living.isOnGround() && living instanceof PlayerEntity) {
-            PlayerEntity player = (PlayerEntity) living;
-            BlockRayTraceResult result = RayTracer.retrace(player, RayTraceContext.FluidMode.NONE);
-            if (result.getType() != RayTraceResult.Type.MISS) {
-                BlockPos pos = result.getBlockPos();
-                BlockState state = world.getBlockState(pos);
-                if (!world.isClientSide()) {
-                    if ((isEmpowered(stack) || (this.canHarvestBlock(stack, state) && player.mayUseItemAt(pos, result.getDirection(), stack))) && useEnergy(stack, true, player.abilities.instabuild)) {
-                        if (isEmpowered(stack)) {
-                            world.addFreshEntity(new ShockwaveEntity(world, living, Vector3d.atCenterOf(pos), living.yRot));
-                        } else {
-                            world.addFreshEntity(new FallingBlockEntity(world, pos.getX() + 0.5D, pos.getY(), pos.getZ() + 0.5D, state));
+            if (player.isOnGround()) {
+                BlockRayTraceResult result = RayTracer.retrace(player, RayTraceContext.FluidMode.NONE);
+                if (result.getType() != RayTraceResult.Type.MISS) {
+                    BlockPos pos = result.getBlockPos();
+                    BlockState state = world.getBlockState(pos);
+                    if (!world.isClientSide()) {
+                        if ((isEmpowered(stack) || (this.canHarvestBlock(stack, state) && player.mayUseItemAt(pos, result.getDirection(), stack))) && useEnergy(stack, true, player.abilities.instabuild)) {
+                            if (isEmpowered(stack)) {
+                                world.addFreshEntity(new ShockwaveEntity(world, player, Vector3d.atCenterOf(pos), player.yRot));
+                            } else {
+                                //TODO: change
+                                world.addFreshEntity(new FallingBlockEntity(world, pos.getX() + 0.5D, pos.getY(), pos.getZ() + 0.5D, state));
+                            }
+                            player.getCooldowns().addCooldown(this, getUseCooldown(stack));
                         }
-                        player.getCooldowns().addCooldown(this, getUseCooldown(stack));
                     }
+                    //world.playSound(player, pos, SoundEvents.RAVAGER_STEP, SoundCategory.BLOCKS, 1.0F, 1.0F);
+                    world.playSound(player, pos, state.getSoundType(world, pos, player).getBreakSound(), SoundCategory.BLOCKS, 1.0F, 1.0F);
+                    return ActionResult.success(stack);
                 }
-                //world.playSound(player, pos, SoundEvents.RAVAGER_STEP, SoundCategory.BLOCKS, 1.0F, 1.0F);
-                world.playSound(player, pos, state.getSoundType(world, pos, player).getBreakSound(), SoundCategory.BLOCKS, 1.0F, 1.0F);
             }
         }
+        return ActionResult.fail(stack);
     }
 
     @Override
@@ -173,7 +160,7 @@ public class FluxHammerItem extends HammerItem implements IFluxItem {
     @Override
     public boolean hurtEnemy(ItemStack stack, LivingEntity target, LivingEntity attacker) {
 
-        useEnergy(stack, false, ((PlayerEntity) attacker).abilities.instabuild);
+        useEnergy(stack, false, attacker);
         return true;
     }
 
@@ -181,7 +168,7 @@ public class FluxHammerItem extends HammerItem implements IFluxItem {
     public boolean mineBlock(ItemStack stack, World worldIn, BlockState state, BlockPos pos, LivingEntity entityLiving) {
 
         if (Utils.isServerWorld(worldIn) && state.getDestroySpeed(worldIn, pos) != 0.0F) {
-            useEnergy(stack, false, entityLiving instanceof PlayerEntity && ((PlayerEntity) entityLiving).abilities.instabuild);
+            useEnergy(stack, false, entityLiving);
         }
         return true;
     }

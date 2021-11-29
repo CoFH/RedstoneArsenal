@@ -1,23 +1,34 @@
 package cofh.redstonearsenal.event;
 
+import cofh.lib.util.Utils;
+import cofh.lib.util.helpers.MathHelper;
+import cofh.redstonearsenal.init.RSAReferences;
 import cofh.redstonearsenal.item.FluxAxeItem;
 import cofh.redstonearsenal.item.FluxCrossbowItem;
+import cofh.redstonearsenal.item.FluxShovelItem;
 import cofh.redstonearsenal.item.FluxTridentItem;
 import cofh.redstonearsenal.util.FluxShieldingHelper;
+import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
+import net.minecraft.block.GrassPathBlock;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.EquipmentSlotType;
 import net.minecraft.item.ItemStack;
 import net.minecraft.potion.EffectInstance;
 import net.minecraft.potion.Effects;
+import net.minecraft.tags.ITag;
+import net.minecraftforge.common.Tags;
 import net.minecraftforge.event.entity.living.*;
 import net.minecraftforge.event.entity.player.AttackEntityEvent;
 import net.minecraftforge.event.entity.player.CriticalHitEvent;
+import net.minecraftforge.event.world.BlockEvent;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
 import static cofh.lib.util.constants.Constants.ID_REDSTONE_ARSENAL;
+import static cofh.redstonearsenal.init.RSAReferences.FLUX_GRASS_PATH;
 
 @Mod.EventBusSubscriber(modid = ID_REDSTONE_ARSENAL)
 public class RSAEvents {
@@ -99,11 +110,26 @@ public class RSAEvents {
         }
     }
 
+    @SubscribeEvent
+    public static void handleBlockToolInteractEvent(BlockEvent.BlockToolInteractEvent event) {
+
+        ItemStack stack = event.getHeldItemStack();
+        BlockState state = event.getState();
+        if (stack.getItem() instanceof FluxShovelItem) {
+            FluxShovelItem shovel = (FluxShovelItem) stack.getItem();
+            if (state.is(Tags.Blocks.DIRT) && shovel.isEmpowered(stack)) {
+                event.setFinalState(FLUX_GRASS_PATH.defaultBlockState());
+            } else if (state.is(Blocks.GRASS_PATH) || state.is(FLUX_GRASS_PATH)) {
+                event.setFinalState(Blocks.DIRT.defaultBlockState());
+            }
+        }
+    }
+
     @SubscribeEvent(priority = EventPriority.LOWEST)
     public static void handleLivingAttackEvent(LivingAttackEvent event) {
 
         LivingEntity target = event.getEntityLiving();
-        if (!event.isCanceled() && event.getAmount() <= 500.0F) {
+        if (!event.isCanceled() && event.getAmount() <= 500.0F && !Utils.isCreativePlayer(target)) {
             ItemStack shieldedItem = FluxShieldingHelper.findShieldedItem(target);
             if (shieldedItem.isEmpty()) {
                 return;
@@ -120,8 +146,8 @@ public class RSAEvents {
     @SubscribeEvent(priority = EventPriority.LOWEST)
     public static void handleLivingHurtEvent(LivingHurtEvent event) {
 
-        if (!event.isCanceled() && event.getAmount() > 500.0F && FluxShieldingHelper.useFluxShieldCharge(event.getEntityLiving())) {
-            event.setAmount(event.getAmount() - 500.0F);
+        if (!event.isCanceled() && FluxShieldingHelper.useFluxShieldCharge(event.getEntityLiving())) {
+            event.setAmount(Math.max(event.getAmount() - 500.0F, 0));
         }
     }
 

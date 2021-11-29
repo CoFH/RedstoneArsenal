@@ -4,6 +4,7 @@ import cofh.lib.energy.EnergyContainerItemWrapper;
 import cofh.lib.energy.IEnergyContainerItem;
 import cofh.lib.item.ICoFHItem;
 import cofh.lib.item.IMultiModeItem;
+import cofh.lib.util.Utils;
 import cofh.lib.util.helpers.MathHelper;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.Entity;
@@ -56,19 +57,25 @@ public interface IFluxItem extends ICoFHItem, IEnergyContainerItem, IMultiModeIt
             return true;
         }
         if (hasEnergy(stack, amount)) {
-            //            int unbreakingLevel = MathHelper.clamp(EnchantmentHelper.getItemEnchantmentLevel(Enchantments.UNBREAKING, stack), 0, 10);
-            //            if (MathHelper.RANDOM.nextInt(2 + unbreakingLevel) < 2) {
-            //                extractEnergy(stack, amount, false);
-            //            }
             extractEnergy(stack, amount, false);
             return true;
         }
         return false;
     }
 
+    default boolean useEnergy(ItemStack stack, int amount, Entity entity) {
+
+        return useEnergy(stack, amount, Utils.isCreativePlayer(entity));
+    }
+
     default boolean useEnergy(ItemStack stack, boolean empowered, boolean simulate) {
 
         return useEnergy(stack, getEnergyPerUse(empowered), simulate);
+    }
+
+    default boolean useEnergy(ItemStack stack, boolean empowered, Entity entity) {
+
+        return useEnergy(stack, getEnergyPerUse(empowered), Utils.isCreativePlayer(entity));
     }
 
     @Override

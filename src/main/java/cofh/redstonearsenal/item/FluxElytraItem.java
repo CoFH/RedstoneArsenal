@@ -3,6 +3,7 @@ package cofh.redstonearsenal.item;
 import cofh.core.init.CoreConfig;
 import cofh.core.item.ArmorItemCoFH;
 import cofh.core.util.ProxyUtils;
+import cofh.lib.util.Utils;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.enchantment.Enchantment;
@@ -103,7 +104,7 @@ public class FluxElytraItem extends ArmorItemCoFH implements IFluxItem {
     @Override
     public boolean elytraFlightTick(ItemStack stack, LivingEntity entity, int flightTicks) {
 
-        boolean isCreative = entity instanceof PlayerEntity && ((PlayerEntity) entity).abilities.instabuild;
+        boolean isCreative = Utils.isCreativePlayer(entity);
         boolean shouldExtract = flightTicks % ENERGY_USE_INTERVAL == 0 && !isCreative;
         useEnergy(stack, false, !shouldExtract);
 
@@ -131,7 +132,7 @@ public class FluxElytraItem extends ArmorItemCoFH implements IFluxItem {
     public <T extends LivingEntity> int damageItem(ItemStack stack, int amount, T entity, Consumer<T> onBroken) {
 
         amount = Math.min(getEnergyStored(stack), amount * getEnergyPerUse(false));
-        useEnergy(stack, amount, entity instanceof PlayerEntity && ((PlayerEntity) entity).abilities.instabuild);
+        useEnergy(stack, amount, entity);
         return -1;
     }
 

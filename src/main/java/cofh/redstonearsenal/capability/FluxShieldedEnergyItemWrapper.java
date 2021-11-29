@@ -2,6 +2,7 @@ package cofh.redstonearsenal.capability;
 
 import cofh.lib.energy.EnergyContainerItemWrapper;
 import cofh.lib.energy.IEnergyContainerItem;
+import cofh.lib.util.Utils;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
@@ -59,7 +60,7 @@ public class FluxShieldedEnergyItemWrapper extends EnergyContainerItemWrapper im
     @Override
     public boolean useCharge(LivingEntity entity) {
 
-        if (availableCharges(entity) < 1 || extractEnergy(energyPerUse, entity instanceof PlayerEntity && ((PlayerEntity) entity).abilities.instabuild) != energyPerUse) {
+        if (availableCharges(entity) < 1 || extractEnergy(energyPerUse, Utils.isCreativePlayer(entity)) != energyPerUse) {
             return false;
         }
         long regenTime = entity.level.getGameTime() + COOLDOWN;

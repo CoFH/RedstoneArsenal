@@ -1,9 +1,7 @@
 package cofh.redstonearsenal.init;
 
 import cofh.redstonearsenal.block.FluxGlowAirBlock;
-import net.minecraft.block.Block;
-import net.minecraft.block.Blocks;
-import net.minecraft.block.SoundType;
+import net.minecraft.block.*;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.material.MaterialColor;
 import net.minecraftforge.common.ToolType;
@@ -26,6 +24,7 @@ public class RSABlocks {
         BLOCKS.register(ID_FLUX_GEM_BLOCK, () -> new Block(of(Material.METAL, MaterialColor.COLOR_RED).strength(5.0F, 6.0F).sound(SoundType.METAL).harvestLevel(2).harvestTool(ToolType.PICKAXE).requiresCorrectToolForDrops()));
 
         BLOCKS.register(ID_FLUX_GLOW_AIR, () -> new FluxGlowAirBlock(copy(Blocks.AIR).lightLevel(lightValue(15))));
+        BLOCKS.register(ID_FLUX_GRASS_PATH, () -> new GrassPathBlock(AbstractBlock.Properties.of(Material.DIRT).strength(0.65F).sound(SoundType.GRASS).isViewBlocking((a, b, c) -> true).isSuffocating((a, b, c) -> true).speedFactor(1.25F)));
     }
 
 }

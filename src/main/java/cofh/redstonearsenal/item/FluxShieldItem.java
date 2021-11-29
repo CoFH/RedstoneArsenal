@@ -6,6 +6,7 @@ import cofh.lib.capability.IShieldItem;
 import cofh.lib.energy.EnergyContainerItemWrapper;
 import cofh.lib.energy.IEnergyContainerItem;
 import cofh.lib.item.impl.ShieldItemCoFH;
+import cofh.lib.util.Utils;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.Entity;
@@ -87,7 +88,7 @@ public class FluxShieldItem extends ShieldItemCoFH implements IFluxItem {
 
     public void repel(World world, LivingEntity living, ItemStack stack) {
 
-        if (useEnergy(stack, true, living instanceof PlayerEntity && ((PlayerEntity) living).abilities.instabuild)) {
+        if (useEnergy(stack, true, living)) {
             double r2 = RANGE * RANGE;
             AxisAlignedBB searchArea = living.getBoundingBox().inflate(RANGE);
             for (Entity entity : world.getEntities(living, searchArea, EntityPredicates.NO_CREATIVE_OR_SPECTATOR)) {

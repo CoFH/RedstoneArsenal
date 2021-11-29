@@ -11,11 +11,11 @@ import net.minecraftforge.client.gui.ForgeIngameGui;
 
 import static cofh.lib.util.constants.Constants.ID_REDSTONE_ARSENAL;
 
-public class FluxShieldingHandler {
+public class FluxShieldingHUDRenderer {
 
     protected static final ResourceLocation ICONS = new ResourceLocation(ID_REDSTONE_ARSENAL + ":textures/gui/flux_shielding_icons.png");
 
-    public static void renderHUD(MatrixStack stack) {
+    public static void render(MatrixStack stack) {
 
         final Minecraft minecraft = Minecraft.getInstance();
         final IProfiler profiler = minecraft.getProfiler();

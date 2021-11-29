@@ -3,6 +3,7 @@ package cofh.redstonearsenal.item;
 import cofh.core.init.CoreConfig;
 import cofh.core.item.ArmorItemCoFH;
 import cofh.core.util.ProxyUtils;
+import cofh.lib.util.Utils;
 import cofh.redstonearsenal.capability.FluxShieldedEnergyItemWrapper;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.util.ITooltipFlag;
@@ -83,8 +84,7 @@ public class FluxArmorItem extends ArmorItemCoFH implements IFluxItem {
     @Override
     public <T extends LivingEntity> int damageItem(ItemStack stack, int amount, T entity, Consumer<T> onBroken) {
 
-        amount = Math.min(getEnergyStored(stack), amount * getEnergyPerUse(false));
-        useEnergy(stack, amount, entity instanceof PlayerEntity && ((PlayerEntity) entity).abilities.instabuild);
+        useEnergy(stack, Math.min(getEnergyStored(stack), amount * getEnergyPerUse(false)), entity);
         return -1;
     }
 
