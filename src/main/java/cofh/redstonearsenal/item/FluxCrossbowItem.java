@@ -195,7 +195,7 @@ public class FluxCrossbowItem extends CrossbowItemCoFH implements IFluxItem {
             }
 
             if (duration == baseDuration / 4) {
-                world.playSound(null, living.getX(), living.getY(), living.getZ(), getStartSound(EnchantmentHelper.getItemEnchantmentLevel(Enchantments.QUICK_CHARGE, stack)), SoundCategory.PLAYERS, 0.5F, 1.0F);
+                world.playSound(null, living.getX(), living.getY(), living.getZ(), getStartSound(Utils.getItemEnchantmentLevel(Enchantments.QUICK_CHARGE, stack)), SoundCategory.PLAYERS, 0.5F, 1.0F);
             }
             if (duration == baseDuration / 2) {
                 world.playSound(null, living.getX(), living.getY(), living.getZ(), SoundEvents.CROSSBOW_LOADING_MIDDLE, SoundCategory.PLAYERS, 0.5F, 1.0F);
@@ -341,7 +341,7 @@ public class FluxCrossbowItem extends CrossbowItemCoFH implements IFluxItem {
         arrow.setCritArrow(true);
         arrow.setSoundEvent(SoundEvents.CROSSBOW_HIT);
         arrow.setShotFromCrossbow(true);
-        int pierce = EnchantmentHelper.getItemEnchantmentLevel(Enchantments.PIERCING, crossbow);
+        int pierce = Utils.getItemEnchantmentLevel(Enchantments.PIERCING, crossbow);
         if (pierce > 0) {
             arrow.setPierceLevel((byte) pierce);
         }
