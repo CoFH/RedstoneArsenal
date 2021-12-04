@@ -4,7 +4,6 @@ import cofh.lib.energy.EnergyContainerItemWrapper;
 import cofh.lib.energy.IEnergyContainerItem;
 import cofh.lib.util.Utils;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.Direction;

@@ -6,7 +6,6 @@ import cofh.lib.capability.IShieldItem;
 import cofh.lib.energy.EnergyContainerItemWrapper;
 import cofh.lib.energy.IEnergyContainerItem;
 import cofh.lib.item.impl.ShieldItemCoFH;
-import cofh.lib.util.Utils;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.Entity;

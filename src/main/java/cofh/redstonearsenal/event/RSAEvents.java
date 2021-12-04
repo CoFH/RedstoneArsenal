@@ -1,8 +1,6 @@
 package cofh.redstonearsenal.event;
 
 import cofh.lib.util.Utils;
-import cofh.lib.util.helpers.MathHelper;
-import cofh.redstonearsenal.init.RSAReferences;
 import cofh.redstonearsenal.item.FluxAxeItem;
 import cofh.redstonearsenal.item.FluxCrossbowItem;
 import cofh.redstonearsenal.item.FluxShovelItem;
@@ -10,14 +8,12 @@ import cofh.redstonearsenal.item.FluxTridentItem;
 import cofh.redstonearsenal.util.FluxShieldingHelper;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
-import net.minecraft.block.GrassPathBlock;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.EquipmentSlotType;
 import net.minecraft.item.ItemStack;
 import net.minecraft.potion.EffectInstance;
 import net.minecraft.potion.Effects;
-import net.minecraft.tags.ITag;
 import net.minecraftforge.common.Tags;
 import net.minecraftforge.event.entity.living.*;
 import net.minecraftforge.event.entity.player.AttackEntityEvent;

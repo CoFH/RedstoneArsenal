@@ -32,7 +32,6 @@ import net.minecraftforge.common.ToolType;
 import javax.annotation.Nullable;
 import java.util.List;
 
-import static cofh.lib.util.constants.Constants.UUID_TOOL_KNOCKBACK;
 import static cofh.lib.util.helpers.StringHelper.getTextComponent;
 import static cofh.redstonearsenal.init.RSAReferences.FLUX_GRASS_PATH;
 import static net.minecraft.util.text.TextFormatting.GRAY;
