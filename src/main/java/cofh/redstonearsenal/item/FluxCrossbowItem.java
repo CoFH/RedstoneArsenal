@@ -97,7 +97,7 @@ public class FluxCrossbowItem extends CrossbowItemCoFH implements IFluxItem {
     @Override
     public ICapabilityProvider initCapabilities(ItemStack stack, @Nullable CompoundNBT nbt) {
 
-        return new EnergyContainerItemWrapper(stack, this);
+        return new EnergyContainerItemWrapper(stack, this, getEnergyCapability());
     }
 
     public float getPullProperty(ItemStack stack, World world, LivingEntity entity) {

@@ -4,7 +4,6 @@ import cofh.core.init.CoreConfig;
 import cofh.core.util.ProxyUtils;
 import cofh.lib.capability.IArcheryBowItem;
 import cofh.lib.energy.EnergyContainerItemWrapper;
-import cofh.lib.energy.IEnergyContainerItem;
 import cofh.lib.item.impl.BowItemCoFH;
 import cofh.lib.util.helpers.ArcheryHelper;
 import net.minecraft.client.gui.screen.Screen;
@@ -84,7 +83,7 @@ public class FluxBowItem extends BowItemCoFH implements IFluxItem {
     @Override
     public ICapabilityProvider initCapabilities(ItemStack stack, @Nullable CompoundNBT nbt) {
 
-        return new FluxBowItemWrapper(stack, accuracyModifier, damageModifier, velocityModifier);
+        return new FluxBowItemWrapper(stack, this);
     }
 
     public float getPullProperty(ItemStack stack, World world, LivingEntity entity) {
@@ -135,19 +134,14 @@ public class FluxBowItem extends BowItemCoFH implements IFluxItem {
 
         final ItemStack bowItem;
 
-        FluxBowItemWrapper(ItemStack bowItemContainer, float accuracyModifier, float damageModifier, float velocityModifier) {
+        FluxBowItemWrapper(ItemStack bowItemContainer, FluxBowItem item) {
 
-            super(bowItemContainer, (IEnergyContainerItem) bowItemContainer.getItem());
+            super(bowItemContainer, item, item.getEnergyCapability());
             this.bowItem = bowItemContainer;
 
-            this.accuracyModifier = MathHelper.clamp(accuracyModifier, 0.1F, 10.0F);
-            this.damageModifier = MathHelper.clamp(damageModifier, 0.1F, 10.0F);
-            this.velocityModifier = MathHelper.clamp(velocityModifier, 0.1F, 10.0F);
-        }
-
-        FluxBowItemWrapper(ItemStack bowItemContainer) {
-
-            this(bowItemContainer, 1.0F, 1.0F, 1.0F);
+            this.accuracyModifier = MathHelper.clamp(item.accuracyModifier, 0.1F, 10.0F);
+            this.damageModifier = MathHelper.clamp(item.damageModifier, 0.1F, 10.0F);
+            this.velocityModifier = MathHelper.clamp(item.velocityModifier, 0.1F, 10.0F);
         }
 
         @Override

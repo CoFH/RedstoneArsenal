@@ -32,7 +32,7 @@ public class FluxShieldedEnergyItemWrapper extends EnergyContainerItemWrapper im
 
     public FluxShieldedEnergyItemWrapper(ItemStack shieldedItemContainer, int energyPerUse) {
 
-        super(shieldedItemContainer, (IEnergyContainerItem) shieldedItemContainer.getItem());
+        super(shieldedItemContainer, (IEnergyContainerItem) shieldedItemContainer.getItem(), ((IEnergyContainerItem) shieldedItemContainer.getItem()).getEnergyCapability());
         this.shieldedItem = shieldedItemContainer;
         this.energyPerUse = energyPerUse;
     }

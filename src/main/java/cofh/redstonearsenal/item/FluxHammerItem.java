@@ -220,7 +220,7 @@ public class FluxHammerItem extends HammerItem implements IFluxItem {
 
         FluxHammerItemWrapper(ItemStack containerIn, IEnergyContainerItem itemIn) {
 
-            super(containerIn, itemIn);
+            super(containerIn, itemIn, itemIn.getEnergyCapability());
         }
 
         @Override

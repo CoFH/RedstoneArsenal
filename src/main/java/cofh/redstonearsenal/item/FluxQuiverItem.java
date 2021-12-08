@@ -119,7 +119,7 @@ public class FluxQuiverItem extends ItemCoFH implements IFluxItem {
 
         FluxQuiverItemWrapper(ItemStack quiverItemContainer, IEnergyContainerItem item) {
 
-            super(quiverItemContainer, item);
+            super(quiverItemContainer, item, item.getEnergyCapability());
             this.quiverItem = quiverItemContainer;
         }
 

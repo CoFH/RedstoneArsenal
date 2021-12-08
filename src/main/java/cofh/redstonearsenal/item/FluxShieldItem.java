@@ -151,7 +151,7 @@ public class FluxShieldItem extends ShieldItemCoFH implements IFluxItem {
 
         FluxShieldItemWrapper(ItemStack shieldItem, IEnergyContainerItem container) {
 
-            super(shieldItem, container);
+            super(shieldItem, container, container.getEnergyCapability());
             this.shieldItem = shieldItem;
         }
 

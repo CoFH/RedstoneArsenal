@@ -6,6 +6,7 @@ import cofh.lib.item.ICoFHItem;
 import cofh.lib.item.IMultiModeItem;
 import cofh.lib.util.Utils;
 import cofh.lib.util.helpers.MathHelper;
+import cofh.redstonearsenal.util.RSAEnergyHelper;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
@@ -17,7 +18,9 @@ import net.minecraft.util.*;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
+import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.ICapabilityProvider;
+import net.minecraftforge.energy.IEnergyStorage;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -30,6 +33,11 @@ public interface IFluxItem extends ICoFHItem, IEnergyContainerItem, IMultiModeIt
 
     int ENERGY_PER_USE = 200;
     int ENERGY_PER_USE_EMPOWERED = 800;
+
+    default Capability<? extends IEnergyStorage> getEnergyCapability() {
+
+        return RSAEnergyHelper.getBaseEnergySystem();
+    }
 
     default boolean isEmpowered(ItemStack stack) {
 
@@ -126,7 +134,7 @@ public interface IFluxItem extends ICoFHItem, IEnergyContainerItem, IMultiModeIt
     @Override
     default ICapabilityProvider initCapabilities(ItemStack stack, @Nullable CompoundNBT nbt) {
 
-        return new EnergyContainerItemWrapper(stack, this);
+        return new EnergyContainerItemWrapper(stack, this, getEnergyCapability());
     }
 
     default void tooltipDelegate(ItemStack stack, @Nullable World worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn) {

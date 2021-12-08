@@ -253,7 +253,7 @@ public class FluxExcavatorItem extends ExcavatorItem implements IFluxItem {
 
         FluxExcavatorItemWrapper(ItemStack containerIn, IEnergyContainerItem itemIn) {
 
-            super(containerIn, itemIn);
+            super(containerIn, itemIn, itemIn.getEnergyCapability());
         }
 
         @Override
