@@ -42,30 +42,31 @@ import static net.minecraft.util.text.TextFormatting.GRAY;
 
 public class FluxCrossbowItem extends CrossbowItemCoFH implements IFluxItem {
 
-    protected static final int MAX_REPEATS = 20;
     protected static final int REPEAT_START_DELAY = 20;
 
     protected final int maxEnergy;
     protected final int extract;
     protected final int receive;
 
+    protected int maxRepeats;
     protected int repeats = 1;
     protected int cooldown = 0;
 
-    public FluxCrossbowItem(int enchantability, float accuracyModifier, float damageModifier, float velocityModifier, Item.Properties builder, int energy, int xfer) {
+    public FluxCrossbowItem(int enchantability, float accuracyModifier, float damageModifier, float velocityModifier, int maxRepeats, Item.Properties builder, int energy, int xfer) {
 
         super(builder);
 
         this.maxEnergy = energy;
         this.extract = xfer;
         this.receive = xfer;
+        this.maxRepeats = maxRepeats;
         setParams(enchantability, accuracyModifier, damageModifier, velocityModifier);
 
-        ProxyUtils.registerItemModelProperty(this, new ResourceLocation("pull"), this::getPullProperty);
+        ProxyUtils.registerItemModelProperty(this, new ResourceLocation("pull"), this::getPullModelProperty);
         ProxyUtils.registerItemModelProperty(this, new ResourceLocation("firework"), (stack, world, entity) -> !getLoadedAmmo(stack).isEmpty() && (getLoadedAmmo(stack).getItem() instanceof FireworkRocketItem) ? 1F : 0F);
         ProxyUtils.registerItemModelProperty(this, new ResourceLocation("arrow"), (stack, world, entity) -> !getLoadedAmmo(stack).isEmpty() && !(getLoadedAmmo(stack).getItem() instanceof FireworkRocketItem) ? 1F : 0F);
-        ProxyUtils.registerItemModelProperty(this, new ResourceLocation("charged"), (stack, world, entity) -> getEnergyStored(stack) > 0 ? 1F : 0F);
-        ProxyUtils.registerItemModelProperty(this, new ResourceLocation("active"), (stack, world, entity) -> getEnergyStored(stack) > 0 && isEmpowered(stack) ? 1F : 0F);
+        ProxyUtils.registerItemModelProperty(this, new ResourceLocation("charged"), this::getChargedModelProperty);
+        ProxyUtils.registerItemModelProperty(this, new ResourceLocation("active"), this::getEmpoweredModelProperty);
     }
 
     @Override
@@ -100,7 +101,7 @@ public class FluxCrossbowItem extends CrossbowItemCoFH implements IFluxItem {
         return new EnergyContainerItemWrapper(stack, this, getEnergyCapability());
     }
 
-    public float getPullProperty(ItemStack stack, World world, LivingEntity entity) {
+    public float getPullModelProperty(ItemStack stack, World world, LivingEntity entity) {
 
         if (entity == null || !entity.getUseItem().equals(stack)) {
             return 0.0F;
@@ -109,7 +110,7 @@ public class FluxCrossbowItem extends CrossbowItemCoFH implements IFluxItem {
         int duration = baseDuration - entity.getUseItemRemainingTicks();
 
         if (isEmpowered(stack)) {
-            if (repeats >= MAX_REPEATS) {
+            if (repeats >= maxRepeats) {
                 return 0.0F;
             }
             int interval = getRepeatInterval(stack);
@@ -159,7 +160,7 @@ public class FluxCrossbowItem extends CrossbowItemCoFH implements IFluxItem {
             int duration = baseDuration - durationRemaining;
 
             if (isEmpowered(stack)) {
-                if (repeats >= MAX_REPEATS) {
+                if (repeats >= maxRepeats) {
                     return;
                 }
                 cooldown++;
@@ -168,7 +169,7 @@ public class FluxCrossbowItem extends CrossbowItemCoFH implements IFluxItem {
                 if (repeats > 0) {
                     if (duration == next - 2) {
                         if (!loadAmmo(living, stack)) {
-                            repeats = MAX_REPEATS;
+                            repeats = maxRepeats;
                             living.releaseUsingItem();
                             return;
                         }
@@ -182,7 +183,7 @@ public class FluxCrossbowItem extends CrossbowItemCoFH implements IFluxItem {
                             living.releaseUsingItem();
                             return;
                         }
-                        if (repeats >= MAX_REPEATS) {
+                        if (repeats >= maxRepeats) {
                             living.releaseUsingItem();
                         }
                         return;

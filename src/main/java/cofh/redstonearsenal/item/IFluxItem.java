@@ -31,8 +31,8 @@ import static cofh.lib.util.helpers.StringHelper.*;
 
 public interface IFluxItem extends ICoFHItem, IEnergyContainerItem, IMultiModeItem {
 
-    int ENERGY_PER_USE = 200;
-    int ENERGY_PER_USE_EMPOWERED = 800;
+    int ENERGY_PER_USE = 500;
+    int ENERGY_PER_USE_EMPOWERED = 2000;
 
     default Capability<? extends IEnergyStorage> getEnergyCapability() {
 
@@ -117,6 +117,16 @@ public interface IFluxItem extends ICoFHItem, IEnergyContainerItem, IMultiModeIt
             return 0;
         }
         return MathHelper.clamp(1.0D - getEnergyStored(stack) / (double) getMaxEnergyStored(stack), 0.0D, 1.0D);
+    }
+
+    default float getChargedModelProperty(ItemStack stack, World world, LivingEntity entity) {
+
+         return getEnergyStored(stack) > 0 ? 1F : 0F;
+    }
+
+    default float getEmpoweredModelProperty(ItemStack stack, World world, LivingEntity entity) {
+
+        return getEnergyStored(stack) > 0 && isEmpowered(stack) ? 1F : 0F;
     }
 
     // region IMultiModeItem

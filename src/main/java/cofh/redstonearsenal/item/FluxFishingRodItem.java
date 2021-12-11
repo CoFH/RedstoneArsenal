@@ -49,8 +49,8 @@ public class FluxFishingRodItem extends FishingRodItemCoFH implements IFluxItem 
         setParams(enchantability, luckModifier, speedModifier);
 
         ProxyUtils.registerItemModelProperty(this, new ResourceLocation("cast"), (stack, world, entity) -> entity instanceof PlayerEntity && ((PlayerEntity) entity).fishing != null ? 1F : 0F);
-        ProxyUtils.registerItemModelProperty(this, new ResourceLocation("charged"), (stack, world, entity) -> getEnergyStored(stack) > 0 ? 1F : 0F);
-        ProxyUtils.registerItemModelProperty(this, new ResourceLocation("active"), (stack, world, entity) -> getEnergyStored(stack) > 0 && isEmpowered(stack) ? 1F : 0F);
+        ProxyUtils.registerItemModelProperty(this, new ResourceLocation("charged"), this::getChargedModelProperty);
+        ProxyUtils.registerItemModelProperty(this, new ResourceLocation("active"), this::getEmpoweredModelProperty);
     }
 
     @Override

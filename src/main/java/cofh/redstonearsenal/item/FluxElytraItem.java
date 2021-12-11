@@ -50,8 +50,8 @@ public class FluxElytraItem extends ArmorItemCoFH implements IFluxItem {
         this.extract = maxTransfer;
         this.receive = maxTransfer;
 
-        ProxyUtils.registerItemModelProperty(this, new ResourceLocation("charged"), (stack, world, entity) -> getEnergyStored(stack) > 0 ? 1F : 0F);
-        ProxyUtils.registerItemModelProperty(this, new ResourceLocation("active"), (stack, world, entity) -> getEnergyStored(stack) > 0 && isEmpowered(stack) ? 1F : 0F);
+        ProxyUtils.registerItemModelProperty(this, new ResourceLocation("charged"), this::getChargedModelProperty);
+        ProxyUtils.registerItemModelProperty(this, new ResourceLocation("active"), this::getEmpoweredModelProperty);
     }
 
     @Override
@@ -168,8 +168,8 @@ public class FluxElytraItem extends ArmorItemCoFH implements IFluxItem {
             Vector3d velocity = entity.getDeltaMovement();
             entity.setDeltaMovement(velocity.add(look.x * speed - velocity.x * 0.5, look.y * speed - velocity.y * 0.5, look.z * speed - velocity.z * 0.5));
 
-            if (entity.level.isClientSide) {
-                entity.level.addParticle(RedstoneParticleData.REDSTONE, entity.getX(), entity.getY(), entity.getZ(), this.random.nextGaussian() * 0.05D, -entity.getDeltaMovement().y * 0.5D, Item.random.nextGaussian() * 0.05D);
+            if (entity.level.isClientSide()) {
+                entity.level.addParticle(RedstoneParticleData.REDSTONE, entity.getX(), entity.getY(), entity.getZ(), 0, 0, 0);
             }
         }
     }

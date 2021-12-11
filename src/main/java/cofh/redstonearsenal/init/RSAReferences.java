@@ -31,8 +31,8 @@ public class RSAReferences {
     // region BLOCKS
     @ObjectHolder(ID_FLUX_GLOW_AIR)
     public static final Block FLUX_GLOW_AIR = null;
-    @ObjectHolder(ID_FLUX_GRASS_PATH)
-    public static final Block FLUX_GRASS_PATH = null;
+    @ObjectHolder(ID_FLUX_PATH)
+    public static final Block FLUX_PATH = null;
     // endregion
 
     // region ITEMS

@@ -39,5 +39,8 @@
   "item.redstone_arsenal.flux_leggings": "Flux-Infused Leggings",
   "item.redstone_arsenal.flux_boots": "Flux-Infused Boots",
   "item.redstone_arsenal.flux_elytra": "Flux-Infused Elytra",
-  "item.redstone_arsenal.flux_controller": "Flux-Infused Elytra Controller"
+  "item.redstone_arsenal.flux_controller": "Flux-Infused Elytra Controller",
+
+  "block.redstone_arsenal.flux_glow_air": "Flux-Infused Air",
+  "block.redstone_arsenal.flux_path": "Flux-Infused Path"
 }

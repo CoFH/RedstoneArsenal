@@ -13,6 +13,7 @@ import net.minecraft.item.ItemGroup;
 import net.minecraft.item.Rarity;
 import net.minecraft.item.crafting.Ingredient;
 import net.minecraft.util.SoundEvents;
+import net.minecraft.util.math.MathHelper;
 
 import static cofh.redstonearsenal.RedstoneArsenal.BLOCKS;
 import static cofh.redstonearsenal.RedstoneArsenal.ITEMS;
@@ -33,8 +34,8 @@ public class RSAItems {
 
         Rarity rarity = Rarity.UNCOMMON;
 
-        int energy = 320000;
-        int xfer = 4000;
+        int energy = 800000;
+        int xfer = 10000;
 
         ITEMS.register(ID_FLUX_GEM, () -> new ItemCoFH(new Item.Properties().tab(misc).rarity(rarity)));
         ITEMS.register(ID_FLUX_INGOT, () -> new ItemCoFH(new Item.Properties().tab(misc).rarity(rarity)));
@@ -54,9 +55,9 @@ public class RSAItems {
 
         ITEMS.register("flux_sword", () -> new FluxSwordItem(MATERIAL_FLUX_METAL, 4, -2.4F, new Item.Properties().stacksTo(1).tab(combat).rarity(rarity).setNoRepair(), energy, xfer));
         ITEMS.register("flux_shield", () -> new FluxShieldItem(MATERIAL_FLUX_METAL.getEnchantmentValue(), new Item.Properties().stacksTo(1).tab(combat).rarity(rarity).setNoRepair(), energy, xfer));
-        ITEMS.register("flux_bow", () -> new FluxBowItem(MATERIAL_FLUX_METAL.getEnchantmentValue(), 1, 1, 1, new Item.Properties().stacksTo(1).tab(combat).rarity(rarity).setNoRepair(), energy, xfer));
-        ITEMS.register("flux_crossbow", () -> new FluxCrossbowItem(MATERIAL_FLUX_METAL.getEnchantmentValue(), 1, 1, 1, new Item.Properties().stacksTo(1).tab(combat).rarity(rarity).setNoRepair(), energy, xfer));
-        ITEMS.register("flux_quiver", () -> new FluxQuiverItem(MATERIAL_FLUX_METAL.getEnchantmentValue(), new Item.Properties().stacksTo(1).tab(combat).rarity(rarity).setNoRepair(), energy, xfer));
+        ITEMS.register("flux_bow", () -> new FluxBowItem(MATERIAL_FLUX_METAL.getEnchantmentValue(), 1, 1, 1, new Item.Properties().stacksTo(1).tab(combat).rarity(rarity).setNoRepair(), MathHelper.floor(energy * 0.4F), xfer));
+        ITEMS.register("flux_crossbow", () -> new FluxCrossbowItem(MATERIAL_FLUX_METAL.getEnchantmentValue(), 1, 1, 1, 20, new Item.Properties().stacksTo(1).tab(combat).rarity(rarity).setNoRepair(), MathHelper.floor(energy * 0.4F), xfer));
+        ITEMS.register("flux_quiver", () -> new FluxQuiverItem(MATERIAL_FLUX_METAL.getEnchantmentValue(), new Item.Properties().stacksTo(1).tab(combat).rarity(rarity).setNoRepair(), MathHelper.floor(energy * 0.4F), xfer, 2.0F));
         ITEMS.register(ID_FLUX_TRIDENT, () -> new FluxTridentItem(MATERIAL_FLUX_METAL, 2, 6, -2.9F, 2.0F, new Item.Properties().stacksTo(1).tab(combat).rarity(rarity).setNoRepair().setISTER(() -> FluxTridentISTER::new), energy, xfer));
 
         ITEMS.register("flux_shovel", () -> new FluxShovelItem(MATERIAL_FLUX_METAL, 1.5F, -3.0F, new Item.Properties().stacksTo(1).tab(tools).rarity(rarity).setNoRepair(), energy, xfer));
@@ -64,7 +65,7 @@ public class RSAItems {
         ITEMS.register("flux_axe", () -> new FluxAxeItem(MATERIAL_FLUX_METAL, 6.0F, -3.0F, new Item.Properties().stacksTo(1).tab(tools).rarity(rarity).setNoRepair(), energy, xfer));
         //ITEMS.register("flux_hoe", () -> new FluxHoeItem(MATERIAL_FLUX_METAL, -1.0F, new Item.Properties().stacksTo(1).tab(tools).rarity(rarity).setNoRepair(), energy, xfer));
         ITEMS.register("flux_excavator", () -> new FluxExcavatorItem(MATERIAL_FLUX_METAL, 2.0F, -3.0F, new Item.Properties().stacksTo(1).tab(tools).rarity(rarity).setNoRepair(), energy, xfer));
-        ITEMS.register("flux_hammer", () -> new FluxHammerItem(MATERIAL_FLUX_METAL, 6.0F, -3.2F, new Item.Properties().stacksTo(1).tab(tools).rarity(rarity).setNoRepair(), energy, xfer));
+        ITEMS.register("flux_hammer", () -> new FluxHammerItem(MATERIAL_FLUX_METAL, 5.0F, -3.4F, new Item.Properties().stacksTo(1).tab(tools).rarity(rarity).setNoRepair(), energy, xfer));
         ITEMS.register("flux_fishing_rod", () -> new FluxFishingRodItem(MATERIAL_FLUX_METAL.getEnchantmentValue(), 0, 0, new Item.Properties().stacksTo(1).tab(tools).rarity(rarity).setNoRepair(), energy, xfer));
         ITEMS.register(ID_FLUX_WRENCH, () -> new FluxWrenchItem(MATERIAL_FLUX_METAL, 2, -2.0F, new Item.Properties().stacksTo(1).tab(combat).rarity(rarity).setNoRepair(), energy, xfer));
 

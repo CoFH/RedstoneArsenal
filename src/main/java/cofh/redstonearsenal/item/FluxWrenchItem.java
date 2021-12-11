@@ -65,15 +65,15 @@ public class FluxWrenchItem extends ItemCoFH implements IFluxItem {
 
         this.damage = tier.getAttackDamageBonus() + attackDamageIn;
         this.attackSpeed = attackSpeedIn;
-        this.throwCooldown = (int) (20 / attackSpeedIn) + 2;
+        this.throwCooldown = (int) (20 / (4.0F + attackSpeedIn)) + 2;
         setEnchantability(tier.getEnchantmentValue());
 
         this.maxEnergy = energy;
         this.extract = xfer;
         this.receive = xfer;
 
-        ProxyUtils.registerItemModelProperty(this, new ResourceLocation("charged"), (stack, world, entity) -> getEnergyStored(stack) > 0 ? 1F : 0F);
-        ProxyUtils.registerItemModelProperty(this, new ResourceLocation("active"), (stack, world, entity) -> getEnergyStored(stack) > 0 && isEmpowered(stack) ? 1F : 0F);
+        ProxyUtils.registerItemModelProperty(this, new ResourceLocation("charged"), this::getChargedModelProperty);
+        ProxyUtils.registerItemModelProperty(this, new ResourceLocation("active"), this::getEmpoweredModelProperty);
     }
 
     @Override
@@ -168,15 +168,6 @@ public class FluxWrenchItem extends ItemCoFH implements IFluxItem {
         }
         BlockState state = world.getBlockState(pos);
         Block block = state.getBlock();
-
-        //        if (player.isSecondaryUseActive() && block instanceof IDismantleable && ((IDismantleable) block).canDismantle(world, pos, state, player)) {
-        //            if (Utils.isServerWorld(world)) {
-        //                BlockRayTraceResult target = new BlockRayTraceResult(context.getClickLocation(), context.getClickedFace(), context.getClickedPos(), context.isInside());
-        //                ((IDismantleable) block).dismantleBlock(world, pos, state, target, player, false);
-        //            }
-        //            player.swing(context.getHand());
-        //            return true;
-        //        } else if (!player.isSecondaryUseActive()) {
         if (block instanceof IWrenchable && ((IWrenchable) block).canWrench(world, pos, state, player)) {
             ((IWrenchable) block).wrenchBlock(world, pos, state, result, player);
             useEnergy(stack, false, player.abilities.instabuild);
@@ -185,7 +176,6 @@ public class FluxWrenchItem extends ItemCoFH implements IFluxItem {
             useEnergy(stack, false, player.abilities.instabuild);
             return true;
         }
-        //        }
         return false;
     }
 

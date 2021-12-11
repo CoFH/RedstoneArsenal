@@ -29,7 +29,7 @@ import java.util.stream.IntStream;
 
 public class ShockwaveRenderer extends EntityRenderer<ShockwaveEntity> {
 
-    public static List<List<int[]>> offsetsByTick = getOffsetsByTick(ShockwaveEntity.LIFESPAN);
+    public static List<List<int[]>> offsetsByTick = getOffsetsByTick(ShockwaveEntity.duration);
     protected static final BlockRendererDispatcher blockRenderer = Minecraft.getInstance().getBlockRenderer();
     protected static final List<RenderType> renderTypes = RenderType.chunkBufferLayers();
 
@@ -44,7 +44,7 @@ public class ShockwaveRenderer extends EntityRenderer<ShockwaveEntity> {
         BlockPos origin = entity.blockPosition();
         World world = entity.level;
 
-        for (int i = Math.max(0, entity.tickCount - ShockwaveEntity.ANIM_DURATION); i <= entity.tickCount; ++i) {
+        for (int i = Math.max(0, entity.tickCount - ShockwaveEntity.animDuration); i <= entity.tickCount; ++i) {
             if (i >= offsetsByTick.size()) {
                 break;
             }
@@ -89,13 +89,13 @@ public class ShockwaveRenderer extends EntityRenderer<ShockwaveEntity> {
     protected static List<List<int[]>> getOffsetsByTick(int maxTicks) {
 
         List<List<int[]>> ticks = IntStream.range(0, maxTicks).mapToObj(i -> new ArrayList<int[]>()).collect(Collectors.toList());
-        float max = maxTicks * ShockwaveEntity.DISTANCE_PER_TICK;
+        float max = maxTicks * ShockwaveEntity.defaultSpeed;
         float max2 = max * max;
         for (int x = 0; x <= MathHelper.ceil(max); ++x) {
             for (int z = 0; z <= x; ++z) {
                 int distSqr = x * x + z * z;
                 if (distSqr < max2) {
-                    int index = Math.round(MathHelper.sqrt(distSqr) / ShockwaveEntity.DISTANCE_PER_TICK);
+                    int index = Math.round(MathHelper.sqrt(distSqr) / ShockwaveEntity.defaultSpeed);
                     if (index < ticks.size()) {
                         addReflections(ticks.get(index), x, z);
                     }

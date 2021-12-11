@@ -41,18 +41,27 @@ public class FluxQuiverItem extends ItemCoFH implements IFluxItem {
     protected final int maxEnergy;
     protected final int extract;
     protected final int receive;
+    protected int energyPerUse = ENERGY_PER_USE;
+    protected int energyPerUseEmpowered = ENERGY_PER_USE_EMPOWERED;
 
     public FluxQuiverItem(int enchantability, Properties builder, int energy, int xfer) {
+
+        this(enchantability, builder, energy, xfer, 1.0F);
+    }
+
+    public FluxQuiverItem(int enchantability, Properties builder, int energy, int xfer, float energyUseMod) {
 
         super(builder);
 
         this.maxEnergy = energy;
         this.extract = xfer;
         this.receive = xfer;
+        this.energyPerUse *= energyUseMod;
+        this.energyPerUseEmpowered *= energyUseMod;
         setEnchantability(enchantability);
 
-        ProxyUtils.registerItemModelProperty(this, new ResourceLocation("charged"), (stack, world, entity) -> getEnergyStored(stack) > 0 ? 1F : 0F);
-        ProxyUtils.registerItemModelProperty(this, new ResourceLocation("active"), (stack, world, entity) -> getEnergyStored(stack) > 0 && isEmpowered(stack) ? 1F : 0F);
+        ProxyUtils.registerItemModelProperty(this, new ResourceLocation("charged"), this::getChargedModelProperty);
+        ProxyUtils.registerItemModelProperty(this, new ResourceLocation("active"), this::getEmpoweredModelProperty);
     }
 
     @Override
@@ -88,6 +97,12 @@ public class FluxQuiverItem extends ItemCoFH implements IFluxItem {
     public ICapabilityProvider initCapabilities(ItemStack stack, @Nullable CompoundNBT nbt) {
 
         return new FluxQuiverItemWrapper(stack, this);
+    }
+
+    @Override
+    public int getEnergyPerUse(boolean empowered) {
+
+        return empowered ? energyPerUseEmpowered : energyPerUse;
     }
 
     // region IEnergyContainerItem
@@ -137,11 +152,11 @@ public class FluxQuiverItem extends ItemCoFH implements IFluxItem {
             if (isEmpowered(quiverItem)) {
                 ItemStack weapon = shooter.getMainHandItem().isEmpty() ? shooter.getOffhandItem() : shooter.getMainHandItem();
                 if (!weapon.isEmpty()) {
-                    if (ArcheryHelper.validBow(weapon)) {
-                        arrow.setNoGravity(true);
-                    } else if (weapon.getItem() instanceof CrossbowItem) {
+                    if (weapon.getItem() instanceof CrossbowItem) {
                         arrow.setExplodeArrow(true);
                         arrow.setBaseDamage(8);
+                    } else {
+                        arrow.setNoGravity(true);
                     }
                 }
             }

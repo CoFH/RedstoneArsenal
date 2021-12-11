@@ -3,10 +3,18 @@ package cofh.redstonearsenal.util;
 import cofh.core.compat.curios.CuriosProxy;
 import cofh.redstonearsenal.capability.IFluxShieldedItem;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.MobEntity;
+import net.minecraft.entity.monster.MonsterEntity;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.particles.ParticleTypes;
 import net.minecraft.particles.RedstoneParticleData;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.SoundEvents;
+import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.util.math.vector.Vector3d;
+import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.common.util.LazyOptional;
 
 import java.util.Random;
@@ -102,10 +110,18 @@ public class FluxShieldingHelper {
 
     protected static void onUseFluxShieldCharge(LivingEntity entity) {
 
-        entity.level.playSound(null, entity.blockPosition(), SoundEvents.ITEM_BREAK, SoundCategory.PLAYERS, 1.0F, 1.0F); //TODO: soundcategory
-        Random random = entity.getRandom();
-        for (int i = 0; i < 20; ++i) { //TODO: fix particles
-            entity.level.addParticle(RedstoneParticleData.REDSTONE, entity.getX(), entity.getY(), entity.getZ(), random.nextFloat() - 0.5, random.nextFloat() - 0.5, random.nextFloat() - 0.5);
+        SoundCategory category = SoundCategory.NEUTRAL;
+        if (entity instanceof PlayerEntity) {
+            category = SoundCategory.PLAYERS;
+        } else if (entity instanceof MonsterEntity) {
+            category = SoundCategory.HOSTILE;
+        }
+        entity.level.playSound(null, entity.blockPosition(), SoundEvents.ITEM_BREAK, category, 1.0F, 1.0F); //TODO: sound event
+
+        AxisAlignedBB bounds = entity.getBoundingBox();
+        Vector3d pos = bounds.getCenter();
+        if (!entity.level.isClientSide()) {
+            ((ServerWorld) entity.level).sendParticles(RedstoneParticleData.REDSTONE, pos.x(), pos.y(), pos.z(), 20, bounds.getXsize() * 0.5 + 0.2, bounds.getYsize() * 0.5 + 0.2, bounds.getZsize() * 0.5 + 0.2, 0);
         }
     }
 

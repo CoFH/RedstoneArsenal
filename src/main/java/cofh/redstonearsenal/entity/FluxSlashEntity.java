@@ -22,10 +22,9 @@ import static cofh.redstonearsenal.init.RSAReferences.FLUX_SLASH_ENTITY;
 public class FluxSlashEntity extends ProjectileEntity {
 
     public static float defaultSpeed = 2.0F;
-    public static int defaultDuration = 5;
 
     public float damage = 2.0F;
-    public int duration = defaultDuration;
+    public int duration = 5;
 
     public final float zRot;
 
@@ -49,11 +48,16 @@ public class FluxSlashEntity extends ProjectileEntity {
         this.shootFromRotation(livingEntityIn, livingEntityIn.xRot, livingEntityIn.yRot, 0.0F, defaultSpeed, 0.5F);
     }
 
-    public FluxSlashEntity(World worldIn, LivingEntity livingEntityIn, int enchantModifier) {
+    public FluxSlashEntity(World worldIn, LivingEntity livingEntityIn, int damageModifier) {
 
         this(worldIn, livingEntityIn);
-        this.damage += enchantModifier;
-        this.duration += enchantModifier;
+        this.damage += damageModifier;
+    }
+
+    public FluxSlashEntity(World worldIn, LivingEntity livingEntityIn, int damageModifier, int durationModifier) {
+
+        this(worldIn, livingEntityIn, damageModifier);
+        this.duration += durationModifier;
     }
 
     @Override

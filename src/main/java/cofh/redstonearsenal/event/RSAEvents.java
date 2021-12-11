@@ -24,7 +24,7 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
 import static cofh.lib.util.constants.Constants.ID_REDSTONE_ARSENAL;
-import static cofh.redstonearsenal.init.RSAReferences.FLUX_GRASS_PATH;
+import static cofh.redstonearsenal.init.RSAReferences.FLUX_PATH;
 
 @Mod.EventBusSubscriber(modid = ID_REDSTONE_ARSENAL)
 public class RSAEvents {
@@ -114,8 +114,8 @@ public class RSAEvents {
         if (stack.getItem() instanceof FluxShovelItem) {
             FluxShovelItem shovel = (FluxShovelItem) stack.getItem();
             if (state.is(Tags.Blocks.DIRT) && shovel.isEmpowered(stack)) {
-                event.setFinalState(FLUX_GRASS_PATH.defaultBlockState());
-            } else if (state.is(Blocks.GRASS_PATH) || state.is(FLUX_GRASS_PATH)) {
+                event.setFinalState(FLUX_PATH.defaultBlockState());
+            } else if (state.is(Blocks.GRASS_PATH) || state.is(FLUX_PATH)) {
                 event.setFinalState(Blocks.DIRT.defaultBlockState());
             }
         }
@@ -142,6 +142,7 @@ public class RSAEvents {
     @SubscribeEvent(priority = EventPriority.LOWEST)
     public static void handleLivingHurtEvent(LivingHurtEvent event) {
 
+        System.out.println(event.getAmount());
         if (!event.isCanceled() && FluxShieldingHelper.useFluxShieldCharge(event.getEntityLiving())) {
             event.setAmount(Math.max(event.getAmount() - 500.0F, 0));
         }

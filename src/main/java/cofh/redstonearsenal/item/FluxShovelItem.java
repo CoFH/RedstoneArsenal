@@ -33,7 +33,7 @@ import javax.annotation.Nullable;
 import java.util.List;
 
 import static cofh.lib.util.helpers.StringHelper.getTextComponent;
-import static cofh.redstonearsenal.init.RSAReferences.FLUX_GRASS_PATH;
+import static cofh.redstonearsenal.init.RSAReferences.FLUX_PATH;
 import static net.minecraft.util.text.TextFormatting.GRAY;
 
 public class FluxShovelItem extends ShovelItemCoFH implements IFluxItem {
@@ -56,8 +56,8 @@ public class FluxShovelItem extends ShovelItemCoFH implements IFluxItem {
         this.extract = xfer;
         this.receive = xfer;
 
-        ProxyUtils.registerItemModelProperty(this, new ResourceLocation("charged"), (stack, world, entity) -> getEnergyStored(stack) > 0 ? 1F : 0F);
-        ProxyUtils.registerItemModelProperty(this, new ResourceLocation("active"), (stack, world, entity) -> getEnergyStored(stack) > 0 && isEmpowered(stack) ? 1F : 0F);
+        ProxyUtils.registerItemModelProperty(this, new ResourceLocation("charged"), this::getChargedModelProperty);
+        ProxyUtils.registerItemModelProperty(this, new ResourceLocation("active"), this::getEmpoweredModelProperty);
     }
 
     @Override
@@ -95,7 +95,7 @@ public class FluxShovelItem extends ShovelItemCoFH implements IFluxItem {
         ItemStack stack = context.getItemInHand();
         BlockState state = world.getBlockState(pos);
         BlockState newState = state.getToolModifiedState(world, pos, player, context.getItemInHand(), ToolType.SHOVEL);
-        if (newState != null && world.getBlockState(pos.above()).canBeReplaced(new BlockItemUseContext(context)) && useEnergy(stack, newState.is(FLUX_GRASS_PATH), player.abilities.instabuild)) {
+        if (newState != null && world.getBlockState(pos.above()).canBeReplaced(new BlockItemUseContext(context)) && useEnergy(stack, newState.is(FLUX_PATH), player.abilities.instabuild)) {
             world.playSound(player, pos, SoundEvents.SHOVEL_FLATTEN, SoundCategory.BLOCKS, 1.0F, 1.0F);
             world.setBlock(pos, newState, 11);
             return ActionResultType.sidedSuccess(world.isClientSide());

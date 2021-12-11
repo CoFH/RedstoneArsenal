@@ -18,6 +18,7 @@ import net.minecraft.block.BlockState;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.enchantment.Enchantment;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.attributes.Attribute;
 import net.minecraft.entity.ai.attributes.AttributeModifier;
@@ -28,6 +29,8 @@ import net.minecraft.inventory.EquipmentSlotType;
 import net.minecraft.item.IItemTier;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.potion.EffectInstance;
+import net.minecraft.potion.Effects;
 import net.minecraft.util.*;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockRayTraceResult;
@@ -46,12 +49,14 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.List;
 
+import static cofh.lib.util.constants.Constants.UUID_TOOL_KNOCKBACK;
 import static cofh.lib.util.helpers.StringHelper.getTextComponent;
 import static net.minecraft.util.text.TextFormatting.GRAY;
 
 public class FluxHammerItem extends HammerItem implements IFluxItem {
 
     public static final int COOLDOWN = 160;
+    public static final float KNOCKBACK_MODIFIER = 1.5F;
 
     protected final float damage;
     protected final float attackSpeed;
@@ -71,8 +76,8 @@ public class FluxHammerItem extends HammerItem implements IFluxItem {
         this.extract = xfer;
         this.receive = xfer;
 
-        ProxyUtils.registerItemModelProperty(this, new ResourceLocation("charged"), (stack, world, entity) -> getEnergyStored(stack) > 0 ? 1F : 0F);
-        ProxyUtils.registerItemModelProperty(this, new ResourceLocation("active"), (stack, world, entity) -> getEnergyStored(stack) > 0 && isEmpowered(stack) ? 1F : 0F);
+        ProxyUtils.registerItemModelProperty(this, new ResourceLocation("charged"), this::getChargedModelProperty);
+        ProxyUtils.registerItemModelProperty(this, new ResourceLocation("active"), this::getEmpoweredModelProperty);
     }
 
     @Override
@@ -114,18 +119,10 @@ public class FluxHammerItem extends HammerItem implements IFluxItem {
                 if (result.getType() != RayTraceResult.Type.MISS) {
                     BlockPos pos = result.getBlockPos();
                     BlockState state = world.getBlockState(pos);
-                    if (!world.isClientSide()) {
-                        if ((isEmpowered(stack) || (this.canHarvestBlock(stack, state) && player.mayUseItemAt(pos, result.getDirection(), stack))) && useEnergy(stack, true, player.abilities.instabuild)) {
-                            if (isEmpowered(stack)) {
-                                world.addFreshEntity(new ShockwaveEntity(world, player, Vector3d.atCenterOf(pos), player.yRot));
-                            } else {
-                                //TODO: change
-                                world.addFreshEntity(new FallingBlockEntity(world, pos.getX() + 0.5D, pos.getY(), pos.getZ() + 0.5D, state));
-                            }
-                            player.getCooldowns().addCooldown(this, getUseCooldown(stack));
-                        }
+                    if (!world.isClientSide() && isEmpowered(stack) && useEnergy(stack, true, player.abilities.instabuild)) {
+                        world.addFreshEntity(new ShockwaveEntity(world, player, Vector3d.atCenterOf(pos), player.yRot));
+                        player.getCooldowns().addCooldown(this, getUseCooldown(stack));
                     }
-                    //world.playSound(player, pos, SoundEvents.RAVAGER_STEP, SoundCategory.BLOCKS, 1.0F, 1.0F);
                     world.playSound(player, pos, state.getSoundType(world, pos, player).getBreakSound(), SoundCategory.BLOCKS, 1.0F, 1.0F);
                     return ActionResult.success(stack);
                 }
@@ -135,9 +132,14 @@ public class FluxHammerItem extends HammerItem implements IFluxItem {
     }
 
     @Override
-    public int getUseDuration(ItemStack stack) {
+    public void inventoryTick(ItemStack stack, World world, Entity entity, int slot, boolean selected) {
 
-        return 72000;
+        if (selected && isEmpowered(stack) && hasEnergy(stack, true) && world.getGameTime() % 16 == 0) {
+            //if (entity instanceof LivingEntity) {
+            //    ((LivingEntity) entity).addEffect(new EffectInstance(Effects.MOVEMENT_SPEED, 4, 0));
+            //}
+            useEnergy(stack, true, entity);
+        }
     }
 
     protected int getUseCooldown(ItemStack stack) {
@@ -147,7 +149,7 @@ public class FluxHammerItem extends HammerItem implements IFluxItem {
 
     protected float getEfficiency(ItemStack stack) {
 
-        return hasEnergy(stack, false) ? speed : 1.0F;
+        return hasEnergy(stack, false) ? isEmpowered(stack) ? Math.max(speed * 0.25F, 1.0F) : speed : 1.0F;
     }
 
     @Override
@@ -179,18 +181,26 @@ public class FluxHammerItem extends HammerItem implements IFluxItem {
         if (slot == EquipmentSlotType.MAINHAND) {
             multimap.put(Attributes.ATTACK_DAMAGE, new AttributeModifier(BASE_ATTACK_DAMAGE_UUID, "Tool modifier", getAttackDamage(stack), AttributeModifier.Operation.ADDITION));
             multimap.put(Attributes.ATTACK_SPEED, new AttributeModifier(BASE_ATTACK_SPEED_UUID, "Tool modifier", getAttackSpeed(stack), AttributeModifier.Operation.ADDITION));
+            if (isEmpowered(stack) && hasEnergy(stack, true)) {
+                multimap.put(Attributes.ATTACK_KNOCKBACK, new AttributeModifier(UUID_TOOL_KNOCKBACK, "Tool modifier", getKnockbackModifier(stack), AttributeModifier.Operation.ADDITION));
+            }
         }
         return multimap;
     }
 
     protected float getAttackDamage(ItemStack stack) {
 
-        return hasEnergy(stack, false) ? damage : 0.0F;
+        return hasEnergy(stack, false) ? isEmpowered(stack) && hasEnergy(stack, true) ? damage + 2.0F : damage : 0.0F;
     }
 
     protected float getAttackSpeed(ItemStack stack) {
 
-        return attackSpeed;
+        return hasEnergy(stack, false) && isEmpowered(stack) && hasEnergy(stack, true) ? attackSpeed + 0.8F : attackSpeed;
+    }
+
+    protected float getKnockbackModifier(ItemStack stack) {
+
+        return KNOCKBACK_MODIFIER;
     }
 
     // region IEnergyContainerItem
