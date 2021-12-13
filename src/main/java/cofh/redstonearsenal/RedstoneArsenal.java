@@ -25,7 +25,7 @@ import org.apache.logging.log4j.Logger;
 import static cofh.lib.util.constants.Constants.ID_REDSTONE_ARSENAL;
 import static cofh.redstonearsenal.init.RSAReferences.*;
 
-@Mod(ID_REDSTONE_ARSENAL)
+@Mod (ID_REDSTONE_ARSENAL)
 public class RedstoneArsenal {
 
     public static final Logger LOG = LogManager.getLogger(ID_REDSTONE_ARSENAL);
@@ -56,7 +56,6 @@ public class RedstoneArsenal {
             CuriosEvents.register();
         }
     }
-
 
     // region INITIALIZATION
     private void commonSetup(final FMLCommonSetupEvent event) {

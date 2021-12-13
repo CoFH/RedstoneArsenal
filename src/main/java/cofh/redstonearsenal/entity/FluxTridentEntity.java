@@ -128,7 +128,7 @@ public class FluxTridentEntity extends AbstractArrowEntity {
         return this.tridentItem.copy();
     }
 
-    @OnlyIn(Dist.CLIENT)
+    @OnlyIn (Dist.CLIENT)
     public boolean isFoil() {
 
         return this.entityData.get(ID_FOIL);

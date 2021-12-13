@@ -31,10 +31,10 @@ import static cofh.lib.util.references.EnsorcReferences.QUICK_DRAW;
 import static cofh.redstonearsenal.capability.CapabilityFluxShielding.FLUX_SHIELDED_ITEM_CAPABILITY;
 import static cofh.redstonearsenal.init.RSAReferences.FLUX_PATH;
 
-@Mod.EventBusSubscriber(modid = ID_REDSTONE_ARSENAL)
+@Mod.EventBusSubscriber (modid = ID_REDSTONE_ARSENAL)
 public class RSAEvents {
 
-    @SubscribeEvent(priority = EventPriority.LOWEST)
+    @SubscribeEvent (priority = EventPriority.LOWEST)
     public static void handleAttackEntityEvent(AttackEntityEvent event) {
 
         if (!event.isCanceled()) {
@@ -53,7 +53,7 @@ public class RSAEvents {
         }
     }
 
-    @SubscribeEvent(priority = EventPriority.HIGH)
+    @SubscribeEvent (priority = EventPriority.HIGH)
     public static void handleLivingFallEvent(LivingFallEvent event) {
 
         LivingEntity living = event.getEntityLiving();
@@ -71,7 +71,7 @@ public class RSAEvents {
         }
     }
 
-    @SubscribeEvent(priority = EventPriority.LOWEST)
+    @SubscribeEvent (priority = EventPriority.LOWEST)
     public static void handleCriticalHitEvent(CriticalHitEvent event) {
 
         if (!event.isCanceled() && event.isVanillaCritical()) {
@@ -82,7 +82,7 @@ public class RSAEvents {
         }
     }
 
-    @SubscribeEvent(priority = EventPriority.LOWEST)
+    @SubscribeEvent (priority = EventPriority.LOWEST)
     public static void handleLivingEquipmentChangeEvent(LivingEquipmentChangeEvent event) {
 
         ItemStack from = event.getFrom();
@@ -129,7 +129,7 @@ public class RSAEvents {
         }
     }
 
-    @SubscribeEvent(priority = EventPriority.LOWEST)
+    @SubscribeEvent (priority = EventPriority.LOWEST)
     public static void handleLivingAttackEvent(LivingAttackEvent event) {
 
         LivingEntity target = event.getEntityLiving();
@@ -150,7 +150,7 @@ public class RSAEvents {
         }
     }
 
-    @SubscribeEvent(priority = EventPriority.LOWEST)
+    @SubscribeEvent (priority = EventPriority.LOWEST)
     public static void handleLivingHurtEvent(LivingHurtEvent event) {
 
         LivingEntity target = event.getEntityLiving();

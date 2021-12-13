@@ -84,7 +84,7 @@ public class FluxTridentItem extends TridentItemCoFH implements IMultiModeFluxIt
     }
 
     @Override
-    @OnlyIn(Dist.CLIENT)
+    @OnlyIn (Dist.CLIENT)
     public void appendHoverText(ItemStack stack, @Nullable World worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn) {
 
         if (Screen.hasShiftDown() || CoreConfig.alwaysShowDetails) {

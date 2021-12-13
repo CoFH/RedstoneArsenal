@@ -30,7 +30,7 @@ public class FluxElytraControllerItem extends Item implements ICoFHItem, IMultiM
     }
 
     @Override
-    @OnlyIn(Dist.CLIENT)
+    @OnlyIn (Dist.CLIENT)
     public void appendHoverText(ItemStack stack, @Nullable World worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn) {
 
         if (isEmpowered(stack)) {

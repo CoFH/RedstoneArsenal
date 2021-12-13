@@ -60,7 +60,7 @@ public class FluxCrossbowItem extends CrossbowItemCoFH implements IMultiModeFlux
     }
 
     @Override
-    @OnlyIn(Dist.CLIENT)
+    @OnlyIn (Dist.CLIENT)
     public void appendHoverText(ItemStack stack, @Nullable World worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn) {
 
         if (!getLoadedAmmo(stack).isEmpty()) {
@@ -175,8 +175,7 @@ public class FluxCrossbowItem extends CrossbowItemCoFH implements IMultiModeFlux
             if (isEmpowered(stack)) {
                 repeats = maxRepeats + 1;
                 startCooldown(living, stack, getUseDuration(stack) - durationRemaining);
-            }
-            else if (durationRemaining < 0 && !isCharged(stack) && loadAmmo(living, stack)) {
+            } else if (durationRemaining < 0 && !isCharged(stack) && loadAmmo(living, stack)) {
                 setCharged(stack, true);
                 world.playSound(null, living.getX(), living.getY(), living.getZ(), SoundEvents.CROSSBOW_LOADING_END, living instanceof PlayerEntity ? SoundCategory.PLAYERS : SoundCategory.HOSTILE, 1.0F, 1.0F / (random.nextFloat() * 0.5F + 1.0F) + 0.2F);
             }

@@ -16,7 +16,7 @@ public class CapabilityFluxShielding {
 
     private static boolean registered = false;
 
-    @CapabilityInject(IFluxShieldedItem.class)
+    @CapabilityInject (IFluxShieldedItem.class)
     public static Capability<IFluxShieldedItem> FLUX_SHIELDED_ITEM_CAPABILITY = null;
 
     public static void register() {

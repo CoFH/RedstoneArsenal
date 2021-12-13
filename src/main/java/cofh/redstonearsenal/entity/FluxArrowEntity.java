@@ -149,7 +149,7 @@ public class FluxArrowEntity extends AbstractArrowEntity {
         }
     }
 
-    @OnlyIn(Dist.CLIENT)
+    @OnlyIn (Dist.CLIENT)
     public void handleEntityEvent(byte event) {
 
         if (event == 3 && this.level.isClientSide && isExplodeArrow()) {

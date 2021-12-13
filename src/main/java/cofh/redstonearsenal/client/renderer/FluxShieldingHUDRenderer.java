@@ -11,7 +11,7 @@ import net.minecraftforge.client.gui.ForgeIngameGui;
 
 import static cofh.lib.util.constants.Constants.ID_REDSTONE_ARSENAL;
 
-@OnlyIn(Dist.CLIENT)
+@OnlyIn (Dist.CLIENT)
 public class FluxShieldingHUDRenderer {
 
     protected static final ResourceLocation ICONS = new ResourceLocation(ID_REDSTONE_ARSENAL + ":textures/gui/flux_shielding_icons.png");

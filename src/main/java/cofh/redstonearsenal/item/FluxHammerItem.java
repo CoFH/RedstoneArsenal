@@ -53,7 +53,6 @@ import static net.minecraft.util.text.TextFormatting.GRAY;
 
 public class FluxHammerItem extends HammerItem implements IMultiModeFluxItem {
 
-
     protected final float damage;
     protected final float attackSpeed;
     public float knockbackMod = 1.0F;
@@ -79,7 +78,7 @@ public class FluxHammerItem extends HammerItem implements IMultiModeFluxItem {
     }
 
     @Override
-    @OnlyIn(Dist.CLIENT)
+    @OnlyIn (Dist.CLIENT)
     public void appendHoverText(ItemStack stack, @Nullable World worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn) {
 
         if (Screen.hasShiftDown() || CoreConfig.alwaysShowDetails) {

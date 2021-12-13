@@ -8,7 +8,7 @@ import net.minecraftforge.registries.ObjectHolder;
 import static cofh.lib.util.constants.Constants.ID_REDSTONE_ARSENAL;
 import static cofh.redstonearsenal.init.RSAIDs.*;
 
-@ObjectHolder(ID_REDSTONE_ARSENAL)
+@ObjectHolder (ID_REDSTONE_ARSENAL)
 public class RSAReferences {
 
     private RSAReferences() {
@@ -16,22 +16,22 @@ public class RSAReferences {
     }
 
     // region ENTITIES
-    @ObjectHolder(ID_FLUX_SLASH)
+    @ObjectHolder (ID_FLUX_SLASH)
     public static final EntityType<FluxSlashEntity> FLUX_SLASH_ENTITY = null;
-    @ObjectHolder(ID_FLUX_TRIDENT)
+    @ObjectHolder (ID_FLUX_TRIDENT)
     public static final EntityType<FluxTridentEntity> FLUX_TRIDENT_ENTITY = null;
-    @ObjectHolder(ID_FLUX_WRENCH)
+    @ObjectHolder (ID_FLUX_WRENCH)
     public static final EntityType<FluxWrenchEntity> FLUX_WRENCH_ENTITY = null;
-    @ObjectHolder(ID_FLUX_ARROW)
+    @ObjectHolder (ID_FLUX_ARROW)
     public static final EntityType<FluxArrowEntity> FLUX_ARROW_ENTITY = null;
-    @ObjectHolder(ID_SHOCKWAVE)
+    @ObjectHolder (ID_SHOCKWAVE)
     public static final EntityType<ShockwaveEntity> SHOCKWAVE_ENTITY = null;
     // endregion
 
     // region BLOCKS
-    @ObjectHolder(ID_FLUX_GLOW_AIR)
+    @ObjectHolder (ID_FLUX_GLOW_AIR)
     public static final Block FLUX_GLOW_AIR = null;
-    @ObjectHolder(ID_FLUX_PATH)
+    @ObjectHolder (ID_FLUX_PATH)
     public static final Block FLUX_PATH = null;
     // endregion
 

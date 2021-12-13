@@ -108,7 +108,7 @@ public class FluxSlashEntity extends ProjectileEntity {
         return NetworkHooks.getEntitySpawningPacket(this);
     }
 
-    @OnlyIn(Dist.CLIENT)
+    @OnlyIn (Dist.CLIENT)
     public boolean shouldRenderAtSqrDistance(double p_70112_1_) {
 
         double d0 = this.getBoundingBox().getSize() * 10.0D;

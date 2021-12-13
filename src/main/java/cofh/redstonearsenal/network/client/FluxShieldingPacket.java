@@ -10,7 +10,6 @@ import net.minecraft.network.PacketBuffer;
 
 import static cofh.redstonearsenal.init.RSAPackets.PACKET_FLUX_SHIELDING;
 
-
 public class FluxShieldingPacket extends PacketBase implements IPacketClient {
 
     protected int currCharges;

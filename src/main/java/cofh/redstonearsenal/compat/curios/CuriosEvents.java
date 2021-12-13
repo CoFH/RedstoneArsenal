@@ -23,4 +23,5 @@ public class CuriosEvents {
             FluxShieldingPacket.sendToClient(FluxShieldingHelper.countCharges(entity), (ServerPlayerEntity) entity);
         }
     }
+
 }

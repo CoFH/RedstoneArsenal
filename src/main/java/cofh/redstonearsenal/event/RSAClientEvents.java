@@ -16,10 +16,10 @@ import net.minecraftforge.fml.common.Mod;
 
 import static cofh.lib.util.constants.Constants.ID_REDSTONE_ARSENAL;
 
-@Mod.EventBusSubscriber(value = Dist.CLIENT, modid = ID_REDSTONE_ARSENAL)
+@Mod.EventBusSubscriber (value = Dist.CLIENT, modid = ID_REDSTONE_ARSENAL)
 public class RSAClientEvents {
 
-    @SubscribeEvent(priority = EventPriority.LOWEST)
+    @SubscribeEvent (priority = EventPriority.LOWEST)
     public static void handleClickInputEvent(ClickInputEvent event) {
 
         if (event.isCanceled() || !event.isAttack()) {
@@ -45,7 +45,7 @@ public class RSAClientEvents {
         }
     }
 
-    @SubscribeEvent(priority = EventPriority.LOWEST)
+    @SubscribeEvent (priority = EventPriority.LOWEST)
     public static void onDrawScreenPost(RenderGameOverlayEvent.Post event) {
 
         if (event.getType() == RenderGameOverlayEvent.ElementType.ALL && Minecraft.getInstance().gameMode.canHurtPlayer()) {
