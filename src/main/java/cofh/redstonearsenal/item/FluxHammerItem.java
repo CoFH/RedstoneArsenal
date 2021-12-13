@@ -7,7 +7,6 @@ import cofh.lib.capability.IAreaEffect;
 import cofh.lib.energy.EnergyContainerItemWrapper;
 import cofh.lib.energy.IEnergyContainerItem;
 import cofh.lib.item.impl.HammerItem;
-import cofh.lib.util.RayTracer;
 import cofh.lib.util.Utils;
 import cofh.lib.util.helpers.AreaEffectHelper;
 import cofh.redstonearsenal.entity.ShockwaveEntity;
@@ -18,7 +17,6 @@ import net.minecraft.block.BlockState;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.enchantment.Enchantment;
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.attributes.Attribute;
 import net.minecraft.entity.ai.attributes.AttributeModifier;
@@ -27,12 +25,15 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.EquipmentSlotType;
 import net.minecraft.item.IItemTier;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.ItemUseContext;
 import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.util.*;
+import net.minecraft.potion.EffectInstance;
+import net.minecraft.potion.Effects;
+import net.minecraft.util.ActionResultType;
+import net.minecraft.util.Direction;
+import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.BlockRayTraceResult;
-import net.minecraft.util.math.RayTraceContext;
-import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.world.World;
@@ -52,11 +53,11 @@ import static net.minecraft.util.text.TextFormatting.GRAY;
 
 public class FluxHammerItem extends HammerItem implements IMultiModeFluxItem {
 
-    public static final int COOLDOWN = 160;
-    public static final float KNOCKBACK_MODIFIER = 1.5F;
 
     protected final float damage;
     protected final float attackSpeed;
+    public float knockbackMod = 1.0F;
+    public int slamCooldown = 160;
 
     protected final int maxEnergy;
     protected final int extract;
@@ -107,46 +108,33 @@ public class FluxHammerItem extends HammerItem implements IMultiModeFluxItem {
     }
 
     @Override
-    public ActionResult<ItemStack> use(World world, PlayerEntity player, Hand hand) {
+    public ActionResultType useOn(ItemUseContext context) {
 
-        ItemStack stack = player.getItemInHand(hand);
-        if (hasEnergy(stack, true) || player.abilities.instabuild) {
-            if (player.isOnGround()) {
-                BlockRayTraceResult result = RayTracer.retrace(player, RayTraceContext.FluidMode.NONE);
-                if (result.getType() != RayTraceResult.Type.MISS) {
-                    BlockPos pos = result.getBlockPos();
-                    BlockState state = world.getBlockState(pos);
-                    if (!world.isClientSide() && isEmpowered(stack) && useEnergy(stack, true, player.abilities.instabuild)) {
-                        world.addFreshEntity(new ShockwaveEntity(world, player, Vector3d.atCenterOf(pos), player.yRot));
-                        player.getCooldowns().addCooldown(this, getUseCooldown(stack));
-                    }
-                    world.playSound(player, pos, state.getSoundType(world, pos, player).getBreakSound(), SoundCategory.BLOCKS, 1.0F, 1.0F);
-                    return ActionResult.success(stack);
-                }
-            }
+        PlayerEntity player = context.getPlayer();
+        ItemStack stack = context.getItemInHand();
+        int energy = getEnergyPerUse(true) * 2;
+        if (player == null || !player.isOnGround() || !isEmpowered(stack) || !(hasEnergy(stack, energy) || player.abilities.instabuild)) {
+            return ActionResultType.FAIL;
         }
-        return ActionResult.fail(stack);
+        World world = context.getLevel();
+        BlockPos pos = context.getClickedPos();
+        BlockState state = world.getBlockState(pos);
+        if (!world.isClientSide() && world.addFreshEntity(new ShockwaveEntity(world, player, Vector3d.atCenterOf(pos), player.yRot))) {
+            useEnergy(stack, energy, player.abilities.instabuild);
+            player.getCooldowns().addCooldown(this, getSlamCooldown(stack));
+        }
+        world.playSound(player, pos, state.getSoundType(world, pos, player).getBreakSound(), SoundCategory.BLOCKS, 1.0F, 1.0F);
+        return ActionResultType.SUCCESS;
     }
 
-    @Override
-    public void inventoryTick(ItemStack stack, World world, Entity entity, int slot, boolean selected) {
+    protected int getSlamCooldown(ItemStack stack) {
 
-        if (selected && isEmpowered(stack) && hasEnergy(stack, true) && world.getGameTime() % 16 == 0) {
-            //if (entity instanceof LivingEntity) {
-            //    ((LivingEntity) entity).addEffect(new EffectInstance(Effects.MOVEMENT_SPEED, 4, 0));
-            //}
-            useEnergy(stack, true, entity);
-        }
-    }
-
-    protected int getUseCooldown(ItemStack stack) {
-
-        return COOLDOWN;
+        return slamCooldown;
     }
 
     protected float getEfficiency(ItemStack stack) {
 
-        return hasEnergy(stack, false) ? isEmpowered(stack) ? Math.max(speed * 0.25F, 1.0F) : speed : 1.0F;
+        return hasEnergy(stack, false) && !isEmpowered(stack) ? speed : 1.0F;
     }
 
     @Override
@@ -158,7 +146,13 @@ public class FluxHammerItem extends HammerItem implements IMultiModeFluxItem {
     @Override
     public boolean hurtEnemy(ItemStack stack, LivingEntity target, LivingEntity attacker) {
 
-        useEnergy(stack, false, attacker);
+        if (useEnergy(stack, isEmpowered(stack), attacker) && isEmpowered(stack)) {
+            attacker.addEffect(new EffectInstance(Effects.MOVEMENT_SPEED, 40, 0));
+            if (attacker.hasEffect(Effects.DAMAGE_BOOST)) {
+                attacker.addEffect(new EffectInstance(Effects.DAMAGE_BOOST, attacker.getEffect(Effects.DAMAGE_BOOST).getDuration() + 10, 0));
+            }
+            attacker.setSprinting(true);
+        }
         return true;
     }
 
@@ -178,9 +172,7 @@ public class FluxHammerItem extends HammerItem implements IMultiModeFluxItem {
         if (slot == EquipmentSlotType.MAINHAND) {
             multimap.put(Attributes.ATTACK_DAMAGE, new AttributeModifier(BASE_ATTACK_DAMAGE_UUID, "Tool modifier", getAttackDamage(stack), AttributeModifier.Operation.ADDITION));
             multimap.put(Attributes.ATTACK_SPEED, new AttributeModifier(BASE_ATTACK_SPEED_UUID, "Tool modifier", getAttackSpeed(stack), AttributeModifier.Operation.ADDITION));
-            if (isEmpowered(stack) && hasEnergy(stack, true)) {
-                multimap.put(Attributes.ATTACK_KNOCKBACK, new AttributeModifier(UUID_TOOL_KNOCKBACK, "Tool modifier", getKnockbackModifier(stack), AttributeModifier.Operation.ADDITION));
-            }
+            multimap.put(Attributes.ATTACK_KNOCKBACK, new AttributeModifier(UUID_TOOL_KNOCKBACK, "Tool modifier", getKnockbackModifier(stack), AttributeModifier.Operation.ADDITION));
         }
         return multimap;
     }
@@ -197,7 +189,7 @@ public class FluxHammerItem extends HammerItem implements IMultiModeFluxItem {
 
     protected float getKnockbackModifier(ItemStack stack) {
 
-        return KNOCKBACK_MODIFIER;
+        return knockbackMod;
     }
 
     // region IEnergyContainerItem

@@ -8,6 +8,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.IPacket;
 import net.minecraft.potion.EffectInstance;
+import net.minecraft.potion.Effects;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.EntityPredicates;
 import net.minecraft.util.math.MathHelper;
@@ -24,7 +25,7 @@ public class ShockwaveEntity extends Entity {
     public static final int duration = 10;
     public static final int animDuration = 5;
 
-    public float damage = 10.0F;
+    public float damage = 8.0F;
     public int debuffDuration = 100;
 
     protected LivingEntity owner = null;
@@ -75,31 +76,43 @@ public class ShockwaveEntity extends Entity {
         if (!level.isClientSide()) {
             if (tickCount > duration + animDuration) {
                 this.remove();
-            } else if (tickCount < duration) {
-                float lower = Math.max((tickCount - 1) * defaultSpeed, 0);
-                float upper = lower + defaultSpeed * 1.5F;
-                float lowerSqr = lower * lower;
-                float upperSqr = upper * upper;
-                for (LivingEntity entity : level.getEntitiesOfClass(LivingEntity.class, this.getBoundingBox().inflate(upper + 1, 2, upper + 1).inflate(0.5), EntityPredicates.NO_CREATIVE_OR_SPECTATOR)) {
-                    if (!entity.equals(this.owner)) {
-                        Vector3d relPos = new Vector3d(entity.getX() - this.getX(), 0, entity.getZ() - this.getZ());
-                        double distSqr = relPos.lengthSqr();
-                        if (lowerSqr < distSqr && distSqr < upperSqr) {
-                            float falloff = (duration - (tickCount * 0.5F)) / duration;
-                            DamageSource source = DamageSource.mobAttack(this.owner);
-                            if (this.owner instanceof PlayerEntity) {
-                                source = DamageSource.playerAttack((PlayerEntity) this.owner);
-                            }
-                            entity.hurt(source, damage * falloff);
-                            entity.addEffect(new EffectInstance(SUNDERED, debuffDuration, 0, false, false));
-                            Vector3d knockback = relPos.scale(0.8 / MathHelper.sqrt(distSqr)).add(0, 0.3, 0).scale(1.0D - entity.getAttributeValue(Attributes.KNOCKBACK_RESISTANCE));
-                            entity.setDeltaMovement(knockback);
-                        }
+            } else if (tickCount < duration && attack()) {
+                owner.addEffect(new EffectInstance(Effects.DAMAGE_BOOST, 50, 0));
+                //owner.setSprinting(true);
+            }
+        }
+        super.tick();
+    }
+
+    public boolean attack() {
+
+        boolean hitSomething = false;
+        float lower = Math.max((tickCount - 1) * defaultSpeed, 0);
+        float upper = lower + defaultSpeed * 1.5F;
+        float lowerSqr = lower * lower;
+        float upperSqr = upper * upper;
+        for (LivingEntity entity : level.getEntitiesOfClass(LivingEntity.class, this.getBoundingBox().inflate(upper + 1, 2, upper + 1).inflate(0.5), EntityPredicates.NO_CREATIVE_OR_SPECTATOR)) {
+            if (!entity.equals(this.owner)) {
+                Vector3d relPos = new Vector3d(entity.getX() - this.getX(), 0, entity.getZ() - this.getZ());
+                double distSqr = relPos.lengthSqr();
+                if (lowerSqr < distSqr && distSqr < upperSqr) {
+                    float falloff = (duration - (tickCount * 0.5F)) / duration;
+                    DamageSource source;
+                    if (this.owner instanceof PlayerEntity) {
+                        source = DamageSource.playerAttack((PlayerEntity) this.owner);
+                    } else {
+                        source = DamageSource.mobAttack(this.owner);
+                    }
+                    if (entity.hurt(source, damage * falloff)) {
+                        hitSomething = true;
+                        entity.addEffect(new EffectInstance(SUNDERED, debuffDuration, 0, false, false));
+                        Vector3d knockback = relPos.scale(0.8 / MathHelper.sqrt(distSqr)).add(0, 0.3, 0).scale(1.0D - entity.getAttributeValue(Attributes.KNOCKBACK_RESISTANCE));
+                        entity.setDeltaMovement(knockback);
                     }
                 }
             }
         }
-        super.tick();
+        return hitSomething;
     }
 
 }

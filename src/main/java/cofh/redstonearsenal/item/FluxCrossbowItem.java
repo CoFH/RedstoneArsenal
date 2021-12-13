@@ -140,12 +140,13 @@ public class FluxCrossbowItem extends CrossbowItemCoFH implements IMultiModeFlux
                 cooldown++;
                 totalDuration = getRepeatInterval(stack);
                 duration -= getRepeatStartDelay(stack) + totalDuration * repeats;
-                if (duration == totalDuration - 2) {
-                    if (!loadAmmo(living, stack)) {
+                if (duration >= totalDuration - 2) {
+                    if (!isLoaded(stack) && !loadAmmo(living, stack)) {
                         living.releaseUsingItem();
                         return;
                     }
-                } else if (duration == totalDuration) {
+                }
+                if (duration >= totalDuration) {
                     if (useEnergy(stack, true, living)) {
                         shootLoadedAmmo(world, living, living.getUsedItemHand(), stack);
                     } else {
@@ -228,6 +229,11 @@ public class FluxCrossbowItem extends CrossbowItemCoFH implements IMultiModeFlux
         }
     }
 
+    public boolean isLoaded(ItemStack crossbow) {
+
+        return !getLoadedAmmo(crossbow).isEmpty();
+    }
+
     // region IEnergyContainerItem
     @Override
     public int getExtract(ItemStack container) {
@@ -261,7 +267,7 @@ public class FluxCrossbowItem extends CrossbowItemCoFH implements IMultiModeFlux
             setCharged(stack, true);
         } else {
             player.level.playSound(null, player.blockPosition(), SoundEvents.EXPERIENCE_ORB_PICKUP, SoundCategory.PLAYERS, 0.2F, 0.6F);
-            setCharged(stack, !getLoadedAmmo(stack).isEmpty());
+            setCharged(stack, isLoaded(stack));
         }
     }
 
