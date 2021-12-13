@@ -36,7 +36,7 @@ import static cofh.lib.util.helpers.StringHelper.getTextComponent;
 import static cofh.redstonearsenal.init.RSAReferences.FLUX_PATH;
 import static net.minecraft.util.text.TextFormatting.GRAY;
 
-public class FluxShovelItem extends ShovelItemCoFH implements IFluxItem {
+public class FluxShovelItem extends ShovelItemCoFH implements IMultiModeFluxItem {
 
     protected final float damage;
     protected final float attackSpeed;

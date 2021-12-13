@@ -6,7 +6,6 @@ import cofh.core.util.ProxyUtils;
 import cofh.lib.capability.IArcheryAmmoItem;
 import cofh.lib.energy.EnergyContainerItemWrapper;
 import cofh.lib.energy.IEnergyContainerItem;
-import cofh.lib.util.helpers.ArcheryHelper;
 import cofh.redstonearsenal.entity.FluxArrowEntity;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.util.ITooltipFlag;
@@ -36,7 +35,7 @@ import static cofh.lib.util.Utils.getItemEnchantmentLevel;
 import static cofh.lib.util.helpers.StringHelper.getTextComponent;
 import static net.minecraft.util.text.TextFormatting.GRAY;
 
-public class FluxQuiverItem extends ItemCoFH implements IFluxItem {
+public class FluxQuiverItem extends ItemCoFH implements IMultiModeFluxItem {
 
     protected final int maxEnergy;
     protected final int extract;
@@ -78,7 +77,7 @@ public class FluxQuiverItem extends ItemCoFH implements IFluxItem {
     @Override
     public void tooltipDelegate(ItemStack stack, @Nullable World worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn) {
 
-        IFluxItem.super.tooltipDelegate(stack, worldIn, tooltip, flagIn);
+        IMultiModeFluxItem.super.tooltipDelegate(stack, worldIn, tooltip, flagIn);
     }
 
     @Override

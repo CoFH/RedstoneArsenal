@@ -11,7 +11,6 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.EquipmentSlotType;
 import net.minecraft.item.IArmorMaterial;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.particles.RedstoneParticleData;
 import net.minecraft.util.ResourceLocation;
@@ -29,7 +28,7 @@ import java.util.function.Consumer;
 import static cofh.lib.util.helpers.StringHelper.getTextComponent;
 import static net.minecraft.util.text.TextFormatting.GRAY;
 
-public class FluxElytraItem extends ArmorItemCoFH implements IFluxItem {
+public class FluxElytraItem extends ArmorItemCoFH implements IMultiModeFluxItem {
 
     public static final float PROPEL_SPEED = 0.85F;
     public static final float BRAKE_RATE = 0.95F;

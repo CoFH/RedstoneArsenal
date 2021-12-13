@@ -38,7 +38,7 @@ import static cofh.redstonearsenal.init.RSAReferences.FLUX_GLOW_AIR;
 import static net.minecraft.block.Blocks.AIR;
 import static net.minecraft.util.text.TextFormatting.GRAY;
 
-public class FluxPickaxeItem extends PickaxeItemCoFH implements IFluxItem {
+public class FluxPickaxeItem extends PickaxeItemCoFH implements IMultiModeFluxItem {
 
     protected final int LOW_LIGHT_THRESHOLD = 5;
     protected final int REMOVE_RADIUS = 10;

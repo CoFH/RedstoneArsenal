@@ -48,7 +48,7 @@ import static cofh.lib.util.helpers.StringHelper.getTextComponent;
 import static cofh.lib.util.references.CoreReferences.WRENCHED;
 import static net.minecraft.util.text.TextFormatting.GRAY;
 
-public class FluxWrenchItem extends ItemCoFH implements IFluxItem {
+public class FluxWrenchItem extends ItemCoFH implements IMultiModeFluxItem {
 
     protected static final Set<Enchantment> VALID_ENCHANTS = new ObjectOpenHashSet<>();
     protected final float damage;
@@ -90,7 +90,7 @@ public class FluxWrenchItem extends ItemCoFH implements IFluxItem {
     @Override
     public void tooltipDelegate(ItemStack stack, @Nullable World worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn) {
         //TODO: wrench stuff
-        IFluxItem.super.tooltipDelegate(stack, worldIn, tooltip, flagIn);
+        IMultiModeFluxItem.super.tooltipDelegate(stack, worldIn, tooltip, flagIn);
     }
 
     public static void initEnchants() {

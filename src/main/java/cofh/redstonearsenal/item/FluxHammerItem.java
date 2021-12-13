@@ -23,14 +23,11 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.attributes.Attribute;
 import net.minecraft.entity.ai.attributes.AttributeModifier;
 import net.minecraft.entity.ai.attributes.Attributes;
-import net.minecraft.entity.item.FallingBlockEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.EquipmentSlotType;
 import net.minecraft.item.IItemTier;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.potion.EffectInstance;
-import net.minecraft.potion.Effects;
 import net.minecraft.util.*;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockRayTraceResult;
@@ -53,7 +50,7 @@ import static cofh.lib.util.constants.Constants.UUID_TOOL_KNOCKBACK;
 import static cofh.lib.util.helpers.StringHelper.getTextComponent;
 import static net.minecraft.util.text.TextFormatting.GRAY;
 
-public class FluxHammerItem extends HammerItem implements IFluxItem {
+public class FluxHammerItem extends HammerItem implements IMultiModeFluxItem {
 
     public static final int COOLDOWN = 160;
     public static final float KNOCKBACK_MODIFIER = 1.5F;

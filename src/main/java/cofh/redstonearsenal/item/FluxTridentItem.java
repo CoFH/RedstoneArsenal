@@ -46,7 +46,7 @@ import static cofh.lib.util.helpers.StringHelper.getTextComponent;
 import static cofh.lib.util.references.CoreReferences.LIGHTNING_RESISTANCE;
 import static net.minecraft.util.text.TextFormatting.GRAY;
 
-public class FluxTridentItem extends TridentItemCoFH implements IFluxItem, ILeftClickHandlerItem {
+public class FluxTridentItem extends TridentItemCoFH implements IMultiModeFluxItem, ILeftClickHandlerItem {
 
     public static final double PLUNGE_RANGE = 3.5;
     public static final double PLUNGE_SPEED = 3;

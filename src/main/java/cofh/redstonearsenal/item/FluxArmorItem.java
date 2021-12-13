@@ -2,7 +2,6 @@ package cofh.redstonearsenal.item;
 
 import cofh.core.init.CoreConfig;
 import cofh.core.item.ArmorItemCoFH;
-import cofh.core.util.ProxyUtils;
 import cofh.redstonearsenal.capability.FluxShieldedEnergyItemWrapper;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.util.ITooltipFlag;
@@ -12,7 +11,6 @@ import net.minecraft.inventory.EquipmentSlotType;
 import net.minecraft.item.IArmorMaterial;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.world.World;
 import net.minecraftforge.api.distmarker.Dist;
@@ -40,8 +38,7 @@ public class FluxArmorItem extends ArmorItemCoFH implements IFluxItem {
         this.extract = maxTransfer;
         this.receive = maxTransfer;
 
-        ProxyUtils.registerItemModelProperty(this, new ResourceLocation("charged"), this::getChargedModelProperty);
-        ProxyUtils.registerItemModelProperty(this, new ResourceLocation("active"), this::getEmpoweredModelProperty);
+        //ProxyUtils.registerItemModelProperty(this, new ResourceLocation("charged"), this::getChargedModelProperty);
     }
 
     @Override
@@ -70,7 +67,7 @@ public class FluxArmorItem extends ArmorItemCoFH implements IFluxItem {
     @Override
     public ICapabilityProvider initCapabilities(ItemStack stack, @Nullable CompoundNBT nbt) {
 
-        return new FluxShieldedEnergyItemWrapper(stack, getEnergyPerUse(true)); //TODO: shield when empowered
+        return new FluxShieldedEnergyItemWrapper(stack, getEnergyPerUse(true));
     }
 
     @Override

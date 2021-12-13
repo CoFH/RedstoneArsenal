@@ -2,28 +2,65 @@ package cofh.redstonearsenal.util;
 
 import cofh.core.compat.curios.CuriosProxy;
 import cofh.redstonearsenal.capability.IFluxShieldedItem;
+import cofh.redstonearsenal.client.renderer.FluxShieldingHUDRenderer;
+import cofh.redstonearsenal.network.client.FluxShieldingPacket;
+import com.google.common.collect.HashMultimap;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.MobEntity;
 import net.minecraft.entity.monster.MonsterEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.particles.ParticleTypes;
 import net.minecraft.particles.RedstoneParticleData;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.SoundEvents;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.server.ServerWorld;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.util.LazyOptional;
 
-import java.util.Random;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 
 import static cofh.redstonearsenal.capability.CapabilityFluxShielding.FLUX_SHIELDED_ITEM_CAPABILITY;
 
 public class FluxShieldingHelper {
+
+    public static final String TAG_FLUX_SHIELD = "FluxShield";
+    public static HashMultimap<Long, ServerPlayerEntity> updateSchedule = HashMultimap.create();
+
+    public static void updateHUD(ServerPlayerEntity player) {
+
+        FluxShieldingPacket.sendToClient(FluxShieldingHelper.countCharges(player), player);
+    }
+
+    public static void updateHUD(int currCharges, int maxCharges, ServerPlayerEntity player) {
+
+        FluxShieldingPacket.sendToClient(currCharges, maxCharges, player);
+    }
+
+    @OnlyIn(Dist.CLIENT)
+    public static void updateHUD(int currCharges, int maxCharges) {
+
+        FluxShieldingHUDRenderer.currCharges = currCharges;
+        FluxShieldingHUDRenderer.maxCharges = maxCharges;
+    }
+
+    public static void scheduleHUDUpdate(long time, ServerPlayerEntity player) {
+
+        updateSchedule.put(time, player);
+    }
+
+    public static void handleHUDSchedule(long time) {
+
+        if (updateSchedule.containsKey(time)) {
+            for (ServerPlayerEntity player : updateSchedule.get(time)) {
+                updateHUD(player);
+            }
+            updateSchedule.removeAll(time);
+        }
+    }
 
     public static ItemStack findShieldedItem(LivingEntity entity) {
 

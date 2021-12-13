@@ -30,10 +30,10 @@ import java.util.List;
 import static cofh.lib.util.helpers.StringHelper.getTextComponent;
 import static net.minecraft.util.text.TextFormatting.GRAY;
 
-public class FluxFishingRodItem extends FishingRodItemCoFH implements IFluxItem {
+public class FluxFishingRodItem extends FishingRodItemCoFH implements IMultiModeFluxItem {
 
-    public static final double REEL_SPEED = 0.2;
-    public static final int REEL_EXTRACT_INTERVAL = 8;
+    protected double reelSpeed = 0.2;
+    protected int reelEnergyUseInterval = 8;
 
     protected final int maxEnergy;
     protected final int extract;
@@ -114,7 +114,7 @@ public class FluxFishingRodItem extends FishingRodItemCoFH implements IFluxItem 
             if (player.fishing != null && player.fishing.getHookedIn() != null && isEmpowered(stack)) {
                 if (living.isCrouching()) {
                     player.fishing.remove();
-                } else if (useEnergy(stack, true, useDuration % REEL_EXTRACT_INTERVAL != 0 || player.abilities.instabuild)) {
+                } else if (useEnergy(stack, true, useDuration % reelEnergyUseInterval != 0 || player.abilities.instabuild)) {
                     reelIn(stack, player.fishing);
                     return;
                 }
@@ -128,7 +128,7 @@ public class FluxFishingRodItem extends FishingRodItemCoFH implements IFluxItem 
         Entity owner = bobber.getOwner();
         if (!bobber.level.isClientSide && owner != null) {
             if (bobber.getHookedIn() != null) {
-                Vector3d relPos = owner.position().add(owner.getLookAngle()).subtract(bobber.position()).normalize().scale(FluxFishingRodItem.REEL_SPEED);
+                Vector3d relPos = owner.position().add(owner.getLookAngle()).subtract(bobber.position()).normalize().scale(reelSpeed);
                 bobber.getHookedIn().push(relPos.x(), relPos.y(), relPos.z());
                 if (relPos.y() > 0) {
                     bobber.getHookedIn().fallDistance = 0;

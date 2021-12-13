@@ -22,8 +22,6 @@ import net.minecraft.inventory.EquipmentSlotType;
 import net.minecraft.item.IItemTier;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.SoundCategory;
-import net.minecraft.util.SoundEvents;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.world.World;
@@ -36,7 +34,7 @@ import java.util.List;
 import static cofh.lib.util.helpers.StringHelper.getTextComponent;
 import static net.minecraft.util.text.TextFormatting.GRAY;
 
-public class FluxSwordItem extends SwordItemCoFH implements IFluxItem, ILeftClickHandlerItem {
+public class FluxSwordItem extends SwordItemCoFH implements IMultiModeFluxItem, ILeftClickHandlerItem {
 
     protected final float damage;
     protected final float attackSpeed;

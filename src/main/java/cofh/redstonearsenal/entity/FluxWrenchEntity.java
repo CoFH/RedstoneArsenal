@@ -38,8 +38,8 @@ import static cofh.redstonearsenal.init.RSAReferences.FLUX_WRENCH_ENTITY;
 public class FluxWrenchEntity extends ProjectileEntity {
 
     protected static final DataParameter<ItemStack> DATA_ITEM_STACK = EntityDataManager.defineId(FluxWrenchEntity.class, DataSerializers.ITEM_STACK);
-    public static final float SPEED = 1.3F;
-    public static final float RANGE = 16.0F;
+    public float speed = 1.3F;
+    public float range = 16.0F;
     public boolean hitSomething = false;
 
     public FluxWrenchEntity(EntityType<? extends ProjectileEntity> type, World worldIn) {
@@ -58,7 +58,7 @@ public class FluxWrenchEntity extends ProjectileEntity {
         this(worldIn, livingEntityIn.getX(), livingEntityIn.getEyeY() - 0.1F, livingEntityIn.getZ());
         this.setOwner(livingEntityIn);
         this.setItem(stackIn);
-        this.shootFromRotation(livingEntityIn, livingEntityIn.xRot, livingEntityIn.yRot, 0.0F, SPEED, 0.5F);
+        this.shootFromRotation(livingEntityIn, livingEntityIn.xRot, livingEntityIn.yRot, 0.0F, speed, 0.5F);
     }
 
     @Override
@@ -118,14 +118,14 @@ public class FluxWrenchEntity extends ProjectileEntity {
         if (owner != null) {
             Vector3d relPos = owner.getEyePosition(0).subtract(this.position());
             double distance = relPos.length();
-            if (distance > RANGE) {
+            if (distance > range) {
                 this.hitSomething = true;
             }
             if (this.hitSomething) {
                 if (distance < 1.5) {
                     returnToInventory();
                 } else {
-                    this.setDeltaMovement(relPos.scale(SPEED / distance));
+                    this.setDeltaMovement(relPos.scale(speed / distance));
                 }
                 //                Vector3d acceleration = relPos.scale(Math.min(1, 0.05 * tickCount) / distance);
                 //                velocity = velocity.add(acceleration).normalize().scale(SPEED);
@@ -193,7 +193,7 @@ public class FluxWrenchEntity extends ProjectileEntity {
                 if (distance < 1.5) {
                     returnToInventory();
                 } else {
-                    this.setDeltaMovement(relPos.scale(SPEED * 0.5 / distance));
+                    this.setDeltaMovement(relPos.scale(speed * 0.5 / distance));
                 }
             } else {
                 this.setDeltaMovement(getDeltaMovement().scale(-0.5));

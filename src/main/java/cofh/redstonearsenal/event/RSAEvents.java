@@ -10,11 +10,13 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.inventory.EquipmentSlotType;
 import net.minecraft.item.ItemStack;
 import net.minecraft.potion.EffectInstance;
 import net.minecraft.potion.Effects;
 import net.minecraftforge.common.Tags;
+import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.living.*;
 import net.minecraftforge.event.entity.player.AttackEntityEvent;
 import net.minecraftforge.event.entity.player.CriticalHitEvent;
@@ -23,7 +25,10 @@ import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
+import static cofh.lib.util.Utils.getItemEnchantmentLevel;
 import static cofh.lib.util.constants.Constants.ID_REDSTONE_ARSENAL;
+import static cofh.lib.util.references.EnsorcReferences.QUICK_DRAW;
+import static cofh.redstonearsenal.capability.CapabilityFluxShielding.FLUX_SHIELDED_ITEM_CAPABILITY;
 import static cofh.redstonearsenal.init.RSAReferences.FLUX_PATH;
 
 @Mod.EventBusSubscriber(modid = ID_REDSTONE_ARSENAL)
@@ -83,6 +88,9 @@ public class RSAEvents {
         ItemStack from = event.getFrom();
         ItemStack to = event.getTo();
         LivingEntity entity = event.getEntityLiving();
+        if (entity instanceof ServerPlayerEntity && from.getCapability(FLUX_SHIELDED_ITEM_CAPABILITY).isPresent() != to.getCapability(FLUX_SHIELDED_ITEM_CAPABILITY).isPresent()) {
+            FluxShieldingHelper.updateHUD((ServerPlayerEntity) entity);
+        }
         if (from.getItem() instanceof FluxCrossbowItem) {
             EquipmentSlotType slot = event.getSlot();
             //If the used item changes, enforce cooldown
@@ -97,12 +105,12 @@ public class RSAEvents {
         }
     }
 
-    @SubscribeEvent(priority = EventPriority.LOWEST)
-    public static void handleUseItemStopEvent(LivingEntityUseItemEvent.Stop event) {
+    @SubscribeEvent
+    public static void handleItemUseTickEvent(LivingEntityUseItemEvent.Tick event) {
 
-        ItemStack stack = event.getItem();
-        if (stack.getItem() instanceof FluxCrossbowItem) {
-            ((FluxCrossbowItem) stack.getItem()).startCooldown(event.getEntityLiving(), stack);
+        int encQuickDraw = getItemEnchantmentLevel(QUICK_DRAW, event.getItem());
+        if (encQuickDraw > 0 && event.getDuration() > event.getItem().getUseDuration() - 20) {
+            event.setDuration(event.getDuration() - encQuickDraw);
         }
     }
 
@@ -135,6 +143,9 @@ public class RSAEvents {
             } else if (FluxShieldingHelper.useFluxShieldCharge(target, shieldedItem)) {
                 target.invulnerableTime = target.invulnerableDuration;
                 event.setCanceled(true);
+                if (target instanceof ServerPlayerEntity) {
+                    FluxShieldingHelper.updateHUD((ServerPlayerEntity) target);
+                }
             }
         }
     }
@@ -142,9 +153,20 @@ public class RSAEvents {
     @SubscribeEvent(priority = EventPriority.LOWEST)
     public static void handleLivingHurtEvent(LivingHurtEvent event) {
 
-        System.out.println(event.getAmount());
-        if (!event.isCanceled() && FluxShieldingHelper.useFluxShieldCharge(event.getEntityLiving())) {
+        LivingEntity target = event.getEntityLiving();
+        if (!event.isCanceled() && FluxShieldingHelper.useFluxShieldCharge(target)) {
             event.setAmount(Math.max(event.getAmount() - 500.0F, 0));
+            if (target instanceof ServerPlayerEntity) {
+                FluxShieldingHelper.updateHUD((ServerPlayerEntity) target);
+            }
+        }
+    }
+
+    @SubscribeEvent
+    public static void onWorldTick(TickEvent.WorldTickEvent event) {
+
+        if (event.phase == TickEvent.Phase.END && event.side.isServer()) {
+            FluxShieldingHelper.handleHUDSchedule(event.world.getGameTime());
         }
     }
 

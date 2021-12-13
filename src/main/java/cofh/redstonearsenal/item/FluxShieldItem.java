@@ -32,10 +32,10 @@ import static cofh.lib.capability.CapabilityShieldItem.SHIELD_ITEM_CAPABILITY;
 import static cofh.lib.util.helpers.StringHelper.getTextComponent;
 import static net.minecraft.util.text.TextFormatting.GRAY;
 
-public class FluxShieldItem extends ShieldItemCoFH implements IFluxItem {
+public class FluxShieldItem extends ShieldItemCoFH implements IMultiModeFluxItem {
 
-    public static final float RANGE = 4;
-    public static final float REPEL_STRENGTH = 2;
+    protected float repelRange = 4;
+    protected float repelStrength = 2;
 
     protected int maxEnergy;
     protected int extract;
@@ -88,12 +88,12 @@ public class FluxShieldItem extends ShieldItemCoFH implements IFluxItem {
     public void repel(World world, LivingEntity living, ItemStack stack) {
 
         if (useEnergy(stack, true, living)) {
-            double r2 = RANGE * RANGE;
-            AxisAlignedBB searchArea = living.getBoundingBox().inflate(RANGE);
+            double r2 = repelRange * repelRange;
+            AxisAlignedBB searchArea = living.getBoundingBox().inflate(repelRange);
             for (Entity entity : world.getEntities(living, searchArea, EntityPredicates.NO_CREATIVE_OR_SPECTATOR)) {
                 if (living.distanceToSqr(entity) < r2) {
-                    if (entity.getDeltaMovement().lengthSqr() < REPEL_STRENGTH * REPEL_STRENGTH) {
-                        entity.setDeltaMovement(entity.position().subtract(living.position()).normalize().scale(REPEL_STRENGTH));
+                    if (entity.getDeltaMovement().lengthSqr() < repelStrength * repelStrength) {
+                        entity.setDeltaMovement(entity.position().subtract(living.position()).normalize().scale(repelStrength));
                     } else {
                         entity.setDeltaMovement(entity.getDeltaMovement().reverse());
                     }

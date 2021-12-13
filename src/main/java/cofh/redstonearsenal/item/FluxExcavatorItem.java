@@ -48,7 +48,7 @@ import java.util.stream.Collectors;
 import static cofh.lib.util.helpers.StringHelper.getTextComponent;
 import static net.minecraft.util.text.TextFormatting.GRAY;
 
-public class FluxExcavatorItem extends ExcavatorItem implements IFluxItem {
+public class FluxExcavatorItem extends ExcavatorItem implements IMultiModeFluxItem {
 
     protected final float damage;
     protected final float attackSpeed;
@@ -143,7 +143,7 @@ public class FluxExcavatorItem extends ExcavatorItem implements IFluxItem {
                     if (!hasEnergy(context.getItemInHand(), false)) {
                         break;
                     }
-                    List<Item> validItems = Block.getDrops(block.defaultBlockState(), (ServerWorld) world, sorted.get(block).get(0), null).stream().map(stack -> stack.getItem()).collect(Collectors.toList());
+                    List<Item> validItems = Block.getDrops(block.defaultBlockState(), (ServerWorld) world, sorted.get(block).get(0), null).stream().map(ItemStack::getItem).filter(i -> i instanceof BlockItem).collect(Collectors.toList());
                     Predicate<ItemStack> matches = stack -> stack.getItem() instanceof BlockItem && (stack.getItem().equals(block.asItem()) || validItems.contains(stack.getItem()));
                     for (BlockPos pos : sorted.get(block)) {
                         if (slot < 0 || inventory.get(slot).isEmpty()) {

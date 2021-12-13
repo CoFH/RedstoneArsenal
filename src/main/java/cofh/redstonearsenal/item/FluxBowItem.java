@@ -40,9 +40,8 @@ import static cofh.lib.util.Utils.getItemEnchantmentLevel;
 import static cofh.lib.util.references.EnsorcReferences.TRUESHOT;
 import static cofh.lib.util.references.EnsorcReferences.VOLLEY;
 import static net.minecraft.enchantment.Enchantments.*;
-import static net.minecraft.enchantment.Enchantments.FLAMING_ARROWS;
 
-public class FluxBowItem extends BowItemCoFH implements IFluxItem {
+public class FluxBowItem extends BowItemCoFH implements IMultiModeFluxItem {
 
     protected final int maxEnergy;
     protected final int extract;

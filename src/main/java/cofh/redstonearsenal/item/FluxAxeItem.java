@@ -32,10 +32,9 @@ import java.util.List;
 import static cofh.lib.util.helpers.StringHelper.getTextComponent;
 import static net.minecraft.util.text.TextFormatting.GRAY;
 
-public class FluxAxeItem extends AxeItemCoFH implements IFluxItem {
+public class FluxAxeItem extends AxeItemCoFH implements IMultiModeFluxItem {
 
-    public static final float EMPOWERED_CRIT_MULTIPLIER = 1.6F;
-
+    protected float empoweredCritMod = 1.6F;
     protected final float damage;
     protected final float attackSpeed;
 
@@ -103,7 +102,7 @@ public class FluxAxeItem extends AxeItemCoFH implements IFluxItem {
 
         PlayerEntity player = event.getPlayer();
         if (isEmpowered(stack) && useEnergy(stack, true, player.abilities.instabuild)) {
-            event.getTarget().hurt(IFluxItem.fluxDirectDamage(player), (event.getDamageModifier() - 1.0F) * EMPOWERED_CRIT_MULTIPLIER * (getAttackDamage(stack) + 1.0F));
+            event.getTarget().hurt(IFluxItem.fluxDirectDamage(player), (event.getDamageModifier() - 1.0F) * empoweredCritMod * (getAttackDamage(stack) + 1.0F));
             event.setDamageModifier(1);
             event.getTarget().invulnerableTime = 0;
         }

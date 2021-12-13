@@ -31,7 +31,7 @@ import java.util.List;
 import static cofh.lib.util.helpers.StringHelper.getTextComponent;
 import static net.minecraft.util.text.TextFormatting.GRAY;
 
-public class FluxHoeItem extends HoeItemCoFH implements IFluxItem {
+public class FluxHoeItem extends HoeItemCoFH implements IMultiModeFluxItem {
 
     protected final float damage;
     protected final float damageCharged;

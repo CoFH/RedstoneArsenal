@@ -3,7 +3,9 @@ package cofh.redstonearsenal.capability;
 import cofh.lib.energy.EnergyContainerItemWrapper;
 import cofh.lib.energy.IEnergyContainerItem;
 import cofh.lib.util.Utils;
+import cofh.redstonearsenal.util.FluxShieldingHelper;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.Direction;
@@ -14,6 +16,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import static cofh.redstonearsenal.capability.CapabilityFluxShielding.FLUX_SHIELDED_ITEM_CAPABILITY;
+import static cofh.redstonearsenal.util.FluxShieldingHelper.TAG_FLUX_SHIELD;
 
 /**
  * Standard implementation for the IFluxShieldItem capability.
@@ -29,6 +32,7 @@ public class FluxShieldedEnergyItemWrapper extends EnergyContainerItemWrapper im
     protected final ItemStack shieldedItem;
     protected final int COOLDOWN = 600;
     protected int energyPerUse;
+    protected long availableTime = -1;
 
     public FluxShieldedEnergyItemWrapper(ItemStack shieldedItemContainer, int energyPerUse) {
 
@@ -41,13 +45,17 @@ public class FluxShieldedEnergyItemWrapper extends EnergyContainerItemWrapper im
     public int availableCharges(LivingEntity entity) {
 
         CompoundNBT nbt = shieldedItem.getOrCreateTag();
-        if (getEnergyStored() < energyPerUse) {
+        if (energyPerUse > 0 && getEnergyStored() < energyPerUse) {
             return 0;
         }
-        if (!nbt.contains("fluxShield")) {
-            return 1;
+        if (availableTime <= -1) {
+            if (!nbt.contains(TAG_FLUX_SHIELD)) {
+                availableTime = 0;
+                return 1;
+            }
+            availableTime = nbt.getLong(TAG_FLUX_SHIELD);
         }
-        return entity.level.getGameTime() >= nbt.getLong("fluxShield") ? 1 : 0;
+        return entity.level.getGameTime() >= availableTime ? 1 : 0;
     }
 
     @Override
@@ -59,11 +67,14 @@ public class FluxShieldedEnergyItemWrapper extends EnergyContainerItemWrapper im
     @Override
     public boolean useCharge(LivingEntity entity) {
 
-        if (availableCharges(entity) < 1 || extractEnergy(energyPerUse, Utils.isCreativePlayer(entity)) != energyPerUse) {
+        if (availableCharges(entity) < 1 || (energyPerUse > 0 && getEnergyStored() >= energyPerUse && extractEnergy(energyPerUse, Utils.isCreativePlayer(entity)) != energyPerUse)) {
             return false;
         }
-        long regenTime = entity.level.getGameTime() + COOLDOWN;
-        shieldedItem.getOrCreateTag().putLong("fluxShield", regenTime);
+        availableTime = entity.level.getGameTime() + COOLDOWN;
+        if (entity instanceof ServerPlayerEntity) {
+            FluxShieldingHelper.scheduleHUDUpdate(availableTime, (ServerPlayerEntity) entity);
+        }
+        shieldedItem.getOrCreateTag().putLong(TAG_FLUX_SHIELD, availableTime);
         return true;
     }
 
