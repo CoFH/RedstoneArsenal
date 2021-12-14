@@ -2,15 +2,15 @@ package cofh.redstonearsenal.item;
 
 import cofh.core.init.CoreConfig;
 import cofh.core.item.ArmorItemCoFH;
+import cofh.core.util.ProxyUtils;
 import cofh.redstonearsenal.capability.FluxShieldedEnergyItemWrapper;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.util.ITooltipFlag;
-import net.minecraft.enchantment.Enchantment;
-import net.minecraft.entity.LivingEntity;
 import net.minecraft.inventory.EquipmentSlotType;
 import net.minecraft.item.IArmorMaterial;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.world.World;
 import net.minecraftforge.api.distmarker.Dist;
@@ -19,7 +19,6 @@ import net.minecraftforge.common.capabilities.ICapabilityProvider;
 
 import javax.annotation.Nullable;
 import java.util.List;
-import java.util.function.Consumer;
 
 import static cofh.lib.util.helpers.StringHelper.getTextComponent;
 import static net.minecraft.util.text.TextFormatting.GRAY;
@@ -38,7 +37,7 @@ public class FluxArmorItem extends ArmorItemCoFH implements IFluxItem {
         this.extract = maxTransfer;
         this.receive = maxTransfer;
 
-        //ProxyUtils.registerItemModelProperty(this, new ResourceLocation("charged"), this::getChargedModelProperty);
+        ProxyUtils.registerItemModelProperty(this, new ResourceLocation("charged"), this::getChargedModelProperty);
     }
 
     @Override
@@ -50,12 +49,6 @@ public class FluxArmorItem extends ArmorItemCoFH implements IFluxItem {
         } else if (CoreConfig.holdShiftForDetails) {
             tooltip.add(getTextComponent("info.cofh.hold_shift_for_details").withStyle(GRAY));
         }
-    }
-
-    @Override
-    public boolean canApplyAtEnchantingTable(ItemStack stack, Enchantment enchantment) {
-
-        return super.canApplyAtEnchantingTable(stack, enchantment);
     }
 
     @Override
@@ -77,11 +70,35 @@ public class FluxArmorItem extends ArmorItemCoFH implements IFluxItem {
     }
 
     @Override
-    public <T extends LivingEntity> int damageItem(ItemStack stack, int amount, T entity, Consumer<T> onBroken) {
+    public boolean isDamaged(ItemStack stack) {
 
-        useEnergy(stack, Math.min(getEnergyStored(stack), amount * getEnergyPerUse(false)), entity);
-        return -1;
+        return false;
     }
+
+    @Override
+    public void setDamage(ItemStack stack, int damage) {
+
+        setEnergyStored(stack, getMaxEnergyStored(stack) - getEnergyPerUse(false) * damage);
+    }
+
+    @Override
+    public int getDamage(ItemStack stack) {
+
+        return (getMaxEnergyStored(stack) - getEnergyStored(stack)) / getEnergyPerUse(false);
+    }
+
+    @Override
+    public int getMaxDamage(ItemStack stack) {
+
+        return getMaxEnergyStored(stack) / getEnergyPerUse(false);
+    }
+
+    //@Override
+    //public <T extends LivingEntity> int damageItem(ItemStack stack, int amount, T entity, Consumer<T> onBroken) {
+    //
+    //    useEnergy(stack, Math.min(getEnergyStored(stack), amount * getEnergyPerUse(false)), entity);
+    //    return -1;
+    //}
 
     // region IEnergyContainerItem
     @Override

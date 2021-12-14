@@ -1,17 +1,18 @@
 package cofh.redstonearsenal.item;
 
 import cofh.core.init.CoreConfig;
-import cofh.core.item.ArmorItemCoFH;
 import cofh.core.util.ProxyUtils;
+import cofh.lib.energy.EnergyContainerItemWrapper;
 import cofh.lib.util.Utils;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.util.ITooltipFlag;
-import net.minecraft.enchantment.Enchantment;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.EquipmentSlotType;
 import net.minecraft.item.IArmorMaterial;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.particles.RedstoneParticleData;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.vector.Vector3d;
@@ -19,37 +20,27 @@ import net.minecraft.util.text.ITextComponent;
 import net.minecraft.world.World;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraftforge.common.capabilities.ICapabilityProvider;
 
 import javax.annotation.Nullable;
 import java.util.List;
-import java.util.UUID;
-import java.util.function.Consumer;
 
 import static cofh.lib.util.helpers.StringHelper.getTextComponent;
 import static net.minecraft.util.text.TextFormatting.GRAY;
 
-public class FluxElytraItem extends ArmorItemCoFH implements IMultiModeFluxItem {
+public class FluxElytraItem extends FluxArmorItem implements IMultiModeFluxItem {
 
-    public static final float PROPEL_SPEED = 0.85F;
-    public static final float BRAKE_RATE = 0.95F;
-    public static final int BOOST_TIME = 32;
-    public static final int ENERGY_USE_INTERVAL = 8;
-    public static final UUID CHEST_UUID = UUID.fromString("9F3D476D-C118-4544-8365-64846904B48E");
+    public float propelSpeed = 0.85F;
+    public float brakeRate = 0.95F;
+    public int boostTime = 32;
+    public int energyUseInterval = 8;
 
-    protected int maxEnergy;
-    protected int extract;
-    protected int receive;
     protected int propelTime = 0;
 
     public FluxElytraItem(IArmorMaterial material, EquipmentSlotType slot, Properties builder, int maxEnergy, int maxTransfer) {
 
-        super(material, slot, builder);
+        super(material, slot, builder, maxEnergy, maxTransfer);
 
-        this.maxEnergy = maxEnergy;
-        this.extract = maxTransfer;
-        this.receive = maxTransfer;
-
-        ProxyUtils.registerItemModelProperty(this, new ResourceLocation("charged"), this::getChargedModelProperty);
         ProxyUtils.registerItemModelProperty(this, new ResourceLocation("active"), this::getEmpoweredModelProperty);
     }
 
@@ -65,34 +56,10 @@ public class FluxElytraItem extends ArmorItemCoFH implements IMultiModeFluxItem 
     }
 
     @Override
-    public boolean canApplyAtEnchantingTable(ItemStack stack, Enchantment enchantment) {
+    public ICapabilityProvider initCapabilities(ItemStack stack, @Nullable CompoundNBT nbt) {
 
-        return super.canApplyAtEnchantingTable(stack, enchantment);
+        return new EnergyContainerItemWrapper(stack, this, getEnergyCapability());
     }
-
-    @Override
-    public boolean isEnchantable(ItemStack stack) {
-
-        return getItemEnchantability(stack) > 0;
-    }
-
-    @Override
-    @Nullable
-    public EquipmentSlotType getEquipmentSlot(ItemStack stack) {
-
-        return EquipmentSlotType.CHEST;
-    }
-
-    //@Override
-    //public Multimap<Attribute, AttributeModifier> getAttributeModifiers(EquipmentSlotType slot, ItemStack stack) {
-    //
-    //    Multimap<Attribute, AttributeModifier> multimap = HashMultimap.create();
-    //    if (slot == EquipmentSlotType.CHEST && hasEnergy(stack, false)) {
-    //        multimap.put(Attributes.ARMOR, new AttributeModifier(CHEST_UUID, "Armor modifier", getDefense(), AttributeModifier.Operation.ADDITION));
-    //        multimap.put(Attributes.ARMOR_TOUGHNESS, new AttributeModifier(CHEST_UUID, "Armor toughness", getToughness(), AttributeModifier.Operation.ADDITION));
-    //    }
-    //    return multimap;
-    //}
 
     @Override
     public boolean canElytraFly(ItemStack stack, LivingEntity entity) {
@@ -104,11 +71,12 @@ public class FluxElytraItem extends ArmorItemCoFH implements IMultiModeFluxItem 
     public boolean elytraFlightTick(ItemStack stack, LivingEntity entity, int flightTicks) {
 
         boolean isCreative = Utils.isCreativePlayer(entity);
-        boolean shouldExtract = flightTicks % ENERGY_USE_INTERVAL == 0 && !isCreative;
-        useEnergy(stack, false, !shouldExtract);
+        boolean shouldExtract = flightTicks % energyUseInterval == 0 && !isCreative;
+        if (!useEnergy(stack, false, !shouldExtract)) {
+            return false;
+        }
 
-        if (entity.isCrouching() && (hasEnergy(stack, true) || isCreative)) {
-            useEnergy(stack, true, !shouldExtract);
+        if (entity.isCrouching() && useEnergy(stack, true, !shouldExtract)) {
             propelTime = 0;
             brake(entity);
         } else if (propelTime > 0) {
@@ -122,42 +90,36 @@ public class FluxElytraItem extends ArmorItemCoFH implements IMultiModeFluxItem 
     }
 
     @Override
-    public boolean isDamageable(ItemStack stack) {
+    public void inventoryTick(ItemStack stack, World world, Entity entity, int slot, boolean selected) {
 
-        return hasEnergy(stack, false);
-    }
-
-    @Override
-    public <T extends LivingEntity> int damageItem(ItemStack stack, int amount, T entity, Consumer<T> onBroken) {
-
-        amount = Math.min(getEnergyStored(stack), amount * getEnergyPerUse(false));
-        useEnergy(stack, amount, entity);
-        return -1;
+        if (!world.isClientSide() && entity instanceof LivingEntity && !((LivingEntity) entity).isFallFlying()) {
+            propelTime = 0;
+        }
     }
 
     //Used to boost a single time, similar to a rocket.
-    public boolean boost(ItemStack stack, LivingEntity entity, int boostTime) {
+    public boolean boost(ItemStack stack, LivingEntity entity, int time) {
 
         if (!entity.getItemBySlot(EquipmentSlotType.CHEST).canElytraFly(entity)) {
             return false;
         }
         boolean isPlayer = entity instanceof PlayerEntity;
         boolean isCreative = isPlayer && ((PlayerEntity) entity).abilities.instabuild;
-        if (!useEnergy(stack, getEnergyPerUse(true) * boostTime / ENERGY_USE_INTERVAL, isCreative)) {
+        if (!useEnergy(stack, getEnergyPerUse(true) * time / energyUseInterval, isCreative)) {
             return false;
         }
         if (!entity.isFallFlying() && isPlayer) {
             ((PlayerEntity) entity).startFallFlying();
         }
-        propel(entity, PROPEL_SPEED);
-        propelTime = boostTime;
+        propel(entity, propelSpeed);
+        propelTime = time;
 
         return true;
     }
 
     public boolean boost(ItemStack stack, LivingEntity entity) {
 
-        return boost(stack, entity, BOOST_TIME);
+        return boost(stack, entity, boostTime);
     }
 
     public void propel(LivingEntity entity, double speed) {
@@ -175,14 +137,14 @@ public class FluxElytraItem extends ArmorItemCoFH implements IMultiModeFluxItem 
 
     public void propel(LivingEntity entity) {
 
-        propel(entity, PROPEL_SPEED);
+        propel(entity, propelSpeed);
     }
 
     public void brake(LivingEntity entity, double rate) {
 
         if (entity.isFallFlying()) {
             Vector3d velocity = entity.getDeltaMovement();
-            double horzBrake = velocity.x() * velocity.x() + velocity.z() * velocity.z() > 0.25 ? rate : 1;
+            double horzBrake = velocity.x() * velocity.x() + velocity.z() * velocity.z() > 0.16 ? rate : 1;
             double vertBrake = velocity.y() * velocity.y() > 0.2 ? rate : 1;
             entity.setDeltaMovement(velocity.multiply(horzBrake, vertBrake, horzBrake));
         }
@@ -190,26 +152,7 @@ public class FluxElytraItem extends ArmorItemCoFH implements IMultiModeFluxItem 
 
     public void brake(LivingEntity entity) {
 
-        brake(entity, BRAKE_RATE);
+        brake(entity, brakeRate);
     }
 
-    // region IEnergyContainerItem
-    @Override
-    public int getExtract(ItemStack container) {
-
-        return extract;
-    }
-
-    @Override
-    public int getReceive(ItemStack container) {
-
-        return receive;
-    }
-
-    @Override
-    public int getMaxEnergyStored(ItemStack container) {
-
-        return getMaxStored(container, maxEnergy);
-    }
-    // endregion
 }
