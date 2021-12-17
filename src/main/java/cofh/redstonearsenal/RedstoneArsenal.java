@@ -95,5 +95,5 @@ public class RedstoneArsenal {
         RenderingRegistry.registerEntityRenderingHandler(FLUX_WRENCH_ENTITY, FluxWrenchRenderer::new);
         RenderingRegistry.registerEntityRenderingHandler(SHOCKWAVE_ENTITY, ShockwaveRenderer::new);
     }
-    //endregion
+    // endregion
 }
