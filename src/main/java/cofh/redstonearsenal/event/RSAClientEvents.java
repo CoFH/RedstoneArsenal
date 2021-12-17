@@ -40,6 +40,7 @@ public class RSAClientEvents {
             FluxTridentItem trident = (FluxTridentItem) stack.getItem();
             if (trident.isEmpowered(stack) && trident.hasEnergy(stack, true) && trident.startPlunge(player)) {
                 event.setCanceled(true);
+                event.setSwingHand(false);
                 ItemLeftClickPacket.createAndSend();
             }
         }

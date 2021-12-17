@@ -140,19 +140,16 @@ public class FluxCrossbowItem extends CrossbowItemCoFH implements IMultiModeFlux
                 cooldown++;
                 totalDuration = getRepeatInterval(stack);
                 duration -= getRepeatStartDelay(stack) + totalDuration * repeats;
-                if (duration >= totalDuration - 2) {
-                    if (!isLoaded(stack) && !loadAmmo(living, stack)) {
+                if (duration >= totalDuration - 2 && !isLoaded(stack)) {
+                    if ((hasEnergy(stack, false) || Utils.isCreativePlayer(living)) && loadAmmo(living, stack)) {
+                        useEnergy(stack, false, living);
+                    } else {
                         living.releaseUsingItem();
                         return;
                     }
                 }
                 if (duration >= totalDuration) {
-                    if (useEnergy(stack, true, living)) {
-                        shootLoadedAmmo(world, living, living.getUsedItemHand(), stack);
-                    } else {
-                        living.releaseUsingItem();
-                    }
-                    if (++repeats >= maxRepeats) {
+                    if (shootLoadedAmmo(world, living, living.getUsedItemHand(), stack) || ++repeats >= maxRepeats) {
                         living.releaseUsingItem();
                     }
                     return;
@@ -218,7 +215,7 @@ public class FluxCrossbowItem extends CrossbowItemCoFH implements IMultiModeFlux
     @Override
     public void onCrossbowShot(PlayerEntity shooter, Hand hand, ItemStack crossbow, int damage) {
 
-        useEnergy(crossbow, Math.min(getEnergyPerUse(true) * damage, getEnergyStored(crossbow)), shooter.abilities.instabuild);
+        useEnergy(crossbow, Math.min(getEnergyPerUse(false) * damage, getEnergyStored(crossbow)), shooter.abilities.instabuild);
 
         if (shooter instanceof ServerPlayerEntity) {
             if (!shooter.level.isClientSide()) {

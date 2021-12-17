@@ -47,7 +47,6 @@ public class RSAEvents {
                     player.addEffect(new EffectInstance(Effects.SLOW_FALLING, 35));
                     player.fallDistance = 0;
                     event.getTarget().invulnerableTime = 0;
-                    player.attackStrengthTicker = 100;
                 }
             }
         }
