@@ -60,7 +60,7 @@ public class FluxQuiverItem extends ItemCoFH implements IMultiModeFluxItem {
         setEnchantability(enchantability);
 
         ProxyUtils.registerItemModelProperty(this, new ResourceLocation("charged"), this::getChargedModelProperty);
-        ProxyUtils.registerItemModelProperty(this, new ResourceLocation("active"), this::getEmpoweredModelProperty);
+        ProxyUtils.registerItemModelProperty(this, new ResourceLocation("empowered"), this::getEmpoweredModelProperty);
     }
 
     @Override

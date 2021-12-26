@@ -1,0 +1,6 @@
+{
+  "parent": "redstone_arsenal:item/flux_trident_gui",
+  "textures": {
+    "layer0": "redstone_arsenal:item/flux_trident_empowered"
+  }
+}

@@ -2,5 +2,19 @@
   "parent": "item/generated",
   "textures": {
     "layer0": "redstone_arsenal:item/flux_elytra"
-  }
+  },
+  "overrides": [
+    {
+      "predicate": {
+        "charged": 1.0
+      },
+      "model": "redstone_arsenal:item/flux_elytra_charged"
+    },
+    {
+      "predicate": {
+        "empowered": 1.0
+      },
+      "model": "redstone_arsenal:item/flux_elytra_empowered"
+    }
+  ]
 }

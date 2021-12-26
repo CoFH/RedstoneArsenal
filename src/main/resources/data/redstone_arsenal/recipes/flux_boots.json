@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "X X",
+    "X#X"
+  ],
+  "key": {
+    "#": {
+      "item": "redstone_arsenal:flux_obsidian_rod"
+    },
+    "X": {
+      "item": "redstone_arsenal:flux_plating"
+    }
+  },
+  "result": {
+    "item": "redstone_arsenal:flux_boots"
+  }
+}

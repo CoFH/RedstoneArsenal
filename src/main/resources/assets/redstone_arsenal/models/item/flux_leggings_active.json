@@ -1,6 +1,0 @@
-{
-  "parent": "redstone_arsenal:item/flux_leggings",
-  "textures": {
-    "layer0": "redstone_arsenal:item/flux_leggings_active"
-  }
-}

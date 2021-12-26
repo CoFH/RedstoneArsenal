@@ -41,7 +41,7 @@ public class FluxElytraItem extends FluxArmorItem implements IMultiModeFluxItem 
 
         super(material, slot, builder, maxEnergy, maxTransfer);
 
-        ProxyUtils.registerItemModelProperty(this, new ResourceLocation("active"), this::getEmpoweredModelProperty);
+        ProxyUtils.registerItemModelProperty(this, new ResourceLocation("empowered"), this::getEmpoweredModelProperty);
     }
 
     @Override

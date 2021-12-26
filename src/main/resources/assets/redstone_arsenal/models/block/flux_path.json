@@ -1,0 +1,9 @@
+{
+  "parent": "minecraft:block/grass_path",
+  "textures": {
+    "particle": "block/dirt",
+    "top": "redstone_arsenal:block/flux_path_top",
+    "side": "redstone_arsenal:block/flux_path_side",
+    "bottom": "minecraft:block/dirt"
+  }
+}

@@ -56,57 +56,57 @@
     {
       "predicate": {
         "charged": 1.0,
-        "arrow": 1.0
-      },
-      "model": "redstone_arsenal:item/flux_crossbow_charged_arrow"
-    },
-    {
-      "predicate": {
-        "charged": 1.0,
-        "firework": 1.0
+        "ammo": 0.5
       },
       "model": "redstone_arsenal:item/flux_crossbow_charged_firework"
     },
     {
       "predicate": {
-        "active": 1.0
+        "charged": 1.0,
+        "ammo": 1.0
       },
-      "model": "redstone_arsenal:item/flux_crossbow_active"
+      "model": "redstone_arsenal:item/flux_crossbow_charged_arrow"
     },
     {
       "predicate": {
-        "active": 1.0,
+        "empowered": 1.0
+      },
+      "model": "redstone_arsenal:item/flux_crossbow_empowered"
+    },
+    {
+      "predicate": {
+        "empowered": 1.0,
         "pull": 0.01
       },
-      "model": "redstone_arsenal:item/flux_crossbow_active_0"
+      "model": "redstone_arsenal:item/flux_crossbow_empowered_0"
     },
     {
       "predicate": {
-        "active": 1.0,
+        "empowered": 1.0,
         "pull": 0.65
       },
-      "model": "redstone_arsenal:item/flux_crossbow_active_1"
+      "model": "redstone_arsenal:item/flux_crossbow_empowered_1"
     },
     {
       "predicate": {
-        "active": 1.0,
+        "empowered": 1.0,
         "pull": 1.0
       },
-      "model": "redstone_arsenal:item/flux_crossbow_active_2"
+      "model": "redstone_arsenal:item/flux_crossbow_empowered_2"
     },
     {
       "predicate": {
-        "active": 1.0,
-        "arrow": 1.0
+        "empowered": 1.0,
+        "ammo": 0.5
       },
-      "model": "redstone_arsenal:item/flux_crossbow_active_arrow"
+      "model": "redstone_arsenal:item/flux_crossbow_empowered_firework"
     },
     {
       "predicate": {
-        "active": 1.0,
-        "firework": 1.0
+        "empowered": 1.0,
+        "ammo": 1.0
       },
-      "model": "redstone_arsenal:item/flux_crossbow_active_firework"
+      "model": "redstone_arsenal:item/flux_crossbow_empowered_arrow"
     }
   ]
 }

@@ -19,16 +19,16 @@
     },
     {
       "predicate": {
-        "active": 1.0
+        "empowered": 1.0
       },
-      "model": "redstone_arsenal:item/flux_fishing_rod_active"
+      "model": "redstone_arsenal:item/flux_fishing_rod_empowered"
     },
     {
       "predicate": {
-        "active": 1.0,
+        "empowered": 1.0,
         "cast": 1.0
       },
-      "model": "redstone_arsenal:item/flux_fishing_rod_active_cast"
+      "model": "redstone_arsenal:item/flux_fishing_rod_empowered_cast"
     }
   ]
 }

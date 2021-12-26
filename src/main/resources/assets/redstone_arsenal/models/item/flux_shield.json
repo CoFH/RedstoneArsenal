@@ -122,16 +122,16 @@
     },
     {
       "predicate": {
-        "active": 1.0
+        "empowered": 1.0
       },
-      "model": "redstone_arsenal:item/flux_shield_active"
+      "model": "redstone_arsenal:item/flux_shield_empowered"
     },
     {
       "predicate": {
-        "active": 1.0,
+        "empowered": 1.0,
         "blocking": 1.0
       },
-      "model": "redstone_arsenal:item/flux_shield_active_blocking"
+      "model": "redstone_arsenal:item/flux_shield_empowered_blocking"
     }
   ]
 }
