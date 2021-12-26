@@ -115,7 +115,7 @@ public class FluxWrenchItem extends ItemCoFH implements IMultiModeFluxItem {
     public ActionResult<ItemStack> use(World world, PlayerEntity player, Hand hand) {
 
         ItemStack stack = player.getItemInHand(hand);
-        if (hasEnergy(stack, isEmpowered(stack))) {
+        if (hasEnergy(stack, false)) {
             if (!world.isClientSide()) {
                 world.addFreshEntity(new FluxWrenchEntity(world, player, stack));
                 player.inventory.removeItem(stack);

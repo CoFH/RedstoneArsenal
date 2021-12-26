@@ -20,6 +20,7 @@ import net.minecraft.inventory.EquipmentSlotType;
 import net.minecraft.item.IItemTier;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemUseContext;
+import net.minecraft.particles.RedstoneParticleData;
 import net.minecraft.util.ActionResultType;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundCategory;
@@ -27,6 +28,7 @@ import net.minecraft.util.SoundEvents;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.world.World;
+import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
@@ -144,8 +146,7 @@ public class FluxPickaxeItem extends PickaxeItemCoFH implements IMultiModeFluxIt
                     int r2 = r * r;
                     for (BlockPos pos : BlockPos.betweenClosed(context.getClickedPos().offset(-r, -r, -r), context.getClickedPos().offset(r, r, r))) {
                         if (pos.distSqr(context.getClickedPos()) < r2 && world.getBlockState(pos).getBlock().equals(FLUX_GLOW_AIR)) {
-                            world.playLocalSound(pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, SoundEvents.FIRE_EXTINGUISH, SoundCategory.BLOCKS, 0.5F, 1.0F, false);
-                            world.setBlockAndUpdate(pos, AIR.defaultBlockState());
+                            extinguishAir(world, player, pos, 0.3F);
                         }
                     }
                     return ActionResultType.SUCCESS;
@@ -153,18 +154,12 @@ public class FluxPickaxeItem extends PickaxeItemCoFH implements IMultiModeFluxIt
             } else {
                 BlockPos pos = context.getClickedPos().relative(context.getClickedFace());
                 BlockState state = world.getBlockState(pos);
-                if (state.getBlock().equals(FLUX_GLOW_AIR)) {
-                    if (useEnergy(tool, false, player.abilities.instabuild)) {
-                        world.playSound(player, pos, SoundEvents.FIRE_EXTINGUISH, SoundCategory.PLAYERS, 0.5F, 1.0F);
-                        world.setBlockAndUpdate(pos, AIR.defaultBlockState());
-                        return ActionResultType.SUCCESS;
-                    }
-                } else if (state.isAir()) {
-                    if (useEnergy(tool, true, player.abilities.instabuild)) {
-                        world.playSound(player, pos, SoundEvents.FLINTANDSTEEL_USE, SoundCategory.PLAYERS, 0.5F, 1.0F);
-                        world.setBlockAndUpdate(pos, FLUX_GLOW_AIR.defaultBlockState());
-                        return ActionResultType.SUCCESS;
-                    }
+                if (state.getBlock().equals(FLUX_GLOW_AIR) && useEnergy(tool, false, player.abilities.instabuild)) {
+                    extinguishAir(world, player, pos, 0.5F);
+                    return ActionResultType.SUCCESS;
+                } else if (state.isAir() && useEnergy(tool, true, player.abilities.instabuild)) {
+                    igniteAir(world, player, pos, 0.5F);
+                    return ActionResultType.SUCCESS;
                 }
             }
         }
@@ -178,13 +173,28 @@ public class FluxPickaxeItem extends PickaxeItemCoFH implements IMultiModeFluxIt
 
         if (!world.isClientSide() && isEmpowered(stack) && world.getGameTime() % 8 == 0) {
             BlockPos pos = entity.blockPosition();
-            if (world.isEmptyBlock(pos) && world.getRawBrightness(pos, world.getSkyDarken()) <= LOW_LIGHT_THRESHOLD) {
-                if (useEnergy(stack, true, entity)) {
-                    world.playSound(null, pos, SoundEvents.FLINTANDSTEEL_USE, SoundCategory.PLAYERS, 0.5F, 1.0F);
-                    world.setBlockAndUpdate(pos, FLUX_GLOW_AIR.defaultBlockState());
-                }
+            if (world.isEmptyBlock(pos) && world.getRawBrightness(pos, world.getSkyDarken()) <= LOW_LIGHT_THRESHOLD && useEnergy(stack, true, entity)) {
+                igniteAir(world, null, pos, 0.3F);
             }
         }
+    }
+
+    public void igniteAir(World world, PlayerEntity player, BlockPos pos, float volume) {
+
+        world.playSound(player, pos, SoundEvents.FLINTANDSTEEL_USE, SoundCategory.PLAYERS, volume, 1.0F);
+        if (!world.isClientSide()) {
+            ((ServerWorld) world).sendParticles(RedstoneParticleData.REDSTONE, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, 4, 0.25, 0.25, 0.25, 0);
+        }
+        world.setBlockAndUpdate(pos, FLUX_GLOW_AIR.defaultBlockState());
+    }
+
+    public void extinguishAir(World world, PlayerEntity player, BlockPos pos, float volume) {
+
+        world.playSound(player, pos, SoundEvents.FIRE_EXTINGUISH, SoundCategory.PLAYERS, 0.5F, 1.0F);
+        if (!world.isClientSide()) {
+            ((ServerWorld) world).sendParticles(RedstoneParticleData.REDSTONE, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, 4, 0.25, 0.25, 0.25, 0);
+        }
+        world.setBlockAndUpdate(pos, AIR.defaultBlockState());
     }
 
     protected float getAttackDamage(ItemStack stack) {

@@ -24,7 +24,7 @@ public class RSABlocks {
         BLOCKS.register(ID_FLUX_GEM_BLOCK, () -> new Block(of(Material.METAL, MaterialColor.COLOR_RED).strength(5.0F, 6.0F).sound(SoundType.METAL).harvestLevel(2).harvestTool(ToolType.PICKAXE).requiresCorrectToolForDrops()));
 
         BLOCKS.register(ID_FLUX_GLOW_AIR, () -> new FluxGlowAirBlock(copy(Blocks.AIR).lightLevel(lightValue(15))));
-        BLOCKS.register(ID_FLUX_PATH, () -> new GrassPathBlock(AbstractBlock.Properties.of(Material.DIRT).strength(0.65F).harvestTool(ToolType.SHOVEL).sound(SoundType.GRASS).isViewBlocking((a, b, c) -> true).isSuffocating((a, b, c) -> true).speedFactor(1.15F).lightLevel(lightValue(3))));
+        BLOCKS.register(ID_FLUX_PATH, () -> new GrassPathBlock(AbstractBlock.Properties.of(Material.DIRT).strength(0.65F).harvestTool(ToolType.SHOVEL).sound(SoundType.GRASS).isViewBlocking((a, b, c) -> true).isSuffocating((a, b, c) -> true).speedFactor(1.12F).friction(0.56F).lightLevel(lightValue(4))));
     }
 
 }

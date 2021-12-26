@@ -55,7 +55,6 @@ public class FluxCrossbowItem extends CrossbowItemCoFH implements IMultiModeFlux
         this.receive = xfer;
         this.maxRepeats = maxRepeats;
 
-        //ProxyUtils.registerItemModelProperty(this, new ResourceLocation("pull"), this::getPullModelProperty);
         ProxyUtils.registerItemModelProperty(this, new ResourceLocation("charged"), this::getChargedModelProperty);
         ProxyUtils.registerItemModelProperty(this, new ResourceLocation("empowered"), this::getEmpoweredModelProperty);
     }
@@ -102,7 +101,11 @@ public class FluxCrossbowItem extends CrossbowItemCoFH implements IMultiModeFlux
 
         if (isEmpowered(stack)) {
             totalDuration = getRepeatInterval(stack);
-            return MathHelper.clamp((float) ((duration - getRepeatStartDelay(stack)) % totalDuration) / totalDuration, 0.0F, 1.0F);
+            duration = duration - getRepeatStartDelay(stack);
+            if (duration <= 0) {
+                return 0.0F;
+            }
+            return MathHelper.clamp((float) (duration % totalDuration) / totalDuration, 0.0F, 1.0F);
         } else {
             return MathHelper.clamp((float) (duration) / totalDuration, 0.0F, 1.0F);
         }
