@@ -3,6 +3,28 @@
   "textures": {
     "layer0": "redstone_arsenal:item/flux_quiver"
   },
+  "display": {
+    "thirdperson_righthand": {
+      "rotation": [0, -90, -35],
+      "translation": [0, -1, -3],
+      "scale": [0.8, 0.8, 0.8]
+    },
+    "thirdperson_lefthand": {
+      "rotation": [0, 90, 35],
+      "translation": [0, -1, -3],
+      "scale": [0.8, 0.8, 0.8]
+    },
+    "firstperson_righthand": {
+      "rotation": [0, -90, -55],
+      "translation": [1.13, 1.2, 1.13],
+      "scale": [0.68, 0.68, 0.68]
+    },
+    "firstperson_lefthand": {
+      "rotation": [0, 90, 55],
+      "translation": [1.13, 1.2, 1.13],
+      "scale": [0.68, 0.68, 0.68]
+    }
+  },
   "overrides": [
     {
       "predicate": {
