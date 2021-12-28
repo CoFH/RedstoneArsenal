@@ -76,7 +76,7 @@ public class FluxElytraItem extends FluxArmorItem implements IMultiModeFluxItem 
             return false;
         }
 
-        if (entity.isCrouching() && useEnergy(stack, true, !shouldExtract)) {
+        if (entity.isShiftKeyDown() && useEnergy(stack, true, !shouldExtract)) {
             propelTime = 0;
             brake(entity);
         } else if (propelTime > 0) {

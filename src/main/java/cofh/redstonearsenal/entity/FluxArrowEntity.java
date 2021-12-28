@@ -19,17 +19,17 @@ import net.minecraft.network.datasync.DataSerializers;
 import net.minecraft.network.datasync.EntityDataManager;
 import net.minecraft.network.play.server.SChangeGameStatePacket;
 import net.minecraft.particles.ParticleTypes;
-import net.minecraft.particles.RedstoneParticleData;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.EntityPredicates;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.SoundEvents;
-import net.minecraft.util.math.*;
+import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.util.math.BlockRayTraceResult;
+import net.minecraft.util.math.EntityRayTraceResult;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.World;
 import net.minecraft.world.server.ServerWorld;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.fml.network.NetworkHooks;
 
 import javax.annotation.Nullable;
@@ -140,20 +140,16 @@ public class FluxArrowEntity extends AbstractArrowEntity {
         return 0.99F;
     }
 
-    @Override
-    protected void onHit(RayTraceResult result) {
-
-        if (isExplodeArrow()) {
-            this.explode(result.getLocation());
-        } else {
-            RayTraceResult.Type type = result.getType();
-            if (type == RayTraceResult.Type.ENTITY) {
-                this.onHitEntity((EntityRayTraceResult) result);
-            } else if (type == RayTraceResult.Type.BLOCK) {
-                this.onHitBlock((BlockRayTraceResult) result);
-            }
-        }
-    }
+    //@Override
+    //protected void onHit(RayTraceResult result) {
+    //
+    //    RayTraceResult.Type type = result.getType();
+    //    if (type == RayTraceResult.Type.ENTITY) {
+    //            this.onHitEntity((EntityRayTraceResult) result);
+    //    } else if (type == RayTraceResult.Type.BLOCK) {
+    //        this.onHitBlock((BlockRayTraceResult) result);
+    //    }
+    //}
 
     @Override
     protected void onHitEntity(EntityRayTraceResult result) {
@@ -229,6 +225,11 @@ public class FluxArrowEntity extends AbstractArrowEntity {
             }
 
             this.playSound(getDefaultHitGroundSoundEvent(), 1.0F, 1.2F / (this.random.nextFloat() * 0.2F + 0.9F));
+
+            if (isExplodeArrow()) {
+                this.explode(this.position());
+                return;
+            }
             if (this.getPierceLevel() <= 0) {
                 this.remove();
             }
@@ -248,8 +249,12 @@ public class FluxArrowEntity extends AbstractArrowEntity {
     }
 
     @Override
-    protected void onHitBlock(BlockRayTraceResult rayTraceResult) {
+    protected void onHitBlock(BlockRayTraceResult result) {
 
+        if (isExplodeArrow()) {
+            this.explode(result.getLocation());
+            return;
+        }
         level.broadcastEntityEvent(this, (byte) 3);
         this.remove();
     }

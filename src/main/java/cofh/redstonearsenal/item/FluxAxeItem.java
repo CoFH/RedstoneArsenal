@@ -34,7 +34,7 @@ import static net.minecraft.util.text.TextFormatting.GRAY;
 
 public class FluxAxeItem extends AxeItemCoFH implements IMultiModeFluxItem {
 
-    protected float empoweredCritMod = 1.6F;
+    protected float empoweredCritMod = 2.0F;
     protected final float damage;
     protected final float attackSpeed;
 

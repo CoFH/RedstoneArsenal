@@ -82,7 +82,7 @@ public class FluxFishingRodItem extends FishingRodItemCoFH implements IMultiMode
         ItemStack stack = player.getItemInHand(hand);
         if (player.fishing != null) {
             if (isEmpowered(stack) && player.fishing.getHookedIn() != null) {
-                if (player.isCrouching()) {
+                if (player.isShiftKeyDown()) {
                     player.fishing.remove();
                 } else {
                     player.startUsingItem(hand);
@@ -112,7 +112,7 @@ public class FluxFishingRodItem extends FishingRodItemCoFH implements IMultiMode
         if (living instanceof PlayerEntity) {
             PlayerEntity player = (PlayerEntity) living;
             if (player.fishing != null && player.fishing.getHookedIn() != null && isEmpowered(stack)) {
-                if (living.isCrouching()) {
+                if (living.isShiftKeyDown()) {
                     player.fishing.remove();
                 } else if (useEnergy(stack, true, useDuration % reelEnergyUseInterval != 0 || player.abilities.instabuild)) {
                     reelIn(stack, player.fishing);

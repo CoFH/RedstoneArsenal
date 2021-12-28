@@ -33,9 +33,11 @@ public class RSAClientEvents {
         if (stack.isEmpty()) {
             return;
         }
+        // Flux Sword
         if (stack.getItem() instanceof FluxSwordItem) {
             ItemLeftClickPacket.createAndSend();
         }
+        // Flux Trident
         if (stack.getItem() instanceof FluxTridentItem) {
             FluxTridentItem trident = (FluxTridentItem) stack.getItem();
             if (trident.isEmpowered(stack) && trident.hasEnergy(stack, true) && trident.startPlunge(player)) {
@@ -49,6 +51,7 @@ public class RSAClientEvents {
     @SubscribeEvent (priority = EventPriority.LOWEST)
     public static void onDrawScreenPost(RenderGameOverlayEvent.Post event) {
 
+        // Flux Shielding
         if (event.getType() == RenderGameOverlayEvent.ElementType.ALL && Minecraft.getInstance().gameMode.canHurtPlayer()) {
             FluxShieldingHUDRenderer.render(event.getMatrixStack());
         }

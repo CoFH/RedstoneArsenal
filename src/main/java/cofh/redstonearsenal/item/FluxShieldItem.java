@@ -16,6 +16,7 @@ import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.*;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.world.World;
 import net.minecraftforge.api.distmarker.Dist;
@@ -35,7 +36,7 @@ import static net.minecraft.util.text.TextFormatting.GRAY;
 public class FluxShieldItem extends ShieldItemCoFH implements IMultiModeFluxItem {
 
     protected float repelRange = 4;
-    protected float repelStrength = 2;
+    protected float repelStrength = 1.5F;
 
     protected int maxEnergy;
     protected int extract;
@@ -88,18 +89,32 @@ public class FluxShieldItem extends ShieldItemCoFH implements IMultiModeFluxItem
     public void repel(World world, LivingEntity living, ItemStack stack) {
 
         if (useEnergy(stack, true, living)) {
-            double r2 = repelRange * repelRange;
-            AxisAlignedBB searchArea = living.getBoundingBox().inflate(repelRange);
+            float range = getRepelRange(stack);
+            double r2 = range * range;
+            float strength = getRepelStrength(stack);
+            AxisAlignedBB searchArea = living.getBoundingBox().inflate(range);
             for (Entity entity : world.getEntities(living, searchArea, EntityPredicates.NO_CREATIVE_OR_SPECTATOR)) {
                 if (living.distanceToSqr(entity) < r2) {
-                    if (entity.getDeltaMovement().lengthSqr() < repelStrength * repelStrength) {
-                        entity.setDeltaMovement(entity.position().subtract(living.position()).normalize().scale(repelStrength));
+                    Vector3d knockback = entity.position().subtract(living.position());
+                    if (entity instanceof LivingEntity) {
+                        ((LivingEntity) entity).knockback(strength, -knockback.x(), -knockback.z());
                     } else {
-                        entity.setDeltaMovement(entity.getDeltaMovement().reverse());
+                        entity.setDeltaMovement(knockback.normalize().scale(strength));
+                        entity.hasImpulse = true;
                     }
                 }
             }
         }
+    }
+
+    public float getRepelRange(ItemStack stack) {
+
+        return repelRange;
+    }
+
+    public float getRepelStrength(ItemStack stack) {
+
+        return repelStrength;
     }
 
     @Override

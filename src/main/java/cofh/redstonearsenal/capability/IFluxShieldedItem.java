@@ -1,6 +1,7 @@
 package cofh.redstonearsenal.capability;
 
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.player.ServerPlayerEntity;
 
 /**
  * Implement this interface as a capability for an equippable item with a flux shield.
@@ -33,4 +34,17 @@ public interface IFluxShieldedItem {
      */
     boolean useCharge(LivingEntity entity);
 
+    /**
+     * Schedules an update to the HUD. Automatically called after a charge is successfully used.
+     * May be kept empty if no update is necessary.
+     *
+     * @param player Player with the item equipped.
+     * @param currTime The current world time.
+     */
+    void scheduleUpdate(ServerPlayerEntity player, long currTime);
+
+    default void scheduleUpdate(ServerPlayerEntity player) {
+
+        scheduleUpdate(player, player.level.getGameTime());
+    }
 }

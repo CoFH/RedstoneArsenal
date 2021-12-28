@@ -2,9 +2,6 @@ package cofh.redstonearsenal.util;
 
 import cofh.core.compat.curios.CuriosProxy;
 import cofh.redstonearsenal.capability.IFluxShieldedItem;
-import cofh.redstonearsenal.client.renderer.FluxShieldingHUDRenderer;
-import cofh.redstonearsenal.network.client.FluxShieldingPacket;
-import com.google.common.collect.HashMultimap;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.monster.MonsterEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -16,8 +13,6 @@ import net.minecraft.util.SoundEvents;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.server.ServerWorld;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.util.LazyOptional;
 
 import java.util.function.Consumer;
@@ -28,39 +23,6 @@ import static cofh.redstonearsenal.capability.CapabilityFluxShielding.FLUX_SHIEL
 public class FluxShieldingHelper {
 
     public static final String TAG_FLUX_SHIELD = "FluxShield";
-    public static HashMultimap<Long, ServerPlayerEntity> updateSchedule = HashMultimap.create();
-
-    public static void updateHUD(ServerPlayerEntity player) {
-
-        FluxShieldingPacket.sendToClient(FluxShieldingHelper.countCharges(player), player);
-    }
-
-    public static void updateHUD(int currCharges, int maxCharges, ServerPlayerEntity player) {
-
-        FluxShieldingPacket.sendToClient(currCharges, maxCharges, player);
-    }
-
-    @OnlyIn (Dist.CLIENT)
-    public static void updateHUD(int currCharges, int maxCharges) {
-
-        FluxShieldingHUDRenderer.currCharges = currCharges;
-        FluxShieldingHUDRenderer.maxCharges = maxCharges;
-    }
-
-    public static void scheduleHUDUpdate(long time, ServerPlayerEntity player) {
-
-        updateSchedule.put(time, player);
-    }
-
-    public static void handleHUDSchedule(long time) {
-
-        if (updateSchedule.containsKey(time)) {
-            for (ServerPlayerEntity player : updateSchedule.get(time)) {
-                updateHUD(player);
-            }
-            updateSchedule.removeAll(time);
-        }
-    }
 
     public static ItemStack findShieldedItem(LivingEntity entity) {
 
@@ -107,14 +69,11 @@ public class FluxShieldingHelper {
             counter[1] += cap.map(c -> c.maxCharges(entity)).orElse(0);
         };
 
-        //HELD
-        count.accept(entity.getMainHandItem());
-        count.accept(entity.getOffhandItem());
-        //ARMOR
-        for (ItemStack piece : entity.getArmorSlots()) {
-            count.accept(piece);
+        // HELD & ARMOR
+        for (ItemStack item : entity.getArmorSlots()) {
+            count.accept(item);
         }
-        //CURIOS
+        // CURIOS
         CuriosProxy.getAllWorn(entity).ifPresent(c -> {
             for (int i = 0; i < c.getSlots(); ++i) {
                 count.accept(c.getStackInSlot(i));
@@ -138,7 +97,11 @@ public class FluxShieldingHelper {
         if (stack.isEmpty()) {
             return false;
         }
-        if (stack.getCapability(FLUX_SHIELDED_ITEM_CAPABILITY).map(cap -> cap.useCharge(entity)).orElse(false)) {
+        LazyOptional<IFluxShieldedItem> cap = stack.getCapability(FLUX_SHIELDED_ITEM_CAPABILITY);
+        if (cap.map(c -> c.useCharge(entity)).orElse(false)) {
+            if (entity instanceof ServerPlayerEntity) {
+                cap.ifPresent(c -> c.scheduleUpdate((ServerPlayerEntity) entity));
+            }
             onUseFluxShieldCharge(entity);
             return true;
         }
@@ -153,7 +116,7 @@ public class FluxShieldingHelper {
         } else if (entity instanceof MonsterEntity) {
             category = SoundCategory.HOSTILE;
         }
-        entity.level.playSound(null, entity.blockPosition(), SoundEvents.ITEM_BREAK, category, 1.0F, 1.0F); //TODO: sound event
+        entity.level.playSound(null, entity.getX(), entity.getY(), entity.getZ(), SoundEvents.ITEM_BREAK, category, 1.0F, 1.0F); //TODO: sound event
 
         AxisAlignedBB bounds = entity.getBoundingBox();
         Vector3d pos = bounds.getCenter();

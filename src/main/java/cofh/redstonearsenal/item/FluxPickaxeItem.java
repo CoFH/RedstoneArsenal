@@ -140,7 +140,7 @@ public class FluxPickaxeItem extends PickaxeItemCoFH implements IMultiModeFluxIt
         PlayerEntity player = context.getPlayer();
         if (player != null) {
             World world = context.getLevel();
-            if (player.isCrouching()) {
+            if (player.isShiftKeyDown()) {
                 if (useEnergy(tool, true, player.abilities.instabuild)) {
                     int r = REMOVE_RADIUS;
                     int r2 = r * r;

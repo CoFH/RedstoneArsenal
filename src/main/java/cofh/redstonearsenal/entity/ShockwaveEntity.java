@@ -3,7 +3,6 @@ package cofh.redstonearsenal.entity;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.ai.attributes.Attributes;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.IPacket;
@@ -11,7 +10,6 @@ import net.minecraft.potion.EffectInstance;
 import net.minecraft.potion.Effects;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.EntityPredicates;
-import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.network.NetworkHooks;
@@ -106,8 +104,9 @@ public class ShockwaveEntity extends Entity {
                     if (entity.hurt(source, damage * falloff)) {
                         hitSomething = true;
                         entity.addEffect(new EffectInstance(SUNDERED, debuffDuration, 0, false, false));
-                        Vector3d knockback = relPos.scale(0.8 / MathHelper.sqrt(distSqr)).add(0, 0.3, 0).scale(1.0D - entity.getAttributeValue(Attributes.KNOCKBACK_RESISTANCE));
-                        entity.setDeltaMovement(knockback);
+                        entity.knockback(0.8F, -relPos.x(), -relPos.z());
+                        //Vector3d knockback = relPos.scale(0.8 / MathHelper.sqrt(distSqr)).add(0, 0.3, 0).scale(1.0D - entity.getAttributeValue(Attributes.KNOCKBACK_RESISTANCE));
+                        //entity.setDeltaMovement(knockback);
                     }
                 }
             }
