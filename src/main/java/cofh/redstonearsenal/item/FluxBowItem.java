@@ -1,5 +1,6 @@
 package cofh.redstonearsenal.item;
 
+import cofh.core.init.CoreConfig;
 import cofh.core.util.ProxyUtils;
 import cofh.lib.capability.IArcheryAmmoItem;
 import cofh.lib.capability.IArcheryBowItem;
@@ -9,6 +10,7 @@ import cofh.lib.energy.EnergyContainerItemWrapper;
 import cofh.lib.item.impl.BowItemCoFH;
 import cofh.lib.util.Utils;
 import cofh.lib.util.helpers.ArcheryHelper;
+import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.entity.LivingEntity;
@@ -37,9 +39,11 @@ import java.util.List;
 import static cofh.lib.capability.CapabilityArchery.AMMO_ITEM_CAPABILITY;
 import static cofh.lib.capability.CapabilityArchery.BOW_ITEM_CAPABILITY;
 import static cofh.lib.util.Utils.getItemEnchantmentLevel;
+import static cofh.lib.util.helpers.StringHelper.getTextComponent;
 import static cofh.lib.util.references.EnsorcReferences.TRUESHOT;
 import static cofh.lib.util.references.EnsorcReferences.VOLLEY;
 import static net.minecraft.enchantment.Enchantments.*;
+import static net.minecraft.util.text.TextFormatting.GRAY;
 
 public class FluxBowItem extends BowItemCoFH implements IMultiModeFluxItem {
 
@@ -65,7 +69,11 @@ public class FluxBowItem extends BowItemCoFH implements IMultiModeFluxItem {
     @OnlyIn (Dist.CLIENT)
     public void appendHoverText(ItemStack stack, @Nullable World worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn) {
 
-        tooltipDelegate(stack, worldIn, tooltip, flagIn);
+        if (Screen.hasShiftDown() || CoreConfig.alwaysShowDetails) {
+            tooltipDelegate(stack, worldIn, tooltip, flagIn);
+        } else if (CoreConfig.holdShiftForDetails) {
+            tooltip.add(getTextComponent("info.cofh.hold_shift_for_details").withStyle(GRAY));
+        }
     }
 
     @Override

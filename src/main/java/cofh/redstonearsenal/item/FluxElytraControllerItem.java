@@ -1,5 +1,6 @@
 package cofh.redstonearsenal.item;
 
+import cofh.core.util.ProxyUtils;
 import cofh.lib.item.ICoFHItem;
 import cofh.lib.item.IMultiModeItem;
 import net.minecraft.client.util.ITooltipFlag;
@@ -7,10 +8,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.EquipmentSlotType;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.ActionResult;
-import net.minecraft.util.Hand;
-import net.minecraft.util.SoundCategory;
-import net.minecraft.util.SoundEvents;
+import net.minecraft.util.*;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
@@ -27,6 +25,7 @@ public class FluxElytraControllerItem extends Item implements ICoFHItem, IMultiM
     public FluxElytraControllerItem(Item.Properties builder) {
 
         super(builder);
+        ProxyUtils.registerItemModelProperty(this, new ResourceLocation("empowered"), (stack, world, entity) -> isEmpowered(stack) ? 1.0F : 0.0F);
     }
 
     @Override
@@ -34,7 +33,9 @@ public class FluxElytraControllerItem extends Item implements ICoFHItem, IMultiM
     public void appendHoverText(ItemStack stack, @Nullable World worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn) {
 
         if (isEmpowered(stack)) {
-            tooltip.add(getTextComponent("info.redstone_arsenal.empowered").withStyle(TextFormatting.RED));
+            tooltip.add(getTextComponent("info.redstone_arsenal.mode.1").withStyle(TextFormatting.RED));
+        } else {
+            tooltip.add(getTextComponent("info.redstone_arsenal.mode.0").withStyle(TextFormatting.GRAY));
         }
         addIncrementModeChangeTooltip(stack, worldIn, tooltip, flagIn);
     }

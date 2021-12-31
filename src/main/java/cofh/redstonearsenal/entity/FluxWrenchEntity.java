@@ -127,8 +127,8 @@ public class FluxWrenchEntity extends ProjectileEntity {
                 } else {
                     this.setDeltaMovement(relPos.scale(speed / distance));
                 }
-                //                Vector3d acceleration = relPos.scale(Math.min(1, 0.05 * tickCount) / distance);
-                //                velocity = velocity.add(acceleration).normalize().scale(SPEED);
+                //Vector3d acceleration = relPos.scale(Math.min(1, 0.05 * tickCount) / distance);
+                //velocity = velocity.add(acceleration).normalize().scale(SPEED);
             }
         }
 

@@ -1,5 +1,6 @@
 package cofh.redstonearsenal.item;
 
+import cofh.core.util.helpers.ChatHelper;
 import cofh.lib.energy.EnergyContainerItemWrapper;
 import cofh.lib.item.IMultiModeItem;
 import net.minecraft.client.util.ITooltipFlag;
@@ -11,6 +12,7 @@ import net.minecraft.util.SoundCategory;
 import net.minecraft.util.SoundEvents;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextFormatting;
+import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.World;
 import net.minecraftforge.common.capabilities.ICapabilityProvider;
 
@@ -40,6 +42,7 @@ public interface IMultiModeFluxItem extends IFluxItem, IMultiModeItem {
         } else {
             player.level.playSound(null, player.blockPosition(), SoundEvents.EXPERIENCE_ORB_PICKUP, SoundCategory.PLAYERS, 0.2F, 0.6F);
         }
+        ChatHelper.sendIndexedChatMessageToPlayer(player, new TranslationTextComponent("info.redstone_arsenal.mode." + getMode(stack)));
     }
     // endregion
 
@@ -52,7 +55,9 @@ public interface IMultiModeFluxItem extends IFluxItem, IMultiModeItem {
     default void tooltipDelegate(ItemStack stack, @Nullable World worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn) {
 
         if (isEmpowered(stack)) {
-            tooltip.add(getTextComponent("info.redstone_arsenal.empowered").withStyle(TextFormatting.RED));
+            tooltip.add(getTextComponent("info.redstone_arsenal.mode.1").withStyle(TextFormatting.RED));
+        } else {
+            tooltip.add(getTextComponent("info.redstone_arsenal.mode.0").withStyle(TextFormatting.GRAY));
         }
         if (getNumModes(stack) > 1) {
             addIncrementModeChangeTooltip(stack, worldIn, tooltip, flagIn);
