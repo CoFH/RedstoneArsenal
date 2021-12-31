@@ -1,7 +1,7 @@
 {
   "parent": "item/handheld",
   "textures": {
-    "layer0": "redstone_arsenal:item/flux_controller"
+    "layer0": "redstone_arsenal:item/flux_controller_charged"
   },
   "overrides": [
     {
