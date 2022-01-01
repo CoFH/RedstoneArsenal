@@ -75,7 +75,7 @@ public class ShockwaveEntity extends Entity {
             if (tickCount > duration + animDuration) {
                 this.remove();
             } else if (tickCount < duration && attack()) {
-                owner.addEffect(new EffectInstance(Effects.DAMAGE_BOOST, 50, 0));
+                owner.addEffect(new EffectInstance(Effects.DAMAGE_BOOST, 70, 0));
                 //owner.setSprinting(true);
             }
         }
