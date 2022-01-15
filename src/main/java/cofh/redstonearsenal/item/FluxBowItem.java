@@ -10,6 +10,7 @@ import cofh.lib.energy.EnergyContainerItemWrapper;
 import cofh.lib.item.impl.BowItemCoFH;
 import cofh.lib.util.Utils;
 import cofh.lib.util.helpers.ArcheryHelper;
+import cofh.lib.util.helpers.MathHelper;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.enchantment.Enchantment;
@@ -21,7 +22,6 @@ import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.particles.RedstoneParticleData;
 import net.minecraft.stats.Stats;
 import net.minecraft.util.*;
-import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.world.World;
@@ -223,11 +223,11 @@ public class FluxBowItem extends BowItemCoFH implements IMultiModeFluxItem {
                         if (encTrueshot > 0) {
                             accuracyMod *= (1.5F / (1 + encTrueshot));
                             damageMod *= (1.0F + 0.25F * encTrueshot);
-                            arrowVelocity = cofh.lib.util.helpers.MathHelper.clamp(0.1F, arrowVelocity + 0.05F * encTrueshot, 1.75F);
+                            arrowVelocity = MathHelper.clamp(0.1F, arrowVelocity + 0.05F * encTrueshot, 1.75F);
                         }
                         int numArrows = encVolley > 0 ? 3 : 1;
                         // Each additional arrow fired at a higher arc - arrows will not be fired beyond vertically. Maximum of 5 degrees between arrows.
-                        float volleyPitch = encVolley > 0 ? cofh.lib.util.helpers.MathHelper.clamp(90.0F + shooter.xRot / encVolley, 0.0F, 5.0F) : 0;
+                        float volleyPitch = encVolley > 0 ? MathHelper.clamp(90.0F + shooter.xRot / encVolley, 0.0F, 5.0F) : 0;
 
                         BowItem bowItem = bow.getItem() instanceof BowItem ? (BowItem) bow.getItem() : null;
 
