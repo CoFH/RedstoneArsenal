@@ -90,14 +90,12 @@ public class FluxSlashEntity extends ProjectileEntity {
         super.tick();
 
         if (tickCount > duration) {
-            level.broadcastEntityEvent(this, (byte) 3);
             remove();
         }
         calculateCollision(this.level);
 
         checkInsideBlocks();
         Vector3d velocity = getDeltaMovement();
-        updateRotation();
 
         setPos(getX() + velocity.x, getY() + velocity.y, getZ() + velocity.z);
     }

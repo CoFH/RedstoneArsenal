@@ -23,10 +23,7 @@ import net.minecraft.util.DamageSource;
 import net.minecraft.util.EntityPredicates;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.SoundEvents;
-import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.math.BlockRayTraceResult;
-import net.minecraft.util.math.EntityRayTraceResult;
-import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.*;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.World;
 import net.minecraft.world.server.ServerWorld;
@@ -41,7 +38,7 @@ import static cofh.redstonearsenal.init.RSAReferences.FLUX_ARROW_ENTITY;
 public class FluxArrowEntity extends AbstractArrowEntity {
 
     protected static final DataParameter<Byte> RSA_FLAGS = EntityDataManager.defineId(FluxArrowEntity.class, DataSerializers.BYTE);
-    protected static final int LIFESPAN = 200;
+    protected static final int LIFESPAN = 100;
     protected static final float EXPLOSION_RANGE = 4.0F;
 
     public FluxArrowEntity(EntityType<? extends FluxArrowEntity> entityIn, World worldIn) {
@@ -106,32 +103,120 @@ public class FluxArrowEntity extends AbstractArrowEntity {
     public void explode(Vector3d pos) {
 
         if (!level.isClientSide()) {
-            //level.addParticle(ParticleTypes.EXPLOSION, pos.x(), pos.y(), pos.z(), 0, 0, 0);
-            //level.playLocalSound(pos.x(), pos.y(), pos.z(), SoundEvents.GENERIC_EXPLODE, SoundCategory.BLOCKS, 0.5F, (1.0F + (this.level.random.nextFloat() - this.level.random.nextFloat()) * 0.2F) * 0.7F, false);
-            ((ServerWorld) level).sendParticles(ParticleTypes.EXPLOSION, pos.x(), pos.y(), pos.z(), 1, 0, 0, 0, 0);
-            level.playSound(null, pos.x(), pos.y(), pos.z(), SoundEvents.GENERIC_EXPLODE, SoundCategory.BLOCKS, 0.5F, (1.0F + (this.level.random.nextFloat() - this.level.random.nextFloat()) * 0.2F) * 0.7F);
+            ((ServerWorld) level).sendParticles(ParticleTypes.EXPLOSION, this.getX(), this.getY(), this.getZ(), 1, 0, 0, 0, 0);
+            level.playSound(null, this.getX(), this.getY(), this.getZ(), SoundEvents.GENERIC_EXPLODE, SoundCategory.BLOCKS, 0.5F, (1.0F + (this.level.random.nextFloat() - this.level.random.nextFloat()) * 0.2F) * 0.7F);
             double r2 = EXPLOSION_RANGE * EXPLOSION_RANGE;
-            AxisAlignedBB searchArea = this.getBoundingBox().move(pos.subtract(this.position())).inflate(EXPLOSION_RANGE, 1, EXPLOSION_RANGE);
+            AxisAlignedBB searchArea = this.getBoundingBox().move(pos.subtract(this.position())).inflate(EXPLOSION_RANGE);
             Predicate<Entity> filter = EntityPredicates.NO_CREATIVE_OR_SPECTATOR.and(entity -> entity instanceof LivingEntity);
             for (Entity target : level.getEntities(this, searchArea, filter)) {
-                if (pos.distanceToSqr(target.position()) < r2) {
+                if (pos.distanceToSqr(target.getBoundingBox().getCenter()) < r2) {
                     target.hurt(getDamageSource(this, getOwner()), (float) getBaseDamage());
                 }
             }
-            level.broadcastEntityEvent(this, (byte) 3);
+            remove();
         }
-        remove();
     }
 
     @Override
     public void tick() {
 
         if (!level.isClientSide() && tickCount > LIFESPAN) {
-            level.broadcastEntityEvent(this, (byte) 3);
             remove();
         } else {
             super.tick();
+            //if (!this.leftOwner) {
+            //    this.leftOwner = this.checkLeftOwner();
+            //}
+            //if (!this.level.isClientSide) {
+            //    this.setSharedFlag(6, this.isGlowing());
+            //}
+            //this.baseTick();
+            //
+            //boolean noPhysics = this.isNoPhysics();
+            //
+            //BlockPos blockPos = this.blockPosition();
+            //BlockState state = this.level.getBlockState(blockPos);
+            //if (!state.isAir(this.level, blockPos) && !noPhysics) {
+            //    VoxelShape voxelshape = state.getCollisionShape(this.level, blockPos);
+            //    if (!voxelshape.isEmpty()) {
+            //        Vector3d vector3d1 = this.position();
+            //
+            //        for(AxisAlignedBB axisalignedbb : voxelshape.toAabbs()) {
+            //            if (axisalignedbb.move(blockPos).contains(vector3d1)) {
+            //                this.inGround = true;
+            //                break;
+            //            }
+            //        }
+            //    }
+            //}
+            //
+            //Vector3d currPos = this.position();
+            //Vector3d nextPos = currPos.add(this.getDeltaMovement());
+            //RayTraceResult blockResult = this.level.clip(new RayTraceContext(currPos, nextPos, RayTraceContext.BlockMode.COLLIDER, RayTraceContext.FluidMode.NONE, this));
+            //if (blockResult.getType() != RayTraceResult.Type.MISS) {
+            //    nextPos = blockResult.getLocation();
+            //}
+            ////TODO: account for bouncing off invuln enemies
+            //for (EntityRayTraceResult entityResult : ArcheryHelper.findHitEntities(this.level, this, currPos, nextPos, this::canHitEntity).sorted(Comparator.comparingDouble(result -> result.getLocation().distanceToSqr(currPos))).collect(Collectors.toList())) {
+            //    if (!this.isAlive()) {
+            //        return;
+            //    }
+            //    Entity target = entityResult.getEntity();
+            //    Entity owner = this.getOwner();
+            //    if (target instanceof PlayerEntity && owner instanceof PlayerEntity && !((PlayerEntity)owner).canHarmPlayer((PlayerEntity)target)) {
+            //        break;
+            //    }
+            //    if (!noPhysics && !ForgeEventFactory.onProjectileImpact(this, entityResult)) {
+            //        this.onHit(entityResult);
+            //        this.hasImpulse = true;
+            //    }
+            //    if (this.getPierceLevel() <= 0) {
+            //        break;
+            //    }
+            //}
+            //if (this.isAlive() && blockResult.getType() != RayTraceResult.Type.MISS) {
+            //    this.onHit(blockResult);
+            //}
+            //
+            //Vector3d velocity = this.getDeltaMovement();
+            //double xVel = velocity.x;
+            //double yVel = velocity.y;
+            //double zVel = velocity.z;
+            //if (this.isCritArrow()) {
+            //    for(int i = 0; i < 4; ++i) {
+            //        this.level.addParticle(ParticleTypes.CRIT, this.getX() + xVel * i * 0.25F, this.getY() + yVel * i * 0.25F, this.getZ() + zVel * i * 0.25F, -xVel, -yVel + 0.2D, -zVel);
+            //    }
+            //}
+            //if (this.isInWater()) {
+            //    for(int i = 0; i < 4; ++i) {
+            //        this.level.addParticle(ParticleTypes.BUBBLE, this.getX() + xVel * i * 0.25F, this.getY() + yVel * i * 0.25F, this.getZ() + zVel * i * 0.25F, xVel, yVel, zVel);
+            //    }
+            //}
+            //
+            //float radToDeg = 180F / (float) Math.PI;
+            //float horzSpeed = MathHelper.sqrt(xVel * xVel + zVel * zVel);
+            //if (this.xRotO == 0.0F && this.yRotO == 0.0F) {
+            //    this.yRotO = this.yRot;
+            //    this.xRotO = this.xRot;
+            //}
+            //this.xRot = lerpRotation(this.xRotO, (float) MathHelper.atan2(yVel, horzSpeed) * radToDeg);
+            //this.yRot = lerpRotation(this.yRotO, (float)(MathHelper.atan2(xVel, zVel)) * radToDeg);
+            //
+            //this.setDeltaMovement(velocity.scale(this.isInWater() ? this.getWaterInertia() : 0.99F).subtract(0, getGravity(), 0));
+            //this.setPos(nextPos.x, nextPos.y, nextPos.z);
+            //this.checkInsideBlocks();
         }
+    }
+
+    public float getGravity() {
+
+        return this.isNoGravity() || this.noPhysics ? 0.0F : 0.05F;
+    }
+
+    @Override
+    public byte getPierceLevel() {
+
+        return isExplodeArrow() ? 0 : super.getPierceLevel();
     }
 
     @Override
@@ -140,16 +225,20 @@ public class FluxArrowEntity extends AbstractArrowEntity {
         return 0.99F;
     }
 
-    //@Override
-    //protected void onHit(RayTraceResult result) {
-    //
-    //    RayTraceResult.Type type = result.getType();
-    //    if (type == RayTraceResult.Type.ENTITY) {
-    //            this.onHitEntity((EntityRayTraceResult) result);
-    //    } else if (type == RayTraceResult.Type.BLOCK) {
-    //        this.onHitBlock((BlockRayTraceResult) result);
-    //    }
-    //}
+    @Override
+    protected void onHit(RayTraceResult result) {
+
+        if (isExplodeArrow()) {
+            explode(result.getLocation());
+        } else {
+            RayTraceResult.Type type = result.getType();
+            if (type == RayTraceResult.Type.ENTITY) {
+                this.onHitEntity((EntityRayTraceResult) result);
+            } else if (type == RayTraceResult.Type.BLOCK) {
+                this.onHitBlock((BlockRayTraceResult) result);
+            }
+        }
+    }
 
     @Override
     protected void onHitEntity(EntityRayTraceResult result) {
@@ -225,11 +314,6 @@ public class FluxArrowEntity extends AbstractArrowEntity {
             }
 
             this.playSound(getDefaultHitGroundSoundEvent(), 1.0F, 1.2F / (this.random.nextFloat() * 0.2F + 0.9F));
-
-            if (isExplodeArrow()) {
-                this.explode(this.position());
-                return;
-            }
             if (this.getPierceLevel() <= 0) {
                 this.remove();
             }

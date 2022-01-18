@@ -223,7 +223,7 @@ public class FluxTridentItem extends TridentItemCoFH implements IMultiModeFluxIt
         Predicate<Entity> filter = EntityPredicates.NO_CREATIVE_OR_SPECTATOR.and(entity -> entity instanceof LivingEntity);
         boolean hit = false;
         for (Entity target : world.getEntities(attacker, searchArea, filter)) {
-            if (attacker.distanceToSqr(target) < r2) {
+            if (attacker.distanceToSqr(target) <= r2) {
                 hit |= target.hurt(IFluxItem.fluxDirectDamage(attacker), getPlungeAttackDamage(attacker, stack));
             }
         }
@@ -248,6 +248,9 @@ public class FluxTridentItem extends TridentItemCoFH implements IMultiModeFluxIt
         double y = lookVector.y();
         double z = lookVector.z();
         double compSqr = lookVector.lengthSqr() * 0.5;
+        if (x < 0.0001F && z < 0.0001F) {
+            return new Vector3d(0, -magnitude, 0);
+        }
         if (compSqr > y * y || y > 0) {
             double comp = MathHelper.sqrt(compSqr);
             double horzSum = Math.abs(x) + Math.abs(z);

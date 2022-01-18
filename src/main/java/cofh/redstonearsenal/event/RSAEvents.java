@@ -39,6 +39,24 @@ import static cofh.redstonearsenal.init.RSAReferences.FLUX_PATH;
 @Mod.EventBusSubscriber (modid = ID_REDSTONE_ARSENAL)
 public class RSAEvents {
 
+    // Janky code that cancels direct plunging attacks.
+    //@SubscribeEvent (priority = EventPriority.LOWEST)
+    //public static void handlePlayerTickEvent(TickEvent.PlayerTickEvent event) {
+    //
+    //    if (event.isCanceled()) {
+    //        return;
+    //    }
+    //    // Flux Trident
+    //    PlayerEntity player = event.player;
+    //    ItemStack stack = player.getMainHandItem();
+    //    if (stack.getItem() instanceof FluxTridentItem && player.isAutoSpinAttack()) {
+    //        FluxTridentItem trident = (FluxTridentItem) stack.getItem();
+    //        if (trident.isEmpowered(stack) && player.getDeltaMovement().y() < -0.70716) {
+    //            player.autoSpinAttackTicks = event.phase == TickEvent.Phase.START ? 0 : 10;
+    //        }
+    //    }
+    //}
+
     @SubscribeEvent (priority = EventPriority.LOWEST)
     public static void handleAttackEntityEvent(AttackEntityEvent event) {
 
@@ -178,7 +196,7 @@ public class RSAEvents {
         if (target.invulnerableTime > 0) {
             event.setCanceled(true);
         } else if (FluxShieldingHelper.useFluxShieldCharge(target, shieldedItem)) {
-            target.invulnerableTime = target.invulnerableDuration;
+            target.invulnerableTime = 10;
             event.setCanceled(true);
             if (target instanceof ServerPlayerEntity) {
                 FluxShieldingScheduler.updateHUD((ServerPlayerEntity) target);

@@ -1,8 +1,8 @@
 {
+  "gui_light": "front",
   "textures": {
     "all": "redstone_arsenal:item/flux_shield"
   },
-
   "elements": [
     {
       "from": [0, 0, 11],
@@ -62,7 +62,6 @@
       }
     }
   ],
-
   "display": {
     "thirdperson_righthand": {
       "rotation": [0, 90, 0],
@@ -105,7 +104,6 @@
       "scale": [0.25, 0.25, 0.25]
     }
   },
-
   "overrides": [
     {
       "predicate": {
