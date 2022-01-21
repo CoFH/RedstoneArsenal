@@ -42,7 +42,7 @@ public class FluxShieldedEnergyItemWrapper extends EnergyContainerItemWrapper im
     }
 
     @Override
-    public int availableCharges(LivingEntity entity) {
+    public int currCharges(LivingEntity entity) {
 
         CompoundNBT nbt = shieldedItem.getOrCreateTag();
         if (energyPerUse > 0 && getEnergyStored() < energyPerUse) {
@@ -67,7 +67,7 @@ public class FluxShieldedEnergyItemWrapper extends EnergyContainerItemWrapper im
     @Override
     public boolean useCharge(LivingEntity entity) {
 
-        if (availableCharges(entity) < 1 || (energyPerUse > 0 && getEnergyStored() >= energyPerUse && extractEnergy(energyPerUse, Utils.isCreativePlayer(entity)) != energyPerUse)) {
+        if (currCharges(entity) < 1 || (energyPerUse > 0 && getEnergyStored() >= energyPerUse && extractEnergy(energyPerUse, Utils.isCreativePlayer(entity)) != energyPerUse)) {
             return false;
         }
         availableTime = entity.level.getGameTime() + COOLDOWN;

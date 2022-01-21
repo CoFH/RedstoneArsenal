@@ -26,7 +26,7 @@ public class FluxShieldingHelper {
 
     public static ItemStack findShieldedItem(LivingEntity entity) {
 
-        Predicate<ItemStack> isShieldedItem = i -> i.getCapability(FLUX_SHIELDED_ITEM_CAPABILITY).map(cap -> cap.availableCharges(entity) > 0).orElse(false);
+        Predicate<ItemStack> isShieldedItem = i -> i.getCapability(FLUX_SHIELDED_ITEM_CAPABILITY).map(cap -> cap.currCharges(entity) > 0).orElse(false);
 
         // HELD
         ItemStack mainHand = entity.getMainHandItem();
@@ -64,9 +64,8 @@ public class FluxShieldingHelper {
         }
         final int[] counter = {0, 0};
         Consumer<ItemStack> count = i -> {
-            LazyOptional<IFluxShieldedItem> cap = i.getCapability(FLUX_SHIELDED_ITEM_CAPABILITY);
-            counter[0] += cap.map(c -> c.availableCharges(entity)).orElse(0);
-            counter[1] += cap.map(c -> c.maxCharges(entity)).orElse(0);
+            counter[0] += getCurrCharges(entity, i);
+            counter[1] += getMaxCharges(entity, i);
         };
 
         // HELD & ARMOR
@@ -106,6 +105,21 @@ public class FluxShieldingHelper {
             return true;
         }
         return false;
+    }
+
+    public static int getCurrCharges(LivingEntity entity, ItemStack stack) {
+
+        return stack.getCapability(FLUX_SHIELDED_ITEM_CAPABILITY).map(cap -> cap.currCharges(entity)).orElse(0);
+    }
+
+    public static int getMaxCharges(LivingEntity entity, ItemStack stack) {
+
+        return stack.getCapability(FLUX_SHIELDED_ITEM_CAPABILITY).map(cap -> cap.maxCharges(entity)).orElse(0);
+    }
+
+    public static boolean equalCharges(LivingEntity entity, ItemStack a, ItemStack b) {
+
+        return getCurrCharges(entity, a) == getCurrCharges(entity, b) && getMaxCharges(entity, a) == getMaxCharges(entity, b);
     }
 
     protected static void onUseFluxShieldCharge(LivingEntity entity) {

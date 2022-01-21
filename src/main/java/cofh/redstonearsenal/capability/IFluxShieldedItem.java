@@ -18,7 +18,7 @@ public interface IFluxShieldedItem {
      * @param entity Entity with the item equipped.
      * @return Number of charges available to use.
      */
-    int availableCharges(LivingEntity entity);
+    int currCharges(LivingEntity entity);
 
     /**
      * @param entity Entity with the item equipped.

@@ -52,7 +52,7 @@ public class RSAItems {
         //ITEMS.register("flux_plate", () -> new ItemCoFH(new Item.Properties().tab(misc).rarity(rarity)));
         //ITEMS.register("flux_coin", () -> new ItemCoFH(new Item.Properties().tab(misc).rarity(rarity)));
 
-        ITEMS.register("flux_sword", () -> new FluxSwordItem(MATERIAL_FLUX_METAL, 4, -2.4F, new Item.Properties().stacksTo(1).tab(combat).rarity(rarity).setNoRepair(), energy, xfer));
+        ITEMS.register(ID_FLUX_SWORD, () -> new FluxSwordItem(MATERIAL_FLUX_METAL, 4, -2.4F, new Item.Properties().stacksTo(1).tab(combat).rarity(rarity).setNoRepair(), energy, xfer));
         ITEMS.register("flux_shield", () -> new FluxShieldItem(MATERIAL_FLUX_METAL.getEnchantmentValue(), new Item.Properties().stacksTo(1).tab(combat).rarity(rarity).setNoRepair(), energy, xfer));
         ITEMS.register("flux_bow", () -> new FluxBowItem(MATERIAL_FLUX_METAL.getEnchantmentValue(), 1, 1, 1, new Item.Properties().stacksTo(1).tab(combat).rarity(rarity).setNoRepair(), MathHelper.floor(energy * 0.4F), xfer));
         ITEMS.register("flux_crossbow", () -> new FluxCrossbowItem(MATERIAL_FLUX_METAL.getEnchantmentValue(), 1, 1, 1, 20, new Item.Properties().stacksTo(1).tab(combat).rarity(rarity).setNoRepair(), MathHelper.floor(energy * 0.4F), xfer));

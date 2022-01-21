@@ -27,6 +27,7 @@ public class RSAIDs {
     public static final String ID_FLUX_DUST = "flux_dust";
     public static final String ID_FLUX_GEAR = "flux_gear";
 
+    public static final String ID_FLUX_SWORD = "flux_sword";
     public static final String ID_FLUX_TRIDENT = "flux_trident";
     public static final String ID_FLUX_WRENCH = "flux_wrench";
     // endregion

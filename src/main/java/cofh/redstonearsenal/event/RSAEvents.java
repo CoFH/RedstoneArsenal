@@ -35,6 +35,7 @@ import static cofh.lib.capability.CapabilityShieldItem.SHIELD_ITEM_CAPABILITY;
 import static cofh.lib.util.constants.Constants.ID_REDSTONE_ARSENAL;
 import static cofh.redstonearsenal.capability.CapabilityFluxShielding.FLUX_SHIELDED_ITEM_CAPABILITY;
 import static cofh.redstonearsenal.init.RSAReferences.FLUX_PATH;
+import static cofh.redstonearsenal.util.FluxShieldingHelper.equalCharges;
 
 @Mod.EventBusSubscriber (modid = ID_REDSTONE_ARSENAL)
 public class RSAEvents {
@@ -126,13 +127,15 @@ public class RSAEvents {
     @SubscribeEvent (priority = EventPriority.LOWEST)
     public static void handleLivingEquipmentChangeEvent(LivingEquipmentChangeEvent event) {
 
-        // Flux Crossbow
         ItemStack from = event.getFrom();
         ItemStack to = event.getTo();
         LivingEntity entity = event.getEntityLiving();
-        if (entity instanceof ServerPlayerEntity && from.getCapability(FLUX_SHIELDED_ITEM_CAPABILITY).isPresent() != to.getCapability(FLUX_SHIELDED_ITEM_CAPABILITY).isPresent()) {
+        // Flux Shielding
+        if (entity instanceof ServerPlayerEntity && !equalCharges(entity, from, to)) {
             FluxShieldingScheduler.updateHUD((ServerPlayerEntity) entity);
+            to.getCapability(FLUX_SHIELDED_ITEM_CAPABILITY).ifPresent(cap -> cap.scheduleUpdate((ServerPlayerEntity) entity));
         }
+        // Flux Crossbow
         if (from.getItem() instanceof FluxCrossbowItem) {
             EquipmentSlotType slot = event.getSlot();
             //If the used item changes, enforce cooldown
@@ -161,8 +164,12 @@ public class RSAEvents {
             if (state.is(Blocks.GRASS_PATH) || state.is(FLUX_PATH) || state.is(Blocks.FARMLAND)) {
                 event.setFinalState(Blocks.DIRT.defaultBlockState());
                 //} else if (state.getBlock() instanceof TilledSoilBlock) { //TODO: Thermal phyto-soil
-            } else if (state.is(Tags.Blocks.DIRT) && shovel.isEmpowered(stack)) {
-                event.setFinalState(FLUX_PATH.defaultBlockState());
+            } else if (shovel.isEmpowered(stack)) {
+                if (state.is(Tags.Blocks.DIRT)) {
+                    event.setFinalState(FLUX_PATH.defaultBlockState());
+                }
+            } else if (state.is(Blocks.DIRT)) { //TODO: configurable?
+                event.setFinalState(Blocks.GRASS_PATH.defaultBlockState());
             }
         }
     }

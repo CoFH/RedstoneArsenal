@@ -75,7 +75,7 @@ public class RSAConfig {
     // endregion
 
     // region CLIENT VARIABLES
-    public static BooleanValue enableCreativeTab;
+    //public static BooleanValue enableCreativeTab;
     // endregion
 
     // region CONFIGURATION
