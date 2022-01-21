@@ -38,7 +38,7 @@ public interface IFluxShieldedItem {
      * Schedules an update to the HUD. Automatically called after a charge is successfully used.
      * May be kept empty if no update is necessary.
      *
-     * @param player Player with the item equipped.
+     * @param player   Player with the item equipped.
      * @param currTime The current world time.
      */
     void scheduleUpdate(ServerPlayerEntity player, long currTime);
@@ -47,4 +47,5 @@ public interface IFluxShieldedItem {
 
         scheduleUpdate(player, player.level.getGameTime());
     }
+
 }

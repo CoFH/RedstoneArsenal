@@ -128,6 +128,7 @@ public class FluxTridentItem extends TridentItemCoFH implements IMultiModeFluxIt
         return ActionResult.fail(stack);
     }
 
+    @Override
     public void releaseUsing(ItemStack stack, World world, LivingEntity entity, int remainingDuration) {
 
         if (entity instanceof PlayerEntity) {

@@ -14,7 +14,7 @@ public class RSAClient {
         }
         for (EntityRenderer<?> renderer : manager.renderers.values()) {
             if (renderer instanceof BipedRenderer || renderer instanceof ArmorStandRenderer) {
-                LivingRenderer<?,?> livingRenderer = (LivingRenderer<?, ?>) renderer;
+                LivingRenderer<?, ?> livingRenderer = (LivingRenderer<?, ?>) renderer;
                 livingRenderer.addLayer(new FluxElytraLayer<>(livingRenderer));
             }
         }

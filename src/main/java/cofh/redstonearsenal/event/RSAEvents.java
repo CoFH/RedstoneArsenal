@@ -160,9 +160,9 @@ public class RSAEvents {
             FluxShovelItem shovel = (FluxShovelItem) stack.getItem();
             if (state.is(Blocks.GRASS_PATH) || state.is(FLUX_PATH) || state.is(Blocks.FARMLAND)) {
                 event.setFinalState(Blocks.DIRT.defaultBlockState());
-            //} else if (state.getBlock() instanceof TilledSoilBlock) { //TODO: Thermal phyto-soil
+                //} else if (state.getBlock() instanceof TilledSoilBlock) { //TODO: Thermal phyto-soil
             } else if (state.is(Tags.Blocks.DIRT) && shovel.isEmpowered(stack)) {
-                 event.setFinalState(FLUX_PATH.defaultBlockState());
+                event.setFinalState(FLUX_PATH.defaultBlockState());
             }
         }
     }

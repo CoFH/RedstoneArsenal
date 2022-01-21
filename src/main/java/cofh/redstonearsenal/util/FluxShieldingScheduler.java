@@ -27,7 +27,7 @@ public class FluxShieldingScheduler {
         FluxShieldingPacket.sendToClient(currCharges, maxCharges, player);
     }
 
-    @OnlyIn(Dist.CLIENT)
+    @OnlyIn (Dist.CLIENT)
     public static void updateHUD(int currCharges, int maxCharges) {
 
         FluxShieldingHUDRenderer.currCharges = currCharges;
@@ -64,4 +64,5 @@ public class FluxShieldingScheduler {
             schedule.removeAll(time);
         }
     }
+
 }

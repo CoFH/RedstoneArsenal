@@ -21,7 +21,7 @@ public class RSAConfig {
         registered = true;
 
         genServerConfig();
-        genClientConfig();
+        // genClientConfig();
 
         ModLoadingContext.get().registerConfig(ModConfig.Type.SERVER, serverSpec);
         ModLoadingContext.get().registerConfig(ModConfig.Type.CLIENT, clientSpec);
@@ -49,16 +49,16 @@ public class RSAConfig {
         refreshServerConfig();
     }
 
-    private static void genClientConfig() {
-
-        enableCreativeTab = CLIENT_CONFIG
-                .comment("If TRUE, Redstone Arsenal will have its own Item Group (Creative Tab).")
-                .define("Enable Item Group", true);
-
-        clientSpec = CLIENT_CONFIG.build();
-
-        refreshClientConfig();
-    }
+    //    private static void genClientConfig() {
+    //
+    //        enableCreativeTab = CLIENT_CONFIG
+    //                .comment("If TRUE, Redstone Arsenal will have its own Item Group (Creative Tab).")
+    //                .define("Enable Item Group", true);
+    //
+    //        clientSpec = CLIENT_CONFIG.build();
+    //
+    //        refreshClientConfig();
+    //    }
 
     private static void refreshServerConfig() {
 

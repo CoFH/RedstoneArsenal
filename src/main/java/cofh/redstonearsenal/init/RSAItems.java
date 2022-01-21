@@ -15,8 +15,7 @@ import net.minecraft.item.crafting.Ingredient;
 import net.minecraft.util.SoundEvents;
 import net.minecraft.util.math.MathHelper;
 
-import static cofh.redstonearsenal.RedstoneArsenal.BLOCKS;
-import static cofh.redstonearsenal.RedstoneArsenal.ITEMS;
+import static cofh.redstonearsenal.RedstoneArsenal.*;
 import static cofh.redstonearsenal.init.RSAIDs.*;
 
 public class RSAItems {
@@ -27,10 +26,10 @@ public class RSAItems {
 
     public static void register() {
 
-        ItemGroup combat = ItemGroup.TAB_COMBAT;
-        ItemGroup transportation = ItemGroup.TAB_TRANSPORTATION;
-        ItemGroup tools = ItemGroup.TAB_TOOLS;
-        ItemGroup misc = ItemGroup.TAB_MISC;
+        ItemGroup combat = RSA_GROUP;
+        ItemGroup transportation = RSA_GROUP;
+        ItemGroup tools = RSA_GROUP;
+        ItemGroup misc = RSA_GROUP;
 
         Rarity rarity = Rarity.UNCOMMON;
 

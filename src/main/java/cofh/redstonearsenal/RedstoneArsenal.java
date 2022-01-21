@@ -11,7 +11,10 @@ import net.minecraft.block.Block;
 import net.minecraft.entity.EntityType;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.client.registry.RenderingRegistry;
 import net.minecraftforge.fml.common.Mod;
@@ -69,17 +72,17 @@ public class RedstoneArsenal {
 
     private void clientSetup(final FMLClientSetupEvent event) {
 
-        //if (RSAConfig.enableCreativeTab.get()) {
-        //    itemGroup = new ItemGroup(-1, ID_REDSTONE_ARSENAL) {
+        //        if (RSAConfig.enableCreativeTab.get()) {
+        //            itemGroup = new ItemGroup(-1, ID_REDSTONE_ARSENAL) {
         //
-        //        @Override
-        //        @OnlyIn(Dist.CLIENT)
-        //        public ItemStack makeIcon() {
+        //                @Override
+        //                @OnlyIn (Dist.CLIENT)
+        //                public ItemStack makeIcon() {
         //
-        //            return new ItemStack(ITEMS.get("flux_sword"));
+        //                    return new ItemStack(ITEMS.get("flux_sword"));
+        //                }
+        //            };
         //        }
-        //    };
-        //}
 
         this.registerEntityRenderingHandlers();
         RSAClient.registerRenderLayers();
@@ -96,4 +99,15 @@ public class RedstoneArsenal {
         RenderingRegistry.registerEntityRenderingHandler(SHOCKWAVE_ENTITY, ShockwaveRenderer::new);
     }
     // endregion
+
+    public static final ItemGroup RSA_GROUP = new ItemGroup(-1, ID_REDSTONE_ARSENAL) {
+
+        @Override
+        @OnlyIn (Dist.CLIENT)
+        public ItemStack makeIcon() {
+
+            return new ItemStack(ITEMS.get("flux_sword"));
+        }
+    };
+
 }
