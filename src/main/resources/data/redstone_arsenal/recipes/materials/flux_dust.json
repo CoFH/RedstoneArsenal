@@ -22,5 +22,14 @@
   ],
   "result": {
     "item": "redstone_arsenal:flux_dust"
-  }
+  },
+  "conditions": [
+    {
+      "type": "forge:not",
+      "value": {
+        "tag": "forge:dusts/gold",
+        "type": "forge:tag_empty"
+      }
+    }
+  ]
 }

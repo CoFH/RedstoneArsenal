@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:block/cube_all",
+  "textures": {
+    "all": "redstone_arsenal:block/flux_gem_block"
+  }
+}

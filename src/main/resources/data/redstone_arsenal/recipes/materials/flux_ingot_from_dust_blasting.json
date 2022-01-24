@@ -1,9 +1,0 @@
-{
-  "type": "minecraft:blasting",
-  "ingredient": {
-    "item": "redstone_arsenal:flux_dust"
-  },
-  "result": "redstone_arsenal:flux_ingot",
-  "experience": 0.0,
-  "cookingtime": 200
-}

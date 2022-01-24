@@ -1,10 +1,12 @@
 package cofh.redstonearsenal.item;
 
+import cofh.core.init.CoreConfig;
 import cofh.core.util.ProxyUtils;
 import cofh.lib.item.impl.HoeItemCoFH;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 import net.minecraft.block.BlockState;
+import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.entity.LivingEntity;
@@ -26,7 +28,10 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 import javax.annotation.Nullable;
 import java.util.List;
 
-public class FluxHoeItem extends HoeItemCoFH implements IFluxItem {
+import static cofh.lib.util.helpers.StringHelper.getTextComponent;
+import static net.minecraft.util.text.TextFormatting.GRAY;
+
+public class FluxHoeItem extends HoeItemCoFH implements IMultiModeFluxItem {
 
     protected final float damage;
     protected final float damageCharged;
@@ -48,15 +53,19 @@ public class FluxHoeItem extends HoeItemCoFH implements IFluxItem {
         this.extract = xfer;
         this.receive = xfer;
 
-        ProxyUtils.registerItemModelProperty(this, new ResourceLocation("charged"), (stack, world, entity) -> getEnergyStored(stack) > 0 ? 1F : 0F);
-        ProxyUtils.registerItemModelProperty(this, new ResourceLocation("active"), (stack, world, entity) -> getEnergyStored(stack) > 0 && isEmpowered(stack) ? 1F : 0F);
+        ProxyUtils.registerItemModelProperty(this, new ResourceLocation("charged"), this::getChargedModelProperty);
+        ProxyUtils.registerItemModelProperty(this, new ResourceLocation("empowered"), this::getEmpoweredModelProperty);
     }
 
     @Override
-    @OnlyIn(Dist.CLIENT)
+    @OnlyIn (Dist.CLIENT)
     public void appendHoverText(ItemStack stack, @Nullable World worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn) {
 
-        tooltipDelegate(stack, worldIn, tooltip, flagIn);
+        if (Screen.hasShiftDown() || CoreConfig.alwaysShowDetails) {
+            tooltipDelegate(stack, worldIn, tooltip, flagIn);
+        } else if (CoreConfig.holdShiftForDetails) {
+            tooltip.add(getTextComponent("info.cofh.hold_shift_for_details").withStyle(GRAY));
+        }
     }
 
     @Override
@@ -102,8 +111,7 @@ public class FluxHoeItem extends HoeItemCoFH implements IFluxItem {
     @Override
     public boolean hurtEnemy(ItemStack stack, LivingEntity target, LivingEntity attacker) {
 
-        PlayerEntity player = (PlayerEntity) attacker;
-        useEnergy(stack, false, player.abilities.instabuild);
+        useEnergy(stack, false, attacker);
         return true;
     }
 

@@ -1,0 +1,20 @@
+{
+  "parent": "item/generated",
+  "textures": {
+    "layer0": "redstone_arsenal:item/flux_chestplate"
+  },
+  "overrides": [
+    {
+      "predicate": {
+        "charged": 1.0
+      },
+      "model": "redstone_arsenal:item/flux_chestplate_charged"
+    },
+    {
+      "predicate": {
+        "empowered": 1.0
+      },
+      "model": "redstone_arsenal:item/flux_chestplate_empowered"
+    }
+  ]
+}

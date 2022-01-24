@@ -14,6 +14,8 @@
   "item.redstone_arsenal.obsidian_rod": "Обсидиановый стержень",
   "item.redstone_arsenal.flux_obsidian_rod": "Наполненный потоком обсидиановый стержень",
   "block.redstone_arsenal.flux_metal_block": "Потоковый электрумовый блок",
+  "block.redstone_arsenal.flux_gem_block": "Блок потокового кристалла",
+
 
   "item.redstone_arsenal.flux_sword": "Наполненный потоком меч",
   "item.redstone_arsenal.flux_shield": "Наполненный потоком щит",
@@ -33,6 +35,13 @@
   "item.redstone_arsenal.flux_wrench": "Наполненный потоком боевой серповидный молот",
   "item.redstone_arsenal.flux_fishing_rod": "Наполненная потоком удочка",
 
+  "item.redstone_arsenal.flux_helmet": "Наполненный потоком шлем",
+  "item.redstone_arsenal.flux_chestplate": "Наполненная потоком кираса",
+  "item.redstone_arsenal.flux_leggings": "Наполненные потоком поножи",
+  "item.redstone_arsenal.flux_boots": "Наполненные потоком ботинки",
   "item.redstone_arsenal.flux_elytra": "Наполненные потоком элитры",
-  "item.redstone_arsenal.flux_controller": "Наполненный потоком контроллер элитр"
+  "item.redstone_arsenal.flux_controller": "Наполненный потоком контроллер элитр",
+
+  "block.redstone_arsenal.flux_glow_air": "Наполненный потоком воздух",
+  "block.redstone_arsenal.flux_path": "Наполненный потоком тропа"
 }

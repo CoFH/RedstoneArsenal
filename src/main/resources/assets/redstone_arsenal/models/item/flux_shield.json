@@ -1,8 +1,8 @@
 {
+  "gui_light": "front",
   "textures": {
     "all": "redstone_arsenal:item/flux_shield"
   },
-
   "elements": [
     {
       "from": [0, 0, 11],
@@ -62,16 +62,15 @@
       }
     }
   ],
-
   "display": {
     "thirdperson_righthand": {
       "rotation": [0, 90, 0],
-      "translation": [0.5, -5.0, 2],
+      "translation": [0, -5, 2],
       "scale": [1.00, 1.00, 1.00]
     },
     "thirdperson_lefthand": {
       "rotation": [0, 90, 0],
-      "translation": [0.50, -5, 6],
+      "translation": [0, -5, 6],
       "scale": [1.00, 1.00, 1.00]
     },
     "firstperson_righthand": {
@@ -105,7 +104,6 @@
       "scale": [0.25, 0.25, 0.25]
     }
   },
-
   "overrides": [
     {
       "predicate": {
@@ -122,16 +120,16 @@
     },
     {
       "predicate": {
-        "active": 1.0
+        "empowered": 1.0
       },
-      "model": "redstone_arsenal:item/flux_shield_active"
+      "model": "redstone_arsenal:item/flux_shield_empowered"
     },
     {
       "predicate": {
-        "active": 1.0,
+        "empowered": 1.0,
         "blocking": 1.0
       },
-      "model": "redstone_arsenal:item/flux_shield_active_blocking"
+      "model": "redstone_arsenal:item/flux_shield_empowered_blocking"
     }
   ]
 }

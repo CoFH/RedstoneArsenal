@@ -1,14 +1,9 @@
 {
   "type": "minecraft:crafting_shapeless",
   "ingredients": [
-    [
-      {
-        "tag": "forge:ingots/gold"
-      },
-      {
-        "tag": "forge:dusts/gold"
-      }
-    ],
+    {
+      "tag": "forge:ingots/gold"
+    },
     {
       "tag": "forge:dusts/redstone"
     },
@@ -30,5 +25,11 @@
   ],
   "result": {
     "item": "redstone_arsenal:flux_ingot"
-  }
+  },
+  "conditions": [
+    {
+      "tag": "forge:dusts/gold",
+      "type": "forge:tag_empty"
+    }
+  ]
 }

@@ -1,5 +1,6 @@
 package cofh.redstonearsenal.init;
 
+import cofh.redstonearsenal.util.RSAEnergyHelper;
 import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.common.ForgeConfigSpec.BooleanValue;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -20,7 +21,7 @@ public class RSAConfig {
         registered = true;
 
         genServerConfig();
-        genClientConfig();
+        // genClientConfig();
 
         ModLoadingContext.get().registerConfig(ModConfig.Type.SERVER, serverSpec);
         ModLoadingContext.get().registerConfig(ModConfig.Type.CLIENT, clientSpec);
@@ -39,24 +40,29 @@ public class RSAConfig {
 
     private static void genServerConfig() {
 
+        standaloneRedstoneFlux = SERVER_CONFIG
+                .comment("If TRUE, Redstone Flux will act as its own energy system and will NOT be interoperable with 'Forge Energy' - only enable this if you absolutely know what you are doing and want Redstone Arsenal to use a unique energy system.")
+                .define("Standalone Redstone Flux", false);
+
         serverSpec = SERVER_CONFIG.build();
 
         refreshServerConfig();
     }
 
-    private static void genClientConfig() {
-
-        enableCreativeTab = CLIENT_CONFIG
-                .comment("If TRUE, Redstone Arsenal will have its own Item Group (Creative Tab).")
-                .define("Enable Item Group", true);
-
-        clientSpec = CLIENT_CONFIG.build();
-
-        refreshClientConfig();
-    }
+    //    private static void genClientConfig() {
+    //
+    //        enableCreativeTab = CLIENT_CONFIG
+    //                .comment("If TRUE, Redstone Arsenal will have its own Item Group (Creative Tab).")
+    //                .define("Enable Item Group", true);
+    //
+    //        clientSpec = CLIENT_CONFIG.build();
+    //
+    //        refreshClientConfig();
+    //    }
 
     private static void refreshServerConfig() {
 
+        RSAEnergyHelper.standaloneRedstoneFlux = standaloneRedstoneFlux.get();
     }
 
     private static void refreshClientConfig() {
@@ -64,8 +70,12 @@ public class RSAConfig {
     }
     // endregion
 
-    // region VARIABLES
-    public static BooleanValue enableCreativeTab;
+    // region SERVER VARIABLES
+    public static BooleanValue standaloneRedstoneFlux;
+    // endregion
+
+    // region CLIENT VARIABLES
+    //public static BooleanValue enableCreativeTab;
     // endregion
 
     // region CONFIGURATION

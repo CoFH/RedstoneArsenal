@@ -1,11 +1,13 @@
 package cofh.redstonearsenal.item;
 
+import cofh.core.init.CoreConfig;
 import cofh.core.util.ProxyUtils;
 import cofh.lib.item.impl.AxeItemCoFH;
 import cofh.lib.util.Utils;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 import net.minecraft.block.BlockState;
+import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.entity.LivingEntity;
@@ -27,10 +29,12 @@ import net.minecraftforge.event.entity.player.CriticalHitEvent;
 import javax.annotation.Nullable;
 import java.util.List;
 
-public class FluxAxeItem extends AxeItemCoFH implements IFluxItem {
+import static cofh.lib.util.helpers.StringHelper.getTextComponent;
+import static net.minecraft.util.text.TextFormatting.GRAY;
 
-    public static final float EMPOWERED_CRIT_MULTIPLIER = 1.6F;
+public class FluxAxeItem extends AxeItemCoFH implements IMultiModeFluxItem {
 
+    protected float empoweredCritMod = 2.0F;
     protected final float damage;
     protected final float attackSpeed;
 
@@ -49,8 +53,8 @@ public class FluxAxeItem extends AxeItemCoFH implements IFluxItem {
         this.extract = xfer;
         this.receive = xfer;
 
-        ProxyUtils.registerItemModelProperty(this, new ResourceLocation("charged"), (stack, world, entity) -> getEnergyStored(stack) > 0 ? 1F : 0F);
-        ProxyUtils.registerItemModelProperty(this, new ResourceLocation("active"), (stack, world, entity) -> getEnergyStored(stack) > 0 && isEmpowered(stack) ? 1F : 0F);
+        ProxyUtils.registerItemModelProperty(this, new ResourceLocation("charged"), this::getChargedModelProperty);
+        ProxyUtils.registerItemModelProperty(this, new ResourceLocation("empowered"), this::getEmpoweredModelProperty);
     }
 
     protected float getEfficiency(ItemStack stack) {
@@ -59,10 +63,14 @@ public class FluxAxeItem extends AxeItemCoFH implements IFluxItem {
     }
 
     @Override
-    @OnlyIn(Dist.CLIENT)
+    @OnlyIn (Dist.CLIENT)
     public void appendHoverText(ItemStack stack, @Nullable World worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn) {
 
-        tooltipDelegate(stack, worldIn, tooltip, flagIn);
+        if (Screen.hasShiftDown() || CoreConfig.alwaysShowDetails) {
+            tooltipDelegate(stack, worldIn, tooltip, flagIn);
+        } else if (CoreConfig.holdShiftForDetails) {
+            tooltip.add(getTextComponent("info.cofh.hold_shift_for_details").withStyle(GRAY));
+        }
     }
 
     @Override
@@ -86,7 +94,7 @@ public class FluxAxeItem extends AxeItemCoFH implements IFluxItem {
     @Override
     public boolean hurtEnemy(ItemStack stack, LivingEntity target, LivingEntity attacker) {
 
-        useEnergy(stack, false, ((PlayerEntity) attacker).abilities.instabuild);
+        useEnergy(stack, false, attacker);
         return true;
     }
 
@@ -94,7 +102,7 @@ public class FluxAxeItem extends AxeItemCoFH implements IFluxItem {
 
         PlayerEntity player = event.getPlayer();
         if (isEmpowered(stack) && useEnergy(stack, true, player.abilities.instabuild)) {
-            event.getTarget().hurt(IFluxItem.fluxDirectDamage(player), (event.getDamageModifier() - 1.0F) * EMPOWERED_CRIT_MULTIPLIER * (getAttackDamage(stack) + 1.0F));
+            event.getTarget().hurt(IFluxItem.fluxDirectDamage(player), (event.getDamageModifier() - 1.0F) * empoweredCritMod * (getAttackDamage(stack) + 1.0F));
             event.setDamageModifier(1);
             event.getTarget().invulnerableTime = 0;
         }
@@ -104,7 +112,7 @@ public class FluxAxeItem extends AxeItemCoFH implements IFluxItem {
     public boolean mineBlock(ItemStack stack, World worldIn, BlockState state, BlockPos pos, LivingEntity entityLiving) {
 
         if (Utils.isServerWorld(worldIn) && state.getDestroySpeed(worldIn, pos) != 0.0F) {
-            useEnergy(stack, false, entityLiving instanceof PlayerEntity && ((PlayerEntity) entityLiving).abilities.instabuild);
+            useEnergy(stack, false, entityLiving);
         }
         return true;
     }

@@ -3,20 +3,23 @@ package cofh.redstonearsenal.item;
 import cofh.lib.energy.EnergyContainerItemWrapper;
 import cofh.lib.energy.IEnergyContainerItem;
 import cofh.lib.item.ICoFHItem;
-import cofh.lib.item.IMultiModeItem;
+import cofh.lib.util.Utils;
 import cofh.lib.util.helpers.MathHelper;
+import cofh.redstonearsenal.util.RSAEnergyHelper;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.ProjectileEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.util.*;
+import net.minecraft.util.DamageSource;
+import net.minecraft.util.EntityDamageSource;
+import net.minecraft.util.IndirectEntityDamageSource;
 import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
+import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.ICapabilityProvider;
+import net.minecraftforge.energy.IEnergyStorage;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -25,14 +28,14 @@ import static cofh.lib.item.ContainerType.ENERGY;
 import static cofh.lib.util.constants.Constants.RGB_DURABILITY_FLUX;
 import static cofh.lib.util.helpers.StringHelper.*;
 
-public interface IFluxItem extends ICoFHItem, IEnergyContainerItem, IMultiModeItem {
+public interface IFluxItem extends ICoFHItem, IEnergyContainerItem {
 
-    int ENERGY_PER_USE = 200;
-    int ENERGY_PER_USE_EMPOWERED = 800;
+    int ENERGY_PER_USE = 500;
+    int ENERGY_PER_USE_EMPOWERED = 2000;
 
-    default boolean isEmpowered(ItemStack stack) {
+    default Capability<? extends IEnergyStorage> getEnergyCapability() {
 
-        return getMode(stack) > 0;
+        return RSAEnergyHelper.getBaseEnergySystem();
     }
 
     default int getEnergyPerUse(boolean empowered) {
@@ -56,19 +59,25 @@ public interface IFluxItem extends ICoFHItem, IEnergyContainerItem, IMultiModeIt
             return true;
         }
         if (hasEnergy(stack, amount)) {
-            //            int unbreakingLevel = MathHelper.clamp(EnchantmentHelper.getItemEnchantmentLevel(Enchantments.UNBREAKING, stack), 0, 10);
-            //            if (MathHelper.RANDOM.nextInt(2 + unbreakingLevel) < 2) {
-            //                extractEnergy(stack, amount, false);
-            //            }
             extractEnergy(stack, amount, false);
             return true;
         }
         return false;
     }
 
+    default boolean useEnergy(ItemStack stack, int amount, Entity entity) {
+
+        return useEnergy(stack, amount, Utils.isCreativePlayer(entity));
+    }
+
     default boolean useEnergy(ItemStack stack, boolean empowered, boolean simulate) {
 
         return useEnergy(stack, getEnergyPerUse(empowered), simulate);
+    }
+
+    default boolean useEnergy(ItemStack stack, boolean empowered, Entity entity) {
+
+        return useEnergy(stack, getEnergyPerUse(empowered), Utils.isCreativePlayer(entity));
     }
 
     @Override
@@ -104,22 +113,15 @@ public interface IFluxItem extends ICoFHItem, IEnergyContainerItem, IMultiModeIt
         return MathHelper.clamp(1.0D - getEnergyStored(stack) / (double) getMaxEnergyStored(stack), 0.0D, 1.0D);
     }
 
-    // region IMultiModeItem
-    @Override
-    default void onModeChange(PlayerEntity player, ItemStack stack) {
+    default float getChargedModelProperty(ItemStack stack, World world, LivingEntity entity) {
 
-        if (isEmpowered(stack)) {
-            player.level.playSound(null, player.blockPosition(), SoundEvents.LIGHTNING_BOLT_THUNDER, SoundCategory.PLAYERS, 0.4F, 1.0F);
-        } else {
-            player.level.playSound(null, player.blockPosition(), SoundEvents.EXPERIENCE_ORB_PICKUP, SoundCategory.PLAYERS, 0.2F, 0.6F);
-        }
+        return getEnergyStored(stack) > 0 ? 1F : 0F;
     }
-    // endregion
 
     @Override
     default ICapabilityProvider initCapabilities(ItemStack stack, @Nullable CompoundNBT nbt) {
 
-        return new EnergyContainerItemWrapper(stack, this);
+        return new EnergyContainerItemWrapper(stack, this, getEnergyCapability());
     }
 
     default void tooltipDelegate(ItemStack stack, @Nullable World worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn) {
@@ -129,10 +131,7 @@ public interface IFluxItem extends ICoFHItem, IEnergyContainerItem, IMultiModeIt
                 + (creative ?
                 localize("info.cofh.infinite") :
                 getScaledNumber(getEnergyStored(stack)) + " / " + getScaledNumber(getMaxEnergyStored(stack)) + " RF")));
-
-        if (isEmpowered(stack)) {
-            tooltip.add(getTextComponent("info.redstone_arsenal.empowered").withStyle(TextFormatting.RED));
-        }
+        addEnergyTooltip(stack, worldIn, tooltip, flagIn, getExtract(stack), getReceive(stack), creative);
     }
 
     static DamageSource fluxDirectDamage(LivingEntity attacker) {

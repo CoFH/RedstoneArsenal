@@ -1,9 +1,11 @@
 package cofh.redstonearsenal.item;
 
+import cofh.core.init.CoreConfig;
 import cofh.core.util.ProxyUtils;
 import cofh.lib.item.impl.FishingRodItemCoFH;
 import cofh.lib.util.Utils;
 import net.minecraft.block.BlockState;
+import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
@@ -25,10 +27,13 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 import javax.annotation.Nullable;
 import java.util.List;
 
-public class FluxFishingRodItem extends FishingRodItemCoFH implements IFluxItem {
+import static cofh.lib.util.helpers.StringHelper.getTextComponent;
+import static net.minecraft.util.text.TextFormatting.GRAY;
 
-    public static final double REEL_SPEED = 0.2;
-    public static final int REEL_EXTRACT_INTERVAL = 8;
+public class FluxFishingRodItem extends FishingRodItemCoFH implements IMultiModeFluxItem {
+
+    protected double reelSpeed = 0.2;
+    protected int reelEnergyUseInterval = 8;
 
     protected final int maxEnergy;
     protected final int extract;
@@ -44,15 +49,19 @@ public class FluxFishingRodItem extends FishingRodItemCoFH implements IFluxItem 
         setParams(enchantability, luckModifier, speedModifier);
 
         ProxyUtils.registerItemModelProperty(this, new ResourceLocation("cast"), (stack, world, entity) -> entity instanceof PlayerEntity && ((PlayerEntity) entity).fishing != null ? 1F : 0F);
-        ProxyUtils.registerItemModelProperty(this, new ResourceLocation("charged"), (stack, world, entity) -> getEnergyStored(stack) > 0 ? 1F : 0F);
-        ProxyUtils.registerItemModelProperty(this, new ResourceLocation("active"), (stack, world, entity) -> getEnergyStored(stack) > 0 && isEmpowered(stack) ? 1F : 0F);
+        ProxyUtils.registerItemModelProperty(this, new ResourceLocation("charged"), this::getChargedModelProperty);
+        ProxyUtils.registerItemModelProperty(this, new ResourceLocation("empowered"), this::getEmpoweredModelProperty);
     }
 
     @Override
-    @OnlyIn(Dist.CLIENT)
+    @OnlyIn (Dist.CLIENT)
     public void appendHoverText(ItemStack stack, @Nullable World worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn) {
 
-        tooltipDelegate(stack, worldIn, tooltip, flagIn);
+        if (Screen.hasShiftDown() || CoreConfig.alwaysShowDetails) {
+            tooltipDelegate(stack, worldIn, tooltip, flagIn);
+        } else if (CoreConfig.holdShiftForDetails) {
+            tooltip.add(getTextComponent("info.cofh.hold_shift_for_details").withStyle(GRAY));
+        }
     }
 
     @Override
@@ -73,7 +82,7 @@ public class FluxFishingRodItem extends FishingRodItemCoFH implements IFluxItem 
         ItemStack stack = player.getItemInHand(hand);
         if (player.fishing != null) {
             if (isEmpowered(stack) && player.fishing.getHookedIn() != null) {
-                if (player.isCrouching()) {
+                if (player.isShiftKeyDown()) {
                     player.fishing.remove();
                 } else {
                     player.startUsingItem(hand);
@@ -103,9 +112,9 @@ public class FluxFishingRodItem extends FishingRodItemCoFH implements IFluxItem 
         if (living instanceof PlayerEntity) {
             PlayerEntity player = (PlayerEntity) living;
             if (player.fishing != null && player.fishing.getHookedIn() != null && isEmpowered(stack)) {
-                if (living.isCrouching()) {
+                if (living.isShiftKeyDown()) {
                     player.fishing.remove();
-                } else if (useEnergy(stack, true, useDuration % REEL_EXTRACT_INTERVAL != 0 || player.abilities.instabuild)) {
+                } else if (useEnergy(stack, true, useDuration % reelEnergyUseInterval != 0 || player.abilities.instabuild)) {
                     reelIn(stack, player.fishing);
                     return;
                 }
@@ -119,7 +128,7 @@ public class FluxFishingRodItem extends FishingRodItemCoFH implements IFluxItem 
         Entity owner = bobber.getOwner();
         if (!bobber.level.isClientSide && owner != null) {
             if (bobber.getHookedIn() != null) {
-                Vector3d relPos = owner.position().add(owner.getLookAngle()).subtract(bobber.position()).normalize().scale(FluxFishingRodItem.REEL_SPEED);
+                Vector3d relPos = owner.position().add(owner.getLookAngle()).subtract(bobber.position()).normalize().scale(reelSpeed);
                 bobber.getHookedIn().push(relPos.x(), relPos.y(), relPos.z());
                 if (relPos.y() > 0) {
                     bobber.getHookedIn().fallDistance = 0;
@@ -164,7 +173,7 @@ public class FluxFishingRodItem extends FishingRodItemCoFH implements IFluxItem 
     public boolean mineBlock(ItemStack stack, World worldIn, BlockState state, BlockPos pos, LivingEntity entityLiving) {
 
         if (Utils.isServerWorld(worldIn) && state.getDestroySpeed(worldIn, pos) != 0.0F) {
-            useEnergy(stack, false, entityLiving instanceof PlayerEntity && ((PlayerEntity) entityLiving).abilities.instabuild);
+            useEnergy(stack, false, entityLiving);
         }
         return true;
     }

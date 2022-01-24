@@ -1,19 +1,46 @@
 {
   "loader": "forge:separate-perspective",
+  "gui_light": "front",
   "base": {
-    "parent": "redstone_arsenal:item/flux_trident_handheld"
+    "parent": "redstone_arsenal:item/flux_trident_held"
   },
   "perspectives": {
     "gui": {
-      "parent": "redstone_arsenal:item/flux_trident_inventory"
+      "parent": "redstone_arsenal:item/flux_trident_gui"
     }
   },
   "overrides": [
     {
       "predicate": {
+        "charged": 1.0
+      },
+      "model": "redstone_arsenal:item/flux_trident_charged"
+    },
+    {
+      "predicate": {
+        "empowered": 1.0
+      },
+      "model": "redstone_arsenal:item/flux_trident_empowered"
+    },
+    {
+      "predicate": {
         "throwing": 1.0
       },
       "model": "redstone_arsenal:item/flux_trident_using"
+    },
+    {
+      "predicate": {
+        "charged": 1.0,
+        "throwing": 1.0
+      },
+      "model": "redstone_arsenal:item/flux_trident_using_charged"
+    },
+    {
+      "predicate": {
+        "empowered": 1.0,
+        "throwing": 1.0
+      },
+      "model": "redstone_arsenal:item/flux_trident_using_empowered"
     }
   ]
 }

@@ -8,7 +8,7 @@ import net.minecraftforge.fml.event.lifecycle.GatherDataEvent;
 
 import static cofh.lib.util.constants.Constants.ID_REDSTONE_ARSENAL;
 
-@Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.MOD, modid = ID_REDSTONE_ARSENAL)
+@Mod.EventBusSubscriber (bus = Mod.EventBusSubscriber.Bus.MOD, modid = ID_REDSTONE_ARSENAL)
 public class RSADataGen {
 
     @SubscribeEvent
@@ -36,7 +36,7 @@ public class RSADataGen {
         DataGenerator gen = event.getGenerator();
         ExistingFileHelper exFileHelper = event.getExistingFileHelper();
 
-        gen.addProvider(new RSABlockStates(gen, exFileHelper));
+        gen.addProvider(new RSABlockStateProvider(gen, exFileHelper));
         gen.addProvider(new RSAItemModelProvider(gen, exFileHelper));
     }
 

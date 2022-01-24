@@ -1,12 +1,13 @@
 package cofh.redstonearsenal.item;
 
+import cofh.core.init.CoreConfig;
 import cofh.core.item.ItemCoFH;
 import cofh.core.util.ProxyUtils;
 import cofh.lib.capability.IArcheryAmmoItem;
 import cofh.lib.energy.EnergyContainerItemWrapper;
 import cofh.lib.energy.IEnergyContainerItem;
-import cofh.lib.util.helpers.ArcheryHelper;
 import cofh.redstonearsenal.entity.FluxArrowEntity;
+import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.Enchantments;
@@ -31,37 +32,52 @@ import java.util.List;
 
 import static cofh.lib.capability.CapabilityArchery.AMMO_ITEM_CAPABILITY;
 import static cofh.lib.util.Utils.getItemEnchantmentLevel;
+import static cofh.lib.util.helpers.StringHelper.getTextComponent;
+import static net.minecraft.util.text.TextFormatting.GRAY;
 
-public class FluxQuiverItem extends ItemCoFH implements IFluxItem {
+public class FluxQuiverItem extends ItemCoFH implements IMultiModeFluxItem {
 
     protected final int maxEnergy;
     protected final int extract;
     protected final int receive;
+    protected int energyPerUse = ENERGY_PER_USE;
+    protected int energyPerUseEmpowered = ENERGY_PER_USE_EMPOWERED;
 
     public FluxQuiverItem(int enchantability, Properties builder, int energy, int xfer) {
+
+        this(enchantability, builder, energy, xfer, 1.0F);
+    }
+
+    public FluxQuiverItem(int enchantability, Properties builder, int energy, int xfer, float energyUseMod) {
 
         super(builder);
 
         this.maxEnergy = energy;
         this.extract = xfer;
         this.receive = xfer;
+        this.energyPerUse *= energyUseMod;
+        this.energyPerUseEmpowered *= energyUseMod;
         setEnchantability(enchantability);
 
-        ProxyUtils.registerItemModelProperty(this, new ResourceLocation("charged"), (stack, world, entity) -> getEnergyStored(stack) > 0 ? 1F : 0F);
-        ProxyUtils.registerItemModelProperty(this, new ResourceLocation("active"), (stack, world, entity) -> getEnergyStored(stack) > 0 && isEmpowered(stack) ? 1F : 0F);
+        ProxyUtils.registerItemModelProperty(this, new ResourceLocation("charged"), this::getChargedModelProperty);
+        ProxyUtils.registerItemModelProperty(this, new ResourceLocation("empowered"), this::getEmpoweredModelProperty);
     }
 
     @Override
-    @OnlyIn(Dist.CLIENT)
+    @OnlyIn (Dist.CLIENT)
     public void appendHoverText(ItemStack stack, @Nullable World worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn) {
 
-        tooltipDelegate(stack, worldIn, tooltip, flagIn);
+        if (Screen.hasShiftDown() || CoreConfig.alwaysShowDetails) {
+            tooltipDelegate(stack, worldIn, tooltip, flagIn);
+        } else if (CoreConfig.holdShiftForDetails) {
+            tooltip.add(getTextComponent("info.cofh.hold_shift_for_details").withStyle(GRAY));
+        }
     }
 
     @Override
     public void tooltipDelegate(ItemStack stack, @Nullable World worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn) {
 
-        IFluxItem.super.tooltipDelegate(stack, worldIn, tooltip, flagIn);
+        IMultiModeFluxItem.super.tooltipDelegate(stack, worldIn, tooltip, flagIn);
     }
 
     @Override
@@ -80,6 +96,12 @@ public class FluxQuiverItem extends ItemCoFH implements IFluxItem {
     public ICapabilityProvider initCapabilities(ItemStack stack, @Nullable CompoundNBT nbt) {
 
         return new FluxQuiverItemWrapper(stack, this);
+    }
+
+    @Override
+    public int getEnergyPerUse(boolean empowered) {
+
+        return empowered ? energyPerUseEmpowered : energyPerUse;
     }
 
     // region IEnergyContainerItem
@@ -111,7 +133,7 @@ public class FluxQuiverItem extends ItemCoFH implements IFluxItem {
 
         FluxQuiverItemWrapper(ItemStack quiverItemContainer, IEnergyContainerItem item) {
 
-            super(quiverItemContainer, item);
+            super(quiverItemContainer, item, item.getEnergyCapability());
             this.quiverItem = quiverItemContainer;
         }
 
@@ -129,11 +151,11 @@ public class FluxQuiverItem extends ItemCoFH implements IFluxItem {
             if (isEmpowered(quiverItem)) {
                 ItemStack weapon = shooter.getMainHandItem().isEmpty() ? shooter.getOffhandItem() : shooter.getMainHandItem();
                 if (!weapon.isEmpty()) {
-                    if (ArcheryHelper.validBow(weapon)) {
-                        arrow.setNoGravity(true);
-                    } else if (weapon.getItem() instanceof CrossbowItem) {
+                    if (weapon.getItem() instanceof CrossbowItem) {
                         arrow.setExplodeArrow(true);
                         arrow.setBaseDamage(8);
+                    } else {
+                        arrow.setNoGravity(true);
                     }
                 }
             }

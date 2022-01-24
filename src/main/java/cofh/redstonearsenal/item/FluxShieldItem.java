@@ -1,10 +1,12 @@
 package cofh.redstonearsenal.item;
 
+import cofh.core.init.CoreConfig;
 import cofh.core.util.ProxyUtils;
 import cofh.lib.capability.IShieldItem;
 import cofh.lib.energy.EnergyContainerItemWrapper;
 import cofh.lib.energy.IEnergyContainerItem;
 import cofh.lib.item.impl.ShieldItemCoFH;
+import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
@@ -14,6 +16,7 @@ import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.*;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.world.World;
 import net.minecraftforge.api.distmarker.Dist;
@@ -25,14 +28,15 @@ import net.minecraftforge.common.util.LazyOptional;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.List;
-import java.util.function.Consumer;
 
 import static cofh.lib.capability.CapabilityShieldItem.SHIELD_ITEM_CAPABILITY;
+import static cofh.lib.util.helpers.StringHelper.getTextComponent;
+import static net.minecraft.util.text.TextFormatting.GRAY;
 
-public class FluxShieldItem extends ShieldItemCoFH implements IFluxItem {
+public class FluxShieldItem extends ShieldItemCoFH implements IMultiModeFluxItem {
 
-    public static final float RANGE = 4;
-    public static final float REPEL_STRENGTH = 2;
+    protected float repelRange = 4;
+    protected float repelStrength = 1.5F;
 
     protected int maxEnergy;
     protected int extract;
@@ -48,15 +52,19 @@ public class FluxShieldItem extends ShieldItemCoFH implements IFluxItem {
         setEnchantability(enchantability);
 
         ProxyUtils.registerItemModelProperty(this, new ResourceLocation("blocking"), (stack, world, entity) -> entity != null && entity.isUsingItem() && entity.getUseItem().equals(stack) ? 1.0F : 0.0F);
-        ProxyUtils.registerItemModelProperty(this, new ResourceLocation("charged"), (stack, world, entity) -> getEnergyStored(stack) > 0 ? 1F : 0F);
-        ProxyUtils.registerItemModelProperty(this, new ResourceLocation("active"), (stack, world, entity) -> getEnergyStored(stack) > 0 && isEmpowered(stack) ? 1F : 0F);
+        ProxyUtils.registerItemModelProperty(this, new ResourceLocation("charged"), this::getChargedModelProperty);
+        ProxyUtils.registerItemModelProperty(this, new ResourceLocation("empowered"), this::getEmpoweredModelProperty);
     }
 
     @Override
-    @OnlyIn(Dist.CLIENT)
+    @OnlyIn (Dist.CLIENT)
     public void appendHoverText(ItemStack stack, @Nullable World worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn) {
 
-        tooltipDelegate(stack, worldIn, tooltip, flagIn);
+        if (Screen.hasShiftDown() || CoreConfig.alwaysShowDetails) {
+            tooltipDelegate(stack, worldIn, tooltip, flagIn);
+        } else if (CoreConfig.holdShiftForDetails) {
+            tooltip.add(getTextComponent("info.cofh.hold_shift_for_details").withStyle(GRAY));
+        }
     }
 
     @Override
@@ -80,19 +88,33 @@ public class FluxShieldItem extends ShieldItemCoFH implements IFluxItem {
 
     public void repel(World world, LivingEntity living, ItemStack stack) {
 
-        if (useEnergy(stack, true, living instanceof PlayerEntity && ((PlayerEntity) living).abilities.instabuild)) {
-            double r2 = RANGE * RANGE;
-            AxisAlignedBB searchArea = living.getBoundingBox().inflate(RANGE);
+        if (useEnergy(stack, true, living)) {
+            float range = getRepelRange(stack);
+            double r2 = range * range;
+            float strength = getRepelStrength(stack);
+            AxisAlignedBB searchArea = living.getBoundingBox().inflate(range);
             for (Entity entity : world.getEntities(living, searchArea, EntityPredicates.NO_CREATIVE_OR_SPECTATOR)) {
                 if (living.distanceToSqr(entity) < r2) {
-                    if (entity.getDeltaMovement().lengthSqr() < REPEL_STRENGTH * REPEL_STRENGTH) {
-                        entity.setDeltaMovement(entity.position().subtract(living.position()).normalize().scale(REPEL_STRENGTH));
+                    Vector3d knockback = entity.position().subtract(living.position());
+                    if (entity instanceof LivingEntity) {
+                        ((LivingEntity) entity).knockback(strength, -knockback.x(), -knockback.z());
                     } else {
-                        entity.setDeltaMovement(entity.getDeltaMovement().reverse());
+                        entity.setDeltaMovement(knockback.normalize().scale(strength));
+                        entity.hasImpulse = true;
                     }
                 }
             }
         }
+    }
+
+    public float getRepelRange(ItemStack stack) {
+
+        return repelRange;
+    }
+
+    public float getRepelStrength(ItemStack stack) {
+
+        return repelStrength;
     }
 
     @Override
@@ -144,7 +166,7 @@ public class FluxShieldItem extends ShieldItemCoFH implements IFluxItem {
 
         FluxShieldItemWrapper(ItemStack shieldItem, IEnergyContainerItem container) {
 
-            super(shieldItem, container);
+            super(shieldItem, container, container.getEnergyCapability());
             this.shieldItem = shieldItem;
         }
 

@@ -12,9 +12,9 @@
     },
     {
       "predicate": {
-        "active": 1.0
+        "empowered": 1.0
       },
-      "model": "redstone_arsenal:item/flux_shovel_active"
+      "model": "redstone_arsenal:item/flux_shovel_empowered"
     }
   ]
 }

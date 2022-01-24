@@ -1,10 +1,10 @@
 package cofh.redstonearsenal.item;
 
+import cofh.core.init.CoreConfig;
 import cofh.core.item.ItemCoFH;
 import cofh.core.util.ProxyUtils;
 import cofh.lib.block.IDismantleable;
 import cofh.lib.block.IWrenchable;
-import cofh.lib.enchantment.EnchantmentCoFH;
 import cofh.lib.util.Utils;
 import cofh.lib.util.helpers.BlockHelper;
 import cofh.redstonearsenal.entity.FluxWrenchEntity;
@@ -13,6 +13,7 @@ import com.google.common.collect.Multimap;
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
+import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.Enchantments;
@@ -43,9 +44,11 @@ import javax.annotation.Nullable;
 import java.util.List;
 import java.util.Set;
 
+import static cofh.lib.util.helpers.StringHelper.getTextComponent;
 import static cofh.lib.util.references.CoreReferences.WRENCHED;
+import static net.minecraft.util.text.TextFormatting.GRAY;
 
-public class FluxWrenchItem extends ItemCoFH implements IFluxItem {
+public class FluxWrenchItem extends ItemCoFH implements IMultiModeFluxItem {
 
     protected static final Set<Enchantment> VALID_ENCHANTS = new ObjectOpenHashSet<>();
     protected final float damage;
@@ -62,28 +65,32 @@ public class FluxWrenchItem extends ItemCoFH implements IFluxItem {
 
         this.damage = tier.getAttackDamageBonus() + attackDamageIn;
         this.attackSpeed = attackSpeedIn;
-        this.throwCooldown = (int) (20 / attackSpeedIn) + 2;
+        this.throwCooldown = (int) (20 / (4.0F + attackSpeedIn)) + 2;
         setEnchantability(tier.getEnchantmentValue());
 
         this.maxEnergy = energy;
         this.extract = xfer;
         this.receive = xfer;
 
-        ProxyUtils.registerItemModelProperty(this, new ResourceLocation("charged"), (stack, world, entity) -> getEnergyStored(stack) > 0 ? 1F : 0F);
-        ProxyUtils.registerItemModelProperty(this, new ResourceLocation("active"), (stack, world, entity) -> getEnergyStored(stack) > 0 && isEmpowered(stack) ? 1F : 0F);
+        ProxyUtils.registerItemModelProperty(this, new ResourceLocation("charged"), this::getChargedModelProperty);
+        ProxyUtils.registerItemModelProperty(this, new ResourceLocation("empowered"), this::getEmpoweredModelProperty);
     }
 
     @Override
-    @OnlyIn(Dist.CLIENT)
+    @OnlyIn (Dist.CLIENT)
     public void appendHoverText(ItemStack stack, @Nullable World worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn) {
 
-        tooltipDelegate(stack, worldIn, tooltip, flagIn);
+        if (Screen.hasShiftDown() || CoreConfig.alwaysShowDetails) {
+            tooltipDelegate(stack, worldIn, tooltip, flagIn);
+        } else if (CoreConfig.holdShiftForDetails) {
+            tooltip.add(getTextComponent("info.cofh.hold_shift_for_details").withStyle(GRAY));
+        }
     }
 
     @Override
     public void tooltipDelegate(ItemStack stack, @Nullable World worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn) {
         //TODO: wrench stuff
-        IFluxItem.super.tooltipDelegate(stack, worldIn, tooltip, flagIn);
+        IMultiModeFluxItem.super.tooltipDelegate(stack, worldIn, tooltip, flagIn);
     }
 
     public static void initEnchants() {
@@ -108,7 +115,7 @@ public class FluxWrenchItem extends ItemCoFH implements IFluxItem {
     public ActionResult<ItemStack> use(World world, PlayerEntity player, Hand hand) {
 
         ItemStack stack = player.getItemInHand(hand);
-        if (hasEnergy(stack, isEmpowered(stack))) {
+        if (hasEnergy(stack, false)) {
             if (!world.isClientSide()) {
                 world.addFreshEntity(new FluxWrenchEntity(world, player, stack));
                 player.inventory.removeItem(stack);
@@ -161,15 +168,6 @@ public class FluxWrenchItem extends ItemCoFH implements IFluxItem {
         }
         BlockState state = world.getBlockState(pos);
         Block block = state.getBlock();
-
-        //        if (player.isSecondaryUseActive() && block instanceof IDismantleable && ((IDismantleable) block).canDismantle(world, pos, state, player)) {
-        //            if (Utils.isServerWorld(world)) {
-        //                BlockRayTraceResult target = new BlockRayTraceResult(context.getClickLocation(), context.getClickedFace(), context.getClickedPos(), context.isInside());
-        //                ((IDismantleable) block).dismantleBlock(world, pos, state, target, player, false);
-        //            }
-        //            player.swing(context.getHand());
-        //            return true;
-        //        } else if (!player.isSecondaryUseActive()) {
         if (block instanceof IWrenchable && ((IWrenchable) block).canWrench(world, pos, state, player)) {
             ((IWrenchable) block).wrenchBlock(world, pos, state, result, player);
             useEnergy(stack, false, player.abilities.instabuild);
@@ -178,7 +176,6 @@ public class FluxWrenchItem extends ItemCoFH implements IFluxItem {
             useEnergy(stack, false, player.abilities.instabuild);
             return true;
         }
-        //        }
         return false;
     }
 
@@ -206,7 +203,7 @@ public class FluxWrenchItem extends ItemCoFH implements IFluxItem {
     public boolean hurtEnemy(ItemStack stack, LivingEntity target, LivingEntity attacker) {
 
         target.addEffect(new EffectInstance(WRENCHED, 60, 0, false, false));
-        useEnergy(stack, false, ((PlayerEntity) attacker).abilities.instabuild);
+        useEnergy(stack, false, attacker);
         return true;
     }
 
@@ -214,7 +211,7 @@ public class FluxWrenchItem extends ItemCoFH implements IFluxItem {
     public boolean mineBlock(ItemStack stack, World worldIn, BlockState state, BlockPos pos, LivingEntity entityLiving) {
 
         if (Utils.isServerWorld(worldIn) && state.getDestroySpeed(worldIn, pos) != 0.0F) {
-            useEnergy(stack, false, entityLiving instanceof PlayerEntity && ((PlayerEntity) entityLiving).abilities.instabuild);
+            useEnergy(stack, false, entityLiving);
         }
         return true;
     }

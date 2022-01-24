@@ -1,8 +1,11 @@
 {
   "itemGroup.redstone_arsenal": "Redstone Arsenal",
-  "info.redstone_arsenal.empowered": "Empowered",
+
+  "info.redstone_arsenal.mode.0": "Quelled",
+  "info.redstone_arsenal.mode.1": "Empowered",
+
   "death.attack.flux": "%2$s's flux flummoxed %1$s!",
-  "death.attack.flux.item": "%2$s used %3$s to kill %1$s with flux!",
+  "death.attack.flux.item": "%2$s used %3$s to flummox %1$s with flux!",
 
   "item.redstone_arsenal.flux_coin": "Flux-Infused Coin",
   "item.redstone_arsenal.flux_dust": "Flux-Infused Dust",
@@ -15,6 +18,7 @@
   "item.redstone_arsenal.obsidian_rod": "Obsidian Rod",
   "item.redstone_arsenal.flux_obsidian_rod": "Flux-Infused Obsidian Rod",
   "block.redstone_arsenal.flux_metal_block": "Flux-Infused Metal Block",
+  "block.redstone_arsenal.flux_gem_block": "Flux-Infused Gem Block",
 
   "item.redstone_arsenal.flux_sword": "Flux-Infused Sword",
   "item.redstone_arsenal.flux_shield": "Flux-Infused Shield",
@@ -34,7 +38,19 @@
   "item.redstone_arsenal.flux_wrench": "Flux-Infused Battle Wrench",
   "item.redstone_arsenal.flux_fishing_rod": "Flux-Infused Fishing Rod",
 
+  "item.redstone_arsenal.flux_helmet": "Flux-Infused Helmet",
+  "item.redstone_arsenal.flux_chestplate": "Flux-Infused Chestplate",
+  "item.redstone_arsenal.flux_leggings": "Flux-Infused Leggings",
+  "item.redstone_arsenal.flux_boots": "Flux-Infused Boots",
   "item.redstone_arsenal.flux_elytra": "Flux-Infused Elytra",
-  "item.redstone_arsenal.flux_controller": "Flux-Infused Elytra Controller"
+  "item.redstone_arsenal.flux_controller": "Flux-Infused Elytra Controller",
 
+  "block.redstone_arsenal.flux_glow_air": "Flux-Infused Air",
+  "block.redstone_arsenal.flux_path": "Flux-Infused Path",
+
+  "entity.redstone_arsenal.flux_slash": "Flux Slash",
+  "entity.redstone_arsenal.flux_arrow": "Flux Arrow",
+  "entity.redstone_arsenal.flux_trident": "Flux-Infused Trident",
+  "entity.redstone_arsenal.flux_wrench": "Flux-Infused Battle Wrench",
+  "entity.redstone_arsenal.flux_shockwave": "Shockwave"
 }

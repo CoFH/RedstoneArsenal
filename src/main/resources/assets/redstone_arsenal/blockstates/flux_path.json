@@ -1,0 +1,21 @@
+{
+  "variants": {
+    "": [
+      {
+        "model": "redstone_arsenal:block/flux_path"
+      },
+      {
+        "model": "redstone_arsenal:block/flux_path",
+        "y": 90
+      },
+      {
+        "model": "redstone_arsenal:block/flux_path",
+        "y": 180
+      },
+      {
+        "model": "redstone_arsenal:block/flux_path",
+        "y": -90
+      }
+    ]
+  }
+}

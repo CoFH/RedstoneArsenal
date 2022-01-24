@@ -1,5 +1,6 @@
 package cofh.redstonearsenal.item;
 
+import cofh.core.init.CoreConfig;
 import cofh.core.util.ProxyUtils;
 import cofh.lib.item.ILeftClickHandlerItem;
 import cofh.lib.item.impl.TridentItemCoFH;
@@ -8,6 +9,7 @@ import cofh.redstonearsenal.entity.FluxTridentEntity;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 import net.minecraft.block.BlockState;
+import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
@@ -33,16 +35,16 @@ import net.minecraft.world.World;
 import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.common.ForgeMod;
 
 import javax.annotation.Nullable;
 import java.util.List;
 import java.util.function.Predicate;
 
-import static cofh.lib.util.constants.Constants.UUID_TOOL_REACH;
+import static cofh.lib.util.helpers.StringHelper.getTextComponent;
 import static cofh.lib.util.references.CoreReferences.LIGHTNING_RESISTANCE;
+import static net.minecraft.util.text.TextFormatting.GRAY;
 
-public class FluxTridentItem extends TridentItemCoFH implements IFluxItem, ILeftClickHandlerItem {
+public class FluxTridentItem extends TridentItemCoFH implements IMultiModeFluxItem, ILeftClickHandlerItem {
 
     public static final double PLUNGE_RANGE = 3.5;
     public static final double PLUNGE_SPEED = 3;
@@ -68,8 +70,8 @@ public class FluxTridentItem extends TridentItemCoFH implements IFluxItem, ILeft
         this.receive = xfer;
 
         ProxyUtils.registerItemModelProperty(this, new ResourceLocation("throwing"), (stack, world, entity) -> entity != null && entity.isUsingItem() && entity.getUseItem().equals(stack) ? 1.0F : 0.0F);
-        ProxyUtils.registerItemModelProperty(this, new ResourceLocation("charged"), (stack, world, entity) -> getEnergyStored(stack) > 0 ? 1F : 0F);
-        ProxyUtils.registerItemModelProperty(this, new ResourceLocation("active"), (stack, world, entity) -> getEnergyStored(stack) > 0 && isEmpowered(stack) ? 1F : 0F);
+        ProxyUtils.registerItemModelProperty(this, new ResourceLocation("charged"), this::getChargedModelProperty);
+        ProxyUtils.registerItemModelProperty(this, new ResourceLocation("empowered"), this::getEmpoweredModelProperty);
     }
 
     public FluxTridentItem(IItemTier tier, int enchantability, int attackDamageIn, float attackSpeedIn, float reachIn, Properties builder, int energy, int xfer) {
@@ -80,10 +82,14 @@ public class FluxTridentItem extends TridentItemCoFH implements IFluxItem, ILeft
     }
 
     @Override
-    @OnlyIn(Dist.CLIENT)
+    @OnlyIn (Dist.CLIENT)
     public void appendHoverText(ItemStack stack, @Nullable World worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn) {
 
-        tooltipDelegate(stack, worldIn, tooltip, flagIn);
+        if (Screen.hasShiftDown() || CoreConfig.alwaysShowDetails) {
+            tooltipDelegate(stack, worldIn, tooltip, flagIn);
+        } else if (CoreConfig.holdShiftForDetails) {
+            tooltip.add(getTextComponent("info.cofh.hold_shift_for_details").withStyle(GRAY));
+        }
     }
 
     @Override
@@ -103,9 +109,9 @@ public class FluxTridentItem extends TridentItemCoFH implements IFluxItem, ILeft
 
         super.inventoryTick(stack, world, entity, itemSlot, isSelected);
 
-        if (entity.isOnGround() && entity instanceof LivingEntity) {
+        if (entity instanceof LivingEntity) {
             LivingEntity living = (LivingEntity) entity;
-            if (living.isAutoSpinAttack()) {
+            if (living.isAutoSpinAttack() && (living.isOnGround() || (living.isUnderWater() && living.getDeltaMovement().lengthSqr() < 0.09F))) {
                 stopSpinAttack(living);
             }
         }
@@ -122,6 +128,7 @@ public class FluxTridentItem extends TridentItemCoFH implements IFluxItem, ILeft
         return ActionResult.fail(stack);
     }
 
+    @Override
     public void releaseUsing(ItemStack stack, World world, LivingEntity entity, int remainingDuration) {
 
         if (entity instanceof PlayerEntity) {
@@ -181,8 +188,12 @@ public class FluxTridentItem extends TridentItemCoFH implements IFluxItem, ILeft
         if (!canStartPlunging(living)) {
             return false;
         }
+        if (living instanceof PlayerEntity) {
+            ((PlayerEntity) living).stopFallFlying();
+            ((PlayerEntity) living).abilities.flying = false;
+        }
         living.startAutoSpinAttack(200);
-        Vector3d motion = getPlungeVector(living.getLookAngle(), PLUNGE_SPEED);
+        Vector3d motion = getPlungeVector(living.getLookAngle(), getPlungeSpeed());
         living.push(motion.x(), motion.y(), motion.z());
         return true;
     }
@@ -198,23 +209,27 @@ public class FluxTridentItem extends TridentItemCoFH implements IFluxItem, ILeft
 
     public boolean plungeAttack(World world, LivingEntity attacker, ItemStack stack) {
 
-        if (attacker.fallDistance <= attacker.getMaxFallDistance() || !isEmpowered(stack) || !useEnergy(stack, true, attacker instanceof PlayerEntity && ((PlayerEntity) attacker).abilities.instabuild)) {
+        if (attacker.fallDistance <= attacker.getMaxFallDistance() || !isEmpowered(stack) || !useEnergy(stack, true, attacker)) {
             return false;
         }
         if (Utils.getItemEnchantmentLevel(Enchantments.CHANNELING, stack) > 0) {
             if (world.canSeeSky(attacker.blockPosition()) && world instanceof ServerWorld && world.isThundering()) {
-                attacker.addEffect(new EffectInstance(LIGHTNING_RESISTANCE, 40, 1, false, false));
+                attacker.addEffect(new EffectInstance(LIGHTNING_RESISTANCE, 40, 0, false, false));
                 Utils.spawnLightningBolt(world, attacker.blockPosition(), attacker);
             }
         }
-        double r2 = PLUNGE_RANGE * PLUNGE_RANGE;
-        AxisAlignedBB searchArea = attacker.getBoundingBox().inflate(PLUNGE_RANGE, 1, PLUNGE_RANGE);
+        double range = getPlungeRange();
+        double r2 = range * range;
+        AxisAlignedBB searchArea = attacker.getBoundingBox().inflate(range, 1, range);
         Predicate<Entity> filter = EntityPredicates.NO_CREATIVE_OR_SPECTATOR.and(entity -> entity instanceof LivingEntity);
         boolean hit = false;
         for (Entity target : world.getEntities(attacker, searchArea, filter)) {
-            if (attacker.distanceToSqr(target) < r2) {
+            if (attacker.distanceToSqr(target) <= r2) {
                 hit |= target.hurt(IFluxItem.fluxDirectDamage(attacker), getPlungeAttackDamage(attacker, stack));
             }
+        }
+        if (hit) {
+            world.playSound(null, attacker.getX(), attacker.getY(), attacker.getZ(), SoundEvents.TRIDENT_RETURN, SoundCategory.PLAYERS, 10.0F, 1.0F);
         }
         return hit;
     }
@@ -234,6 +249,9 @@ public class FluxTridentItem extends TridentItemCoFH implements IFluxItem, ILeft
         double y = lookVector.y();
         double z = lookVector.z();
         double compSqr = lookVector.lengthSqr() * 0.5;
+        if (x < 0.0001F && z < 0.0001F) {
+            return new Vector3d(0, -magnitude, 0);
+        }
         if (compSqr > y * y || y > 0) {
             double comp = MathHelper.sqrt(compSqr);
             double horzSum = Math.abs(x) + Math.abs(z);
@@ -245,7 +263,7 @@ public class FluxTridentItem extends TridentItemCoFH implements IFluxItem, ILeft
     @Override
     public boolean hurtEnemy(ItemStack stack, LivingEntity target, LivingEntity attacker) {
 
-        useEnergy(stack, false, ((PlayerEntity) attacker).abilities.instabuild);
+        useEnergy(stack, false, attacker);
         return true;
     }
 
@@ -253,7 +271,7 @@ public class FluxTridentItem extends TridentItemCoFH implements IFluxItem, ILeft
     public boolean mineBlock(ItemStack stack, World worldIn, BlockState state, BlockPos pos, LivingEntity entityLiving) {
 
         if (Utils.isServerWorld(worldIn) && state.getDestroySpeed(worldIn, pos) != 0.0F) {
-            useEnergy(stack, false, entityLiving instanceof PlayerEntity && ((PlayerEntity) entityLiving).abilities.instabuild);
+            useEnergy(stack, false, entityLiving);
         }
         return true;
     }
@@ -265,7 +283,8 @@ public class FluxTridentItem extends TridentItemCoFH implements IFluxItem, ILeft
         if (slot == EquipmentSlotType.MAINHAND) {
             multimap.put(Attributes.ATTACK_DAMAGE, new AttributeModifier(BASE_ATTACK_DAMAGE_UUID, "Weapon modifier", getAttackDamage(stack), AttributeModifier.Operation.ADDITION));
             multimap.put(Attributes.ATTACK_SPEED, new AttributeModifier(BASE_ATTACK_SPEED_UUID, "Weapon modifier", getAttackSpeed(stack), AttributeModifier.Operation.ADDITION));
-            multimap.put(ForgeMod.REACH_DISTANCE.get(), new AttributeModifier(UUID_TOOL_REACH, "Weapon modifier", getAddedReach(stack), AttributeModifier.Operation.ADDITION));
+            // Add this back when Forge fixes attack reach distance.
+            //multimap.put(ForgeMod.REACH_DISTANCE.get(), new AttributeModifier(UUID_TOOL_REACH, "Weapon modifier", getAddedReach(stack), AttributeModifier.Operation.ADDITION));
         }
         return multimap;
     }
@@ -278,6 +297,16 @@ public class FluxTridentItem extends TridentItemCoFH implements IFluxItem, ILeft
     protected float getPlungeAttackDamage(LivingEntity living, ItemStack stack) {
 
         return hasEnergy(stack, true) && living.fallDistance > living.getMaxFallDistance() ? 2.5F * MathHelper.sqrt(living.fallDistance) : 0.0F;
+    }
+
+    public double getPlungeRange() {
+
+        return PLUNGE_RANGE;
+    }
+
+    public double getPlungeSpeed() {
+
+        return PLUNGE_SPEED;
     }
 
     protected float getAttackSpeed(ItemStack stack) {

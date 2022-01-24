@@ -18,7 +18,7 @@ public class FluxGlowAirBlock extends AirBlock {
         super(builder);
     }
 
-    @OnlyIn(Dist.CLIENT)
+    @OnlyIn (Dist.CLIENT)
     @Override
     public void animateTick(BlockState stateIn, World worldIn, BlockPos pos, Random rand) {
 

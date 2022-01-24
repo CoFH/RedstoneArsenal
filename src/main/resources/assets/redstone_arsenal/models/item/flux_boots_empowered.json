@@ -1,0 +1,6 @@
+{
+  "parent": "redstone_arsenal:item/flux_boots",
+  "textures": {
+    "layer0": "redstone_arsenal:item/flux_boots_empowered"
+  }
+}

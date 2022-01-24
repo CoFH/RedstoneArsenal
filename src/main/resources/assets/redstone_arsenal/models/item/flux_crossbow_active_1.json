@@ -1,6 +1,0 @@
-{
-  "parent": "redstone_arsenal:item/flux_crossbow",
-  "textures": {
-    "layer0": "redstone_arsenal:item/flux_crossbow_active_1"
-  }
-}

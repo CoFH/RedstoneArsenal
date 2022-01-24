@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "###",
+    "###",
+    "###"
+  ],
+  "key": {
+    "#": {
+      "item": "redstone_arsenal:flux_ingot"
+    }
+  },
+  "result": {
+    "item": "redstone_arsenal:flux_metal_block"
+  }
+}

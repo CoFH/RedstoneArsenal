@@ -1,5 +1,6 @@
 package cofh.redstonearsenal.item;
 
+import cofh.core.init.CoreConfig;
 import cofh.core.util.ProxyUtils;
 import cofh.lib.item.ILeftClickHandlerItem;
 import cofh.lib.item.impl.SwordItemCoFH;
@@ -8,6 +9,7 @@ import cofh.redstonearsenal.entity.FluxSlashEntity;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 import net.minecraft.block.BlockState;
+import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.Enchantments;
@@ -29,7 +31,10 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 import javax.annotation.Nullable;
 import java.util.List;
 
-public class FluxSwordItem extends SwordItemCoFH implements IFluxItem, ILeftClickHandlerItem {
+import static cofh.lib.util.helpers.StringHelper.getTextComponent;
+import static net.minecraft.util.text.TextFormatting.GRAY;
+
+public class FluxSwordItem extends SwordItemCoFH implements IMultiModeFluxItem, ILeftClickHandlerItem {
 
     protected final float damage;
     protected final float attackSpeed;
@@ -49,15 +54,19 @@ public class FluxSwordItem extends SwordItemCoFH implements IFluxItem, ILeftClic
         this.extract = xfer;
         this.receive = xfer;
 
-        ProxyUtils.registerItemModelProperty(this, new ResourceLocation("charged"), (stack, world, entity) -> getEnergyStored(stack) > 0 ? 1F : 0F);
-        ProxyUtils.registerItemModelProperty(this, new ResourceLocation("active"), (stack, world, entity) -> getEnergyStored(stack) > 0 && isEmpowered(stack) ? 1F : 0F);
+        ProxyUtils.registerItemModelProperty(this, new ResourceLocation("charged"), this::getChargedModelProperty);
+        ProxyUtils.registerItemModelProperty(this, new ResourceLocation("empowered"), this::getEmpoweredModelProperty);
     }
 
     @Override
-    @OnlyIn(Dist.CLIENT)
+    @OnlyIn (Dist.CLIENT)
     public void appendHoverText(ItemStack stack, @Nullable World worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn) {
 
-        tooltipDelegate(stack, worldIn, tooltip, flagIn);
+        if (Screen.hasShiftDown() || CoreConfig.alwaysShowDetails) {
+            tooltipDelegate(stack, worldIn, tooltip, flagIn);
+        } else if (CoreConfig.holdShiftForDetails) {
+            tooltip.add(getTextComponent("info.cofh.hold_shift_for_details").withStyle(GRAY));
+        }
     }
 
     @Override
@@ -75,33 +84,15 @@ public class FluxSwordItem extends SwordItemCoFH implements IFluxItem, ILeftClic
     @Override
     public boolean hurtEnemy(ItemStack stack, LivingEntity target, LivingEntity attacker) {
 
-        useEnergy(stack, false, ((PlayerEntity) attacker).abilities.instabuild);
+        useEnergy(stack, false, attacker);
         return true;
-    }
-
-    public void shootFluxSlash(ItemStack stack, PlayerEntity player) {
-
-        if (!this.isEmpowered(stack)) {
-            return;
-        }
-        if (useEnergy(stack, true, player.abilities.instabuild)) {
-            World world = player.level;
-            FluxSlashEntity projectile = new FluxSlashEntity(world, player, getRangedAttackDamage(stack));
-            world.addFreshEntity(projectile);
-        }
-    }
-
-    public static boolean canSweepAttack(PlayerEntity player) {
-
-        // &&(player.isOnGround() || player.onClimbable() || player.isInWater() || player.hasEffect(Effects.BLINDNESS) || player.isPassenger())
-        return player.getAttackStrengthScale(0.5F) > 0.9F && !player.isSprinting();
     }
 
     @Override
     public boolean mineBlock(ItemStack stack, World worldIn, BlockState state, BlockPos pos, LivingEntity entityLiving) {
 
         if (Utils.isServerWorld(worldIn) && state.getDestroySpeed(worldIn, pos) != 0.0F) {
-            useEnergy(stack, false, entityLiving instanceof PlayerEntity && ((PlayerEntity) entityLiving).abilities.instabuild);
+            useEnergy(stack, false, entityLiving);
         }
         return true;
     }
@@ -122,14 +113,27 @@ public class FluxSwordItem extends SwordItemCoFH implements IFluxItem, ILeftClic
         return hasEnergy(stack, false) ? damage : 0.0F;
     }
 
-    protected float getRangedAttackDamage(ItemStack stack) {
-
-        return 2.0F + Utils.getItemEnchantmentLevel(Enchantments.SWEEPING_EDGE, stack);
-    }
-
     protected float getAttackSpeed(ItemStack stack) {
 
         return attackSpeed;
+    }
+
+    protected boolean canSweepAttack(PlayerEntity player) {
+
+        return player.getAttackStrengthScale(0.5F) > 0.9F && !player.isSprinting();
+    }
+
+    protected void shootFluxSlash(ItemStack stack, PlayerEntity player) {
+
+        if (!this.isEmpowered(stack)) {
+            return;
+        }
+        if (useEnergy(stack, true, player.abilities.instabuild)) {
+            World world = player.level;
+            FluxSlashEntity projectile = new FluxSlashEntity(world, player, Utils.getItemEnchantmentLevel(Enchantments.SWEEPING_EDGE, stack));
+            world.addFreshEntity(projectile);
+            //world.playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.PLAYER_ATTACK_SWEEP, SoundCategory.PLAYERS, 1.0F, 1.0F);
+        }
     }
 
     // region IEnergyContainerItem

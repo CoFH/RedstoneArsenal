@@ -1,0 +1,12 @@
+{
+  "loader": "forge:separate-perspective",
+  "gui_light": "front",
+  "base": {
+    "parent": "redstone_arsenal:item/flux_trident_held"
+  },
+  "perspectives": {
+    "gui": {
+      "parent": "redstone_arsenal:item/flux_trident_gui_charged"
+    }
+  }
+}

@@ -1,5 +1,6 @@
 package cofh.redstonearsenal.item;
 
+import cofh.core.init.CoreConfig;
 import cofh.core.util.ProxyUtils;
 import cofh.lib.capability.CapabilityAreaEffect;
 import cofh.lib.capability.IAreaEffect;
@@ -13,6 +14,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Multimap;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
+import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.entity.LivingEntity;
@@ -43,7 +45,10 @@ import java.util.Map;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
-public class FluxExcavatorItem extends ExcavatorItem implements IFluxItem {
+import static cofh.lib.util.helpers.StringHelper.getTextComponent;
+import static net.minecraft.util.text.TextFormatting.GRAY;
+
+public class FluxExcavatorItem extends ExcavatorItem implements IMultiModeFluxItem {
 
     protected final float damage;
     protected final float attackSpeed;
@@ -63,15 +68,19 @@ public class FluxExcavatorItem extends ExcavatorItem implements IFluxItem {
         this.extract = xfer;
         this.receive = xfer;
 
-        ProxyUtils.registerItemModelProperty(this, new ResourceLocation("charged"), (stack, world, entity) -> getEnergyStored(stack) > 0 ? 1F : 0F);
-        ProxyUtils.registerItemModelProperty(this, new ResourceLocation("active"), (stack, world, entity) -> getEnergyStored(stack) > 0 && isEmpowered(stack) ? 1F : 0F);
+        ProxyUtils.registerItemModelProperty(this, new ResourceLocation("charged"), this::getChargedModelProperty);
+        ProxyUtils.registerItemModelProperty(this, new ResourceLocation("empowered"), this::getEmpoweredModelProperty);
     }
 
     @Override
-    @OnlyIn(Dist.CLIENT)
+    @OnlyIn (Dist.CLIENT)
     public void appendHoverText(ItemStack stack, @Nullable World worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn) {
 
-        tooltipDelegate(stack, worldIn, tooltip, flagIn);
+        if (Screen.hasShiftDown() || CoreConfig.alwaysShowDetails) {
+            tooltipDelegate(stack, worldIn, tooltip, flagIn);
+        } else if (CoreConfig.holdShiftForDetails) {
+            tooltip.add(getTextComponent("info.cofh.hold_shift_for_details").withStyle(GRAY));
+        }
     }
 
     @Override
@@ -134,7 +143,7 @@ public class FluxExcavatorItem extends ExcavatorItem implements IFluxItem {
                     if (!hasEnergy(context.getItemInHand(), false)) {
                         break;
                     }
-                    List<Item> validItems = Block.getDrops(block.defaultBlockState(), (ServerWorld) world, sorted.get(block).get(0), null).stream().map(stack -> stack.getItem()).collect(Collectors.toList());
+                    List<Item> validItems = Block.getDrops(block.defaultBlockState(), (ServerWorld) world, sorted.get(block).get(0), null).stream().map(ItemStack::getItem).filter(i -> i instanceof BlockItem).collect(Collectors.toList());
                     Predicate<ItemStack> matches = stack -> stack.getItem() instanceof BlockItem && (stack.getItem().equals(block.asItem()) || validItems.contains(stack.getItem()));
                     for (BlockPos pos : sorted.get(block)) {
                         if (slot < 0 || inventory.get(slot).isEmpty()) {
@@ -183,7 +192,7 @@ public class FluxExcavatorItem extends ExcavatorItem implements IFluxItem {
     @Override
     public boolean hurtEnemy(ItemStack stack, LivingEntity target, LivingEntity attacker) {
 
-        useEnergy(stack, false, ((PlayerEntity) attacker).abilities.instabuild);
+        useEnergy(stack, false, attacker);
         return true;
     }
 
@@ -191,7 +200,7 @@ public class FluxExcavatorItem extends ExcavatorItem implements IFluxItem {
     public boolean mineBlock(ItemStack stack, World worldIn, BlockState state, BlockPos pos, LivingEntity entityLiving) {
 
         if (Utils.isServerWorld(worldIn) && state.getDestroySpeed(worldIn, pos) != 0.0F) {
-            useEnergy(stack, false, entityLiving instanceof PlayerEntity && ((PlayerEntity) entityLiving).abilities.instabuild);
+            useEnergy(stack, false, entityLiving);
         }
         return true;
     }
@@ -244,7 +253,7 @@ public class FluxExcavatorItem extends ExcavatorItem implements IFluxItem {
 
         FluxExcavatorItemWrapper(ItemStack containerIn, IEnergyContainerItem itemIn) {
 
-            super(containerIn, itemIn);
+            super(containerIn, itemIn, itemIn.getEnergyCapability());
         }
 
         @Override

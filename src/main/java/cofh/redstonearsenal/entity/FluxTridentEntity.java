@@ -20,6 +20,7 @@ import net.minecraft.util.DamageSource;
 import net.minecraft.util.SoundEvent;
 import net.minecraft.util.SoundEvents;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.BlockRayTraceResult;
 import net.minecraft.util.math.EntityRayTraceResult;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.World;
@@ -59,6 +60,7 @@ public class FluxTridentEntity extends AbstractArrowEntity {
         super(FLUX_TRIDENT_ENTITY, x, y, z, world);
     }
 
+    @Override
     protected void defineSynchedData() {
 
         super.defineSynchedData();
@@ -77,6 +79,7 @@ public class FluxTridentEntity extends AbstractArrowEntity {
         return ((FluxTridentItem) tridentItem.getItem()).isEmpowered(tridentItem);
     }
 
+    @Override
     public void tick() {
 
         if (this.inGroundTime > 4) {
@@ -123,12 +126,13 @@ public class FluxTridentEntity extends AbstractArrowEntity {
         }
     }
 
+    @Override
     protected ItemStack getPickupItem() {
 
         return this.tridentItem.copy();
     }
 
-    @OnlyIn(Dist.CLIENT)
+    @OnlyIn (Dist.CLIENT)
     public boolean isFoil() {
 
         return this.entityData.get(ID_FOIL);
@@ -140,6 +144,14 @@ public class FluxTridentEntity extends AbstractArrowEntity {
         return this.dealtDamage ? null : super.findHitEntity(start, end);
     }
 
+    @Override
+    protected void onHitBlock(BlockRayTraceResult result) {
+
+        super.onHitBlock(result);
+        this.setSoundEvent(getDefaultHitGroundSoundEvent());
+    }
+
+    @Override
     protected void onHitEntity(EntityRayTraceResult result) {
 
         Entity entity = result.getEntity();
@@ -186,11 +198,13 @@ public class FluxTridentEntity extends AbstractArrowEntity {
         this.playSound(soundevent, f1, 1.0F);
     }
 
+    @Override
     protected SoundEvent getDefaultHitGroundSoundEvent() {
 
         return SoundEvents.TRIDENT_HIT_GROUND;
     }
 
+    @Override
     public void playerTouch(PlayerEntity player) {
 
         Entity entity = this.getOwner();
@@ -199,6 +213,7 @@ public class FluxTridentEntity extends AbstractArrowEntity {
         }
     }
 
+    @Override
     public void readAdditionalSaveData(CompoundNBT nbt) {
 
         super.readAdditionalSaveData(nbt);
@@ -210,6 +225,7 @@ public class FluxTridentEntity extends AbstractArrowEntity {
         this.entityData.set(ID_LOYALTY, (byte) EnchantmentHelper.getLoyalty(this.tridentItem));
     }
 
+    @Override
     public void addAdditionalSaveData(CompoundNBT nbt) {
 
         super.addAdditionalSaveData(nbt);
@@ -217,6 +233,7 @@ public class FluxTridentEntity extends AbstractArrowEntity {
         nbt.putBoolean("DealtDamage", this.dealtDamage);
     }
 
+    @Override
     public void tickDespawn() {
 
         int i = this.entityData.get(ID_LOYALTY);
@@ -226,14 +243,10 @@ public class FluxTridentEntity extends AbstractArrowEntity {
 
     }
 
+    @Override
     protected float getWaterInertia() {
 
         return 0.99F;
-    }
-
-    public boolean shouldRender(double x, double y, double z) {
-
-        return true;
     }
 
 }

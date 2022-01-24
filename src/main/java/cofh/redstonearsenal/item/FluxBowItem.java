@@ -1,25 +1,31 @@
 package cofh.redstonearsenal.item;
 
+import cofh.core.init.CoreConfig;
 import cofh.core.util.ProxyUtils;
+import cofh.lib.capability.IArcheryAmmoItem;
 import cofh.lib.capability.IArcheryBowItem;
+import cofh.lib.capability.templates.ArcheryAmmoItemWrapper;
+import cofh.lib.capability.templates.ArcheryBowItemWrapper;
 import cofh.lib.energy.EnergyContainerItemWrapper;
-import cofh.lib.energy.IEnergyContainerItem;
 import cofh.lib.item.impl.BowItemCoFH;
+import cofh.lib.util.Utils;
 import cofh.lib.util.helpers.ArcheryHelper;
+import cofh.lib.util.helpers.MathHelper;
+import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
+import net.minecraft.entity.projectile.AbstractArrowEntity;
+import net.minecraft.item.*;
 import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.util.ActionResult;
-import net.minecraft.util.Direction;
-import net.minecraft.util.Hand;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.MathHelper;
+import net.minecraft.particles.RedstoneParticleData;
+import net.minecraft.stats.Stats;
+import net.minecraft.util.*;
+import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.world.World;
+import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.capabilities.Capability;
@@ -30,11 +36,16 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.List;
 
+import static cofh.lib.capability.CapabilityArchery.AMMO_ITEM_CAPABILITY;
 import static cofh.lib.capability.CapabilityArchery.BOW_ITEM_CAPABILITY;
+import static cofh.lib.util.Utils.getItemEnchantmentLevel;
+import static cofh.lib.util.helpers.StringHelper.getTextComponent;
+import static cofh.lib.util.references.EnsorcReferences.TRUESHOT;
+import static cofh.lib.util.references.EnsorcReferences.VOLLEY;
+import static net.minecraft.enchantment.Enchantments.*;
+import static net.minecraft.util.text.TextFormatting.GRAY;
 
-public class FluxBowItem extends BowItemCoFH implements IFluxItem {
-
-    protected final int EMPOWERED_ENERGY_USE_INTERVAL = 20;
+public class FluxBowItem extends BowItemCoFH implements IMultiModeFluxItem {
 
     protected final int maxEnergy;
     protected final int extract;
@@ -49,16 +60,20 @@ public class FluxBowItem extends BowItemCoFH implements IFluxItem {
         this.receive = xfer;
         setParams(enchantability, accuracyModifier, damageModifier, velocityModifier);
 
-        ProxyUtils.registerItemModelProperty(this, new ResourceLocation("pull"), this::getPullProperty);
-        ProxyUtils.registerItemModelProperty(this, new ResourceLocation("charged"), (stack, world, entity) -> getEnergyStored(stack) > 0 ? 1F : 0F);
-        ProxyUtils.registerItemModelProperty(this, new ResourceLocation("active"), (stack, world, entity) -> getEnergyStored(stack) > 0 && isEmpowered(stack) ? 1F : 0F);
+        ProxyUtils.registerItemModelProperty(this, new ResourceLocation("pull"), this::getPullModelProperty);
+        ProxyUtils.registerItemModelProperty(this, new ResourceLocation("charged"), this::getChargedModelProperty);
+        ProxyUtils.registerItemModelProperty(this, new ResourceLocation("empowered"), this::getEmpoweredModelProperty);
     }
 
     @Override
-    @OnlyIn(Dist.CLIENT)
+    @OnlyIn (Dist.CLIENT)
     public void appendHoverText(ItemStack stack, @Nullable World worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn) {
 
-        tooltipDelegate(stack, worldIn, tooltip, flagIn);
+        if (Screen.hasShiftDown() || CoreConfig.alwaysShowDetails) {
+            tooltipDelegate(stack, worldIn, tooltip, flagIn);
+        } else if (CoreConfig.holdShiftForDetails) {
+            tooltip.add(getTextComponent("info.cofh.hold_shift_for_details").withStyle(GRAY));
+        }
     }
 
     @Override
@@ -76,10 +91,10 @@ public class FluxBowItem extends BowItemCoFH implements IFluxItem {
     @Override
     public ICapabilityProvider initCapabilities(ItemStack stack, @Nullable CompoundNBT nbt) {
 
-        return new FluxBowItemWrapper(stack, accuracyModifier, damageModifier, velocityModifier);
+        return new FluxBowItemWrapper(stack, this);
     }
 
-    public float getPullProperty(ItemStack stack, World world, LivingEntity entity) {
+    public float getPullModelProperty(ItemStack stack, World world, LivingEntity entity) {
 
         if (entity == null || !entity.getUseItem().equals(stack)) {
             return 0.0F;
@@ -124,22 +139,18 @@ public class FluxBowItem extends BowItemCoFH implements IFluxItem {
         private final float accuracyModifier;
         private final float damageModifier;
         private final float velocityModifier;
+        protected final int simulateTicks = 100;
 
         final ItemStack bowItem;
 
-        FluxBowItemWrapper(ItemStack bowItemContainer, float accuracyModifier, float damageModifier, float velocityModifier) {
+        FluxBowItemWrapper(ItemStack bowItemContainer, FluxBowItem item) {
 
-            super(bowItemContainer, (IEnergyContainerItem) bowItemContainer.getItem());
+            super(bowItemContainer, item, item.getEnergyCapability());
             this.bowItem = bowItemContainer;
 
-            this.accuracyModifier = MathHelper.clamp(accuracyModifier, 0.1F, 10.0F);
-            this.damageModifier = MathHelper.clamp(damageModifier, 0.1F, 10.0F);
-            this.velocityModifier = MathHelper.clamp(velocityModifier, 0.1F, 10.0F);
-        }
-
-        FluxBowItemWrapper(ItemStack bowItemContainer) {
-
-            this(bowItemContainer, 1.0F, 1.0F, 1.0F);
+            this.accuracyModifier = MathHelper.clamp(item.accuracyModifier, 0.1F, 10.0F);
+            this.damageModifier = MathHelper.clamp(item.damageModifier, 0.1F, 10.0F);
+            this.velocityModifier = MathHelper.clamp(item.velocityModifier, 0.1F, 10.0F);
         }
 
         @Override
@@ -147,11 +158,8 @@ public class FluxBowItem extends BowItemCoFH implements IFluxItem {
 
             if (isEmpowered(bowItem)) {
                 int duration = shooter.getTicksUsingItem();
-                if (!shooter.abilities.instabuild) {
-                    duration = Math.min(duration, getEnergyStored() * EMPOWERED_ENERGY_USE_INTERVAL / getEnergyPerUse(true));
-                }
                 if (duration > 20) {
-                    return Math.min(accuracyModifier / MathHelper.sqrt(duration / 20.0F), 10.0F);
+                    return Math.max(accuracyModifier * 20.0F / duration, 0.01F);
                 }
             }
             return accuracyModifier;
@@ -166,39 +174,125 @@ public class FluxBowItem extends BowItemCoFH implements IFluxItem {
         @Override
         public float getVelocityModifier(PlayerEntity shooter) {
 
-            if (isEmpowered(bowItem)) {
-                int duration = shooter.getTicksUsingItem();
-                if (!shooter.abilities.instabuild) {
-                    duration = Math.min(duration, getEnergyStored() * EMPOWERED_ENERGY_USE_INTERVAL / getEnergyPerUse(true));
-                }
-                if (duration > 20) {
-                    return Math.min(velocityModifier * (2 * MathHelper.sqrt(duration / 20.0F) - 1), 10.0F);
-                }
-            }
             return velocityModifier;
         }
 
         @Override
         public void onArrowLoosed(PlayerEntity shooter) {
 
-            if (!shooter.abilities.instabuild) {
-                if (isEmpowered(bowItem)) {
-                    int duration = shooter.getTicksUsingItem();
-                    int amount = Math.min(duration * getEnergyPerUse(true) / EMPOWERED_ENERGY_USE_INTERVAL, getEnergyStored());
-                    int maxExtract = getExtract(bowItem);
-                    for (; amount > 0; amount -= maxExtract) {
-                        useEnergy(bowItem, Math.min(maxExtract, amount), false);
-                    }
-                } else {
-                    useEnergy(bowItem, false, false);
-                }
-            }
+            useEnergy(bowItem, isEmpowered(bowItem), shooter.abilities.instabuild);
         }
 
         @Override
         public boolean fireArrow(ItemStack arrow, PlayerEntity shooter, int charge, World world) {
 
+            if (isEmpowered(bowItem) && hasEnergy(bowItem, true)) {
+                return fireInstantArrow(bowItem, arrow, shooter, charge, world);
+            }
             return ArcheryHelper.fireArrow(bowItem, arrow, shooter, charge, world);
+        }
+
+        public boolean fireInstantArrow(ItemStack bow, ItemStack ammo, PlayerEntity shooter, int charge, World world) {
+
+            IArcheryBowItem bowCap = bow.getCapability(BOW_ITEM_CAPABILITY).orElse(new ArcheryBowItemWrapper(bow));
+            IArcheryAmmoItem ammoCap = ammo.getCapability(AMMO_ITEM_CAPABILITY).orElse(new ArcheryAmmoItemWrapper(ammo));
+
+            boolean infinite = shooter.abilities.instabuild
+                    || ammoCap.isInfinite(bow, shooter)
+                    || (ArcheryHelper.isArrow(ammo) && ((ArrowItem) ammo.getItem()).isInfinite(ammo, bow, shooter))
+                    || ammo.isEmpty() && getItemEnchantmentLevel(INFINITY_ARROWS, bow) > 0;
+
+            if (!ammo.isEmpty() || infinite) {
+                if (ammo.isEmpty()) {
+                    ammo = new ItemStack(Items.ARROW);
+                }
+                float arrowVelocity = BowItem.getPowerForTime(charge);
+
+                float accuracyMod = bowCap.getAccuracyModifier(shooter);
+                float damageMod = bowCap.getDamageModifier(shooter);
+                float velocityMod = bowCap.getVelocityModifier(shooter);
+
+                if (arrowVelocity >= 0.1F) {
+                    if (Utils.isServerWorld(world)) {
+                        int encVolley = getItemEnchantmentLevel(VOLLEY, bow);
+                        int encTrueshot = getItemEnchantmentLevel(TRUESHOT, bow);
+                        int encPunch = getItemEnchantmentLevel(PUNCH_ARROWS, bow);
+                        int encPower = getItemEnchantmentLevel(POWER_ARROWS, bow);
+                        int encFlame = getItemEnchantmentLevel(FLAMING_ARROWS, bow);
+
+                        if (encTrueshot > 0) {
+                            accuracyMod *= (1.5F / (1 + encTrueshot));
+                            damageMod *= (1.0F + 0.25F * encTrueshot);
+                            arrowVelocity = MathHelper.clamp(0.1F, arrowVelocity + 0.05F * encTrueshot, 1.75F);
+                        }
+                        int numArrows = encVolley > 0 ? 3 : 1;
+                        // Each additional arrow fired at a higher arc - arrows will not be fired beyond vertically. Maximum of 5 degrees between arrows.
+                        float volleyPitch = encVolley > 0 ? MathHelper.clamp(90.0F + shooter.xRot / encVolley, 0.0F, 5.0F) : 0;
+
+                        BowItem bowItem = bow.getItem() instanceof BowItem ? (BowItem) bow.getItem() : null;
+
+                        for (int shot = 0; shot < numArrows; ++shot) {
+                            AbstractArrowEntity arrow = ArcheryHelper.createArrow(world, ammo, shooter);
+                            if (bowItem != null) {
+                                arrow = bowItem.customArrow(arrow);
+                            }
+                            arrow.shootFromRotation(shooter, shooter.xRot - volleyPitch * shot, shooter.yRot, 0.0F, arrowVelocity * 3.0F * velocityMod, accuracyMod);// * (1 + shot * 2));
+                            arrow.setBaseDamage(arrow.getBaseDamage() * damageMod);
+
+                            if (arrowVelocity >= 1.0F) {
+                                arrow.setCritArrow(true);
+                            }
+                            if (encTrueshot > 0) {
+                                arrow.setPierceLevel((byte) encTrueshot);
+                            }
+                            if (encPower > 0 && arrow.getBaseDamage() > 0) {
+                                arrow.setBaseDamage(arrow.getBaseDamage() + (double) encPower * 0.5D + 0.5D);
+                            }
+                            if (encPunch > 0) {
+                                arrow.setKnockback(encPunch);
+                            }
+                            if (encFlame > 0) {
+                                arrow.setSecondsOnFire(100);
+                            }
+                            if (infinite || shot > 0) {
+                                arrow.pickup = AbstractArrowEntity.PickupStatus.CREATIVE_ONLY;
+                            }
+                            simulateArrow(arrow, world, simulateTicks);
+                            if (arrow.isAlive()) {
+                                world.addFreshEntity(arrow);
+                            }
+                        }
+                        bowCap.onArrowLoosed(shooter);
+                    }
+                    world.playSound(null, shooter.getX(), shooter.getY(), shooter.getZ(), SoundEvents.ARROW_SHOOT, SoundCategory.PLAYERS, 1.0F, 1.0F / (world.random.nextFloat() * 0.4F + 1.2F) + arrowVelocity * 0.5F);
+
+                    if (!infinite && !shooter.abilities.instabuild) {
+                        ammoCap.onArrowLoosed(shooter);
+                        if (ammo.isEmpty()) {
+                            shooter.inventory.removeItem(ammo);
+                        }
+                    }
+                    shooter.awardStat(Stats.ITEM_USED.get(bow.getItem()));
+                }
+                return true;
+            }
+            return false;
+        }
+
+        public void simulateArrow(AbstractArrowEntity arrow, World world, int maxTicks) {
+
+            for (int i = 0; i < maxTicks && arrow.isAlive() && !arrow.isOnGround() && arrow.life <= 1; ++i) {
+                arrow.tick();
+                Vector3d velocity = arrow.getDeltaMovement();
+                if (!world.isClientSide()) {
+                    Vector3d prevPos = velocity.scale(-0.5F).add(arrow.position());
+                    ((ServerWorld) world).sendParticles(RedstoneParticleData.REDSTONE, prevPos.x(), prevPos.y(), prevPos.z(), 1, 0, 0, 0, 0);
+                    ((ServerWorld) world).sendParticles(RedstoneParticleData.REDSTONE, arrow.getX(), arrow.getY(), arrow.getZ(), 1, 0, 0, 0, 0);
+                }
+                if (velocity.lengthSqr() < 0.02F) {
+                    break;
+                }
+            }
         }
 
         // region ICapabilityProvider

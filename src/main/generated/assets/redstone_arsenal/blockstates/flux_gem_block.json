@@ -1,0 +1,7 @@
+{
+  "variants": {
+    "": {
+      "model": "redstone_arsenal:block/flux_gem_block"
+    }
+  }
+}

@@ -16,9 +16,8 @@ import static cofh.lib.util.constants.Constants.ID_REDSTONE_ARSENAL;
 
 public class FluxTridentRenderer extends EntityRenderer<FluxTridentEntity> {
 
-    //TODO: charged/active
     private static final ResourceLocation CHARGED = new ResourceLocation(ID_REDSTONE_ARSENAL + ":textures/entity/flux_trident.png");
-    private static final ResourceLocation EMPOWERED = new ResourceLocation(ID_REDSTONE_ARSENAL + ":textures/entity/flux_trident.png");
+    //private static final ResourceLocation EMPOWERED = new ResourceLocation(ID_REDSTONE_ARSENAL + ":textures/entity/flux_trident.png");
     private final TridentModel model = new TridentModel();
 
     public FluxTridentRenderer(EntityRendererManager manager) {
@@ -39,7 +38,8 @@ public class FluxTridentRenderer extends EntityRenderer<FluxTridentEntity> {
 
     public ResourceLocation getTextureLocation(FluxTridentEntity trident) {
 
-        return trident.isEmpowered() ? EMPOWERED : CHARGED;
+        //return trident.isEmpowered() ? EMPOWERED : CHARGED;
+        return CHARGED;
     }
 
 }

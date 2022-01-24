@@ -1,0 +1,43 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    [
+      {
+        "tag": "forge:ingots/gold"
+      },
+      {
+        "tag": "forge:dusts/gold"
+      }
+    ],
+    {
+      "tag": "forge:dusts/redstone"
+    },
+    {
+      "tag": "forge:dusts/redstone"
+    },
+    {
+      "tag": "forge:dusts/redstone"
+    },
+    {
+      "tag": "forge:dusts/redstone"
+    },
+    {
+      "tag": "forge:dusts/redstone"
+    },
+    {
+      "item": "minecraft:fire_charge"
+    }
+  ],
+  "result": {
+    "item": "redstone_arsenal:flux_ingot"
+  },
+  "conditions": [
+    {
+      "type": "forge:not",
+      "value": {
+        "tag": "forge:dusts/gold",
+        "type": "forge:tag_empty"
+      }
+    }
+  ]
+}

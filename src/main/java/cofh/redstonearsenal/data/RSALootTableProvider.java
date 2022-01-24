@@ -8,6 +8,8 @@ import net.minecraft.item.Item;
 
 import static cofh.redstonearsenal.RedstoneArsenal.BLOCKS;
 import static cofh.redstonearsenal.RedstoneArsenal.ITEMS;
+import static cofh.redstonearsenal.init.RSAIDs.ID_FLUX_GEM_BLOCK;
+import static cofh.redstonearsenal.init.RSAIDs.ID_FLUX_METAL_BLOCK;
 
 public class RSALootTableProvider extends LootTableProviderCoFH {
 
@@ -28,8 +30,8 @@ public class RSALootTableProvider extends LootTableProviderCoFH {
         DeferredRegisterCoFH<Block> regBlocks = BLOCKS;
         DeferredRegisterCoFH<Item> regItems = ITEMS;
 
-        createSimpleDropTable(regBlocks.get("flux_metal_block"));
-        createSimpleDropTable(regBlocks.get("flux_gem_block"));
+        createSimpleDropTable(regBlocks.get(ID_FLUX_METAL_BLOCK));
+        createSimpleDropTable(regBlocks.get(ID_FLUX_GEM_BLOCK));
     }
 
 }
