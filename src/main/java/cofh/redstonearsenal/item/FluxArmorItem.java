@@ -4,8 +4,13 @@ import cofh.core.init.CoreConfig;
 import cofh.core.item.ArmorItemCoFH;
 import cofh.core.util.ProxyUtils;
 import cofh.redstonearsenal.capability.FluxShieldedEnergyItemWrapper;
+import com.google.common.collect.ImmutableMultimap;
+import com.google.common.collect.Multimap;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.util.ITooltipFlag;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.ai.attributes.Attribute;
+import net.minecraft.entity.ai.attributes.AttributeModifier;
 import net.minecraft.inventory.EquipmentSlotType;
 import net.minecraft.item.IArmorMaterial;
 import net.minecraft.item.ItemStack;
@@ -19,6 +24,7 @@ import net.minecraftforge.common.capabilities.ICapabilityProvider;
 
 import javax.annotation.Nullable;
 import java.util.List;
+import java.util.function.Consumer;
 
 import static cofh.lib.util.helpers.StringHelper.getTextComponent;
 import static net.minecraft.util.text.TextFormatting.GRAY;
@@ -70,35 +76,29 @@ public class FluxArmorItem extends ArmorItemCoFH implements IFluxItem {
     }
 
     @Override
-    public boolean isDamaged(ItemStack stack) {
-
-        return false;
-    }
-
-    @Override
     public void setDamage(ItemStack stack, int damage) {
 
-        setEnergyStored(stack, getMaxEnergyStored(stack) - getEnergyPerUse(false) * damage);
+        // setEnergyStored(stack, getMaxEnergyStored(stack) - getEnergyPerUse(false) * damage);
     }
 
     @Override
     public int getDamage(ItemStack stack) {
 
-        return (getMaxEnergyStored(stack) - getEnergyStored(stack)) / getEnergyPerUse(false);
+        return 0;
     }
 
     @Override
-    public int getMaxDamage(ItemStack stack) {
+    public Multimap<Attribute, AttributeModifier> getAttributeModifiers(EquipmentSlotType slot, ItemStack stack) {
 
-        return getMaxEnergyStored(stack) / getEnergyPerUse(false);
+        return hasEnergy(stack, false) && slot == this.slot ? super.getAttributeModifiers(slot, stack) : ImmutableMultimap.of();
     }
 
-    //@Override
-    //public <T extends LivingEntity> int damageItem(ItemStack stack, int amount, T entity, Consumer<T> onBroken) {
-    //
-    //    useEnergy(stack, Math.min(getEnergyStored(stack), amount * getEnergyPerUse(false)), entity);
-    //    return -1;
-    //}
+    @Override
+    public <T extends LivingEntity> int damageItem(ItemStack stack, int amount, T entity, Consumer<T> onBroken) {
+
+        useEnergy(stack, Math.min(getEnergyStored(stack), amount * getEnergyPerUse(false)), entity);
+        return 0;
+    }
 
     // region IEnergyContainerItem
     @Override
