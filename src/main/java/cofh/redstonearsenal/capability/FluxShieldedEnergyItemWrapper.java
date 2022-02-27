@@ -3,9 +3,7 @@ package cofh.redstonearsenal.capability;
 import cofh.lib.energy.EnergyContainerItemWrapper;
 import cofh.lib.energy.IEnergyContainerItem;
 import cofh.lib.util.Utils;
-import cofh.redstonearsenal.util.FluxShieldingScheduler;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.Direction;
@@ -73,22 +71,6 @@ public class FluxShieldedEnergyItemWrapper extends EnergyContainerItemWrapper im
         availableTime = entity.level.getGameTime() + COOLDOWN;
         shieldedItem.getOrCreateTag().putLong(TAG_FLUX_SHIELD, availableTime);
         return true;
-    }
-
-    @Override
-    public void scheduleUpdate(ServerPlayerEntity player, long currTime) {
-
-        if (availableTime <= -1) {
-            CompoundNBT nbt = shieldedItem.getOrCreateTag();
-            if (!nbt.contains(TAG_FLUX_SHIELD)) {
-                availableTime = 0;
-            } else {
-                availableTime = nbt.getLong(TAG_FLUX_SHIELD);
-            }
-        }
-        if (availableTime > currTime) {
-            FluxShieldingScheduler.scheduleUpdate(availableTime, player);
-        }
     }
 
     // region ICapabilityProvider

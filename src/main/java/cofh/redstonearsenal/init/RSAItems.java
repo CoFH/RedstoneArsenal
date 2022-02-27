@@ -74,7 +74,6 @@ public class RSAItems {
         ITEMS.register("flux_boots", () -> new FluxArmorItem(FLUX_ARMOR, EquipmentSlotType.FEET, new Item.Properties().stacksTo(1).tab(transportation).rarity(rarity).setNoRepair(), energy, xfer));
         ITEMS.register("flux_elytra", () -> new FluxElytraItem(FLUX_ELYTRA, EquipmentSlotType.CHEST, new Item.Properties().stacksTo(1).tab(transportation).rarity(rarity).setNoRepair(), energy, xfer));
         ITEMS.register("flux_controller", () -> new FluxElytraControllerItem(new Item.Properties().stacksTo(1).tab(transportation).rarity(rarity).setNoRepair()));
-
     }
 
     public static void setup() {

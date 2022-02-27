@@ -4,10 +4,9 @@ import cofh.core.event.ShieldEvents;
 import cofh.lib.util.Utils;
 import cofh.redstonearsenal.item.*;
 import cofh.redstonearsenal.util.FluxShieldingHelper;
-import cofh.redstonearsenal.util.FluxShieldingScheduler;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
-import net.minecraft.entity.Entity;
+import net.minecraft.client.entity.player.ClientPlayerEntity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
@@ -18,7 +17,6 @@ import net.minecraft.potion.Effects;
 import net.minecraft.util.DamageSource;
 import net.minecraftforge.common.Tags;
 import net.minecraftforge.event.TickEvent;
-import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.event.entity.living.LivingAttackEvent;
 import net.minecraftforge.event.entity.living.LivingEquipmentChangeEvent;
 import net.minecraftforge.event.entity.living.LivingFallEvent;
@@ -33,9 +31,7 @@ import net.minecraftforge.fml.common.Mod;
 
 import static cofh.lib.capability.CapabilityShieldItem.SHIELD_ITEM_CAPABILITY;
 import static cofh.lib.util.constants.Constants.ID_REDSTONE_ARSENAL;
-import static cofh.redstonearsenal.capability.CapabilityFluxShielding.FLUX_SHIELDED_ITEM_CAPABILITY;
 import static cofh.redstonearsenal.init.RSAReferences.FLUX_PATH;
-import static cofh.redstonearsenal.util.FluxShieldingHelper.equalCharges;
 
 @Mod.EventBusSubscriber (modid = ID_REDSTONE_ARSENAL)
 public class RSAEvents {
@@ -130,11 +126,6 @@ public class RSAEvents {
         ItemStack from = event.getFrom();
         ItemStack to = event.getTo();
         LivingEntity entity = event.getEntityLiving();
-        // Flux Shielding
-        if (entity instanceof ServerPlayerEntity && !equalCharges(entity, from, to)) {
-            FluxShieldingScheduler.updateHUD((ServerPlayerEntity) entity);
-            to.getCapability(FLUX_SHIELDED_ITEM_CAPABILITY).ifPresent(cap -> cap.scheduleUpdate((ServerPlayerEntity) entity));
-        }
         // Flux Crossbow
         if (from.getItem() instanceof FluxCrossbowItem) {
             EquipmentSlotType slot = event.getSlot();
@@ -193,7 +184,7 @@ public class RSAEvents {
         }
 
         // Flux Shielding
-        if (event.getAmount() > 500.0F || Utils.isCreativePlayer(target)) {
+        if (event.getAmount() > 500.0F || Utils.isCreativePlayer(target) || target.isInvulnerableTo(source) || (target.hasEffect(Effects.FIRE_RESISTANCE) && source.isFire())) {
             return;
         }
         ItemStack shieldedItem = FluxShieldingHelper.findShieldedItem(target);
@@ -206,7 +197,7 @@ public class RSAEvents {
             target.invulnerableTime = 10;
             event.setCanceled(true);
             if (target instanceof ServerPlayerEntity) {
-                FluxShieldingScheduler.updateHUD((ServerPlayerEntity) target);
+                FluxShieldingHelper.updateHUD((ServerPlayerEntity) target);
             }
         }
     }
@@ -223,27 +214,17 @@ public class RSAEvents {
         if (amount > 0.0F && FluxShieldingHelper.useFluxShieldCharge(target)) {
             event.setAmount(Math.max(amount - 500.0F, 0));
             if (target instanceof ServerPlayerEntity) {
-                FluxShieldingScheduler.updateHUD((ServerPlayerEntity) target);
+                FluxShieldingHelper.updateHUD((ServerPlayerEntity) target);
             }
         }
     }
 
     @SubscribeEvent
-    public static void handleEntityJoinWorldEvent(EntityJoinWorldEvent event) {
+    public static void onPlayerTick(TickEvent.PlayerTickEvent event) {
 
         // Flux Shielding
-        Entity entity = event.getEntity();
-        if (entity instanceof ServerPlayerEntity) {
-            FluxShieldingScheduler.loadSchedule(event.getWorld().getGameTime(), (ServerPlayerEntity) entity);
-        }
-    }
-
-    @SubscribeEvent
-    public static void onWorldTick(TickEvent.WorldTickEvent event) {
-
-        // Flux Shielding
-        if (event.phase == TickEvent.Phase.END && event.side.isServer()) {
-            FluxShieldingScheduler.handleSchedule(event.world.getGameTime());
+        if (event.phase == TickEvent.Phase.END && event.side.isClient() && (event.player.level.getGameTime() & 7) == 0) {
+            FluxShieldingHelper.updateHUD((ClientPlayerEntity) event.player);
         }
     }
 

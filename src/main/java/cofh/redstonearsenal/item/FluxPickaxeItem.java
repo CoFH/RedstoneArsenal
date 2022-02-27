@@ -7,6 +7,7 @@ import cofh.lib.util.Utils;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 import net.minecraft.block.BlockState;
+import net.minecraft.block.material.Material;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.enchantment.Enchantment;
@@ -102,8 +103,10 @@ public class FluxPickaxeItem extends PickaxeItemCoFH implements IMultiModeFluxIt
 
     @Override
     public float getDestroySpeed(ItemStack stack, BlockState state) {
-
-        return getToolTypes(stack).stream().anyMatch(state::isToolEffective) ? getEfficiency(stack) : 1.0F;
+        
+        Material material = state.getMaterial();
+        return material == Material.METAL || material == Material.HEAVY_METAL || material == Material.STONE ||
+                getToolTypes(stack).stream().anyMatch(state::isToolEffective) ? getEfficiency(stack) : 1.0F;
     }
 
     @Override

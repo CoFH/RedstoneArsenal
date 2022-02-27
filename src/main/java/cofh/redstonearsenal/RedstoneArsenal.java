@@ -1,10 +1,8 @@
 package cofh.redstonearsenal;
 
-import cofh.core.CoFHCore;
 import cofh.lib.network.PacketHandler;
 import cofh.lib.util.DeferredRegisterCoFH;
 import cofh.redstonearsenal.capability.CapabilityFluxShielding;
-import cofh.redstonearsenal.compat.curios.CuriosEvents;
 import cofh.redstonearsenal.init.*;
 import net.minecraft.block.Block;
 import net.minecraft.entity.EntityType;
@@ -51,9 +49,6 @@ public class RedstoneArsenal {
         RSAItems.register();
         RSAEntities.register();
         RSAPackets.register();
-        if (CoFHCore.curiosLoaded) {
-            CuriosEvents.register();
-        }
     }
 
     // region INITIALIZATION

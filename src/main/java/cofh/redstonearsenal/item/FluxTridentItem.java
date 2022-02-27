@@ -38,7 +38,6 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 
 import javax.annotation.Nullable;
 import java.util.List;
-import java.util.function.Predicate;
 
 import static cofh.lib.util.helpers.StringHelper.getTextComponent;
 import static cofh.lib.util.references.CoreReferences.LIGHTNING_RESISTANCE;
@@ -221,9 +220,8 @@ public class FluxTridentItem extends TridentItemCoFH implements IMultiModeFluxIt
         double range = getPlungeRange();
         double r2 = range * range;
         AxisAlignedBB searchArea = attacker.getBoundingBox().inflate(range, 1, range);
-        Predicate<Entity> filter = EntityPredicates.NO_CREATIVE_OR_SPECTATOR.and(entity -> entity instanceof LivingEntity);
         boolean hit = false;
-        for (Entity target : world.getEntities(attacker, searchArea, filter)) {
+        for (Entity target : world.getEntities(attacker, searchArea, EntityPredicates.NO_CREATIVE_OR_SPECTATOR)) {
             if (attacker.distanceToSqr(target) <= r2) {
                 hit |= target.hurt(IFluxItem.fluxDirectDamage(attacker), getPlungeAttackDamage(attacker, stack));
             }

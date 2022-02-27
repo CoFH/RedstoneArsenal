@@ -1,36 +1,34 @@
 package cofh.redstonearsenal.entity;
 
-import net.minecraft.entity.Entity;
+import cofh.lib.entity.AbstractAoESpellEntity;
+import cofh.lib.util.references.CoreReferences;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.network.IPacket;
 import net.minecraft.potion.EffectInstance;
 import net.minecraft.potion.Effects;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.EntityPredicates;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.World;
-import net.minecraftforge.fml.network.NetworkHooks;
 
 import static cofh.lib.util.references.CoreReferences.SUNDERED;
 import static cofh.redstonearsenal.init.RSAReferences.SHOCKWAVE_ENTITY;
 
-public class ShockwaveEntity extends Entity {
+public class ShockwaveEntity extends AbstractAoESpellEntity {
 
-    public static final float defaultSpeed = 1.0F;
-    public static final int duration = 10;
-    public static final int animDuration = 5;
+    public static final float speed = 1.0F;
 
     public float damage = 8.0F;
     public int debuffDuration = 100;
 
-    protected LivingEntity owner = null;
-
-    public ShockwaveEntity(EntityType<?> type, World world) {
+    public ShockwaveEntity(EntityType<? extends ShockwaveEntity> type, World world) {
 
         super(type, world);
+        radius = 8.0F;
+        duration = MathHelper.ceil(radius / speed);
     }
 
     public ShockwaveEntity(World world, LivingEntity attacker, Vector3d pos, float yRot) {
@@ -48,45 +46,27 @@ public class ShockwaveEntity extends Entity {
     }
 
     @Override
-    protected void defineSynchedData() {
+    public void onCast() {
 
-    }
-
-    @Override
-    protected void readAdditionalSaveData(CompoundNBT nbt) {
-
-    }
-
-    @Override
-    protected void addAdditionalSaveData(CompoundNBT nbt) {
-
-    }
-
-    @Override
-    public IPacket<?> getAddEntityPacket() {
-
-        return NetworkHooks.getEntitySpawningPacket(this);
-    }
-
-    @Override
-    public void tick() {
-
-        if (!level.isClientSide()) {
-            if (tickCount > duration + animDuration) {
-                this.remove();
-            } else if (tickCount < duration && attack()) {
-                owner.addEffect(new EffectInstance(Effects.DAMAGE_BOOST, 70, 0));
-                //owner.setSprinting(true);
-            }
+        if (level.isClientSide) {
+            BlockPos pos = this.blockPosition();
+            level.addParticle(CoreReferences.SHOCKWAVE_PARTICLE, pos.getX(), pos.getY(), pos.getZ(), speed, radius, 0.6D);
         }
-        super.tick();
+    }
+
+    @Override
+    public void activeTick() {
+
+        if (!level.isClientSide && attack()) {
+            owner.addEffect(new EffectInstance(Effects.DAMAGE_BOOST, 70, 0));
+        }
     }
 
     public boolean attack() {
 
         boolean hitSomething = false;
-        float lower = Math.max((tickCount - 1) * defaultSpeed, 0);
-        float upper = lower + defaultSpeed * 1.5F;
+        float lower = Math.max((tickCount - 1) * speed, 0);
+        float upper = lower + speed * 1.5F;
         float lowerSqr = lower * lower;
         float upperSqr = upper * upper;
         for (LivingEntity entity : level.getEntitiesOfClass(LivingEntity.class, this.getBoundingBox().inflate(upper + 1, 2, upper + 1).inflate(0.5), EntityPredicates.NO_CREATIVE_OR_SPECTATOR)) {

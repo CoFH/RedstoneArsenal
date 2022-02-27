@@ -31,7 +31,6 @@ import net.minecraftforge.fml.network.NetworkHooks;
 
 import javax.annotation.Nullable;
 import java.util.Arrays;
-import java.util.function.Predicate;
 
 import static cofh.redstonearsenal.init.RSAReferences.FLUX_ARROW_ENTITY;
 
@@ -107,8 +106,7 @@ public class FluxArrowEntity extends AbstractArrowEntity {
             level.playSound(null, this.getX(), this.getY(), this.getZ(), SoundEvents.GENERIC_EXPLODE, SoundCategory.BLOCKS, 0.5F, (1.0F + (this.level.random.nextFloat() - this.level.random.nextFloat()) * 0.2F) * 0.7F);
             double r2 = EXPLOSION_RANGE * EXPLOSION_RANGE;
             AxisAlignedBB searchArea = this.getBoundingBox().move(pos.subtract(this.position())).inflate(EXPLOSION_RANGE);
-            Predicate<Entity> filter = EntityPredicates.NO_CREATIVE_OR_SPECTATOR.and(entity -> entity instanceof LivingEntity);
-            for (Entity target : level.getEntities(this, searchArea, filter)) {
+            for (Entity target : level.getEntities(this, searchArea, EntityPredicates.NO_CREATIVE_OR_SPECTATOR)) {
                 if (pos.distanceToSqr(target.getBoundingBox().getCenter()) < r2) {
                     target.hurt(getDamageSource(this, getOwner()), (float) getBaseDamage());
                 }
