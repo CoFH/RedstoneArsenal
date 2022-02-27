@@ -5,6 +5,7 @@ import cofh.core.util.ProxyUtils;
 import cofh.lib.item.ILeftClickHandlerItem;
 import cofh.lib.item.impl.TridentItemCoFH;
 import cofh.lib.util.Utils;
+import cofh.lib.util.references.CoreReferences;
 import cofh.redstonearsenal.entity.FluxTridentEntity;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
@@ -182,6 +183,17 @@ public class FluxTridentItem extends TridentItemCoFH implements IMultiModeFluxIt
         }
     }
 
+    @Override
+    public boolean onLeftClickEntity(ItemStack stack, PlayerEntity player, Entity entity) {
+
+        // Counteract riptide "bounce"
+        if (player.isAutoSpinAttack() && player.fallDistance > 3) {
+            player.fallDistance = 0;
+            player.setDeltaMovement(player.getDeltaMovement().scale(-5.0D));
+        }
+        return false;
+    }
+
     public boolean startPlunge(LivingEntity living) {
 
         if (!canStartPlunging(living)) {
@@ -218,6 +230,7 @@ public class FluxTridentItem extends TridentItemCoFH implements IMultiModeFluxIt
             }
         }
         double range = getPlungeRange();
+        world.addParticle(CoreReferences.BLAST_WAVE_PARTICLE, attacker.getX(), attacker.getY(), attacker.getZ(), 0.75D, range, 3.0F);
         double r2 = range * range;
         AxisAlignedBB searchArea = attacker.getBoundingBox().inflate(range, 1, range);
         boolean hit = false;

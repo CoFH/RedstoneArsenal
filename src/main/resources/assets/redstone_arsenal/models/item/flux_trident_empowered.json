@@ -7,6 +7,12 @@
   "perspectives": {
     "gui": {
       "parent": "redstone_arsenal:item/flux_trident_gui_empowered"
+    },
+    "ground": {
+      "parent": "redstone_arsenal:item/flux_trident_gui_empowered"
+    },
+    "fixed": {
+      "parent": "redstone_arsenal:item/flux_trident_gui_empowered"
     }
   }
 }

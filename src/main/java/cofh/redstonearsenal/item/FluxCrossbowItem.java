@@ -5,6 +5,7 @@ import cofh.core.util.ProxyUtils;
 import cofh.lib.energy.EnergyContainerItemWrapper;
 import cofh.lib.item.impl.CrossbowItemCoFH;
 import cofh.lib.util.Utils;
+import cofh.lib.util.constants.NBTTags;
 import cofh.lib.util.helpers.ArcheryHelper;
 import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.client.gui.screen.Screen;
@@ -42,9 +43,6 @@ public class FluxCrossbowItem extends CrossbowItemCoFH implements IMultiModeFlux
     protected final int maxEnergy;
     protected final int extract;
     protected final int receive;
-
-    protected int repeats = 0;
-    protected int cooldown = 0;
 
     public FluxCrossbowItem(int enchantability, float accuracyModifier, float damageModifier, float velocityModifier, int maxRepeats, Item.Properties builder, int energy, int xfer) {
 
@@ -119,7 +117,7 @@ public class FluxCrossbowItem extends CrossbowItemCoFH implements IMultiModeFlux
             if (!isEmpowered(stack) && isCharged(stack)) {
                 setCharged(stack, shootLoadedAmmo(world, player, hand, stack));
             } else if (!ArcheryHelper.findAmmo(player, stack).isEmpty() || player.abilities.instabuild) {
-                repeats = 0;
+                setRepeats(stack, 0);
                 player.startUsingItem(hand);
             }
             return ActionResult.consume(stack);
@@ -135,10 +133,10 @@ public class FluxCrossbowItem extends CrossbowItemCoFH implements IMultiModeFlux
             int duration = totalDuration - durationRemaining;
 
             if (isEmpowered(stack)) {
-                if (repeats >= maxRepeats) {
+                int repeats = getRepeats(stack);
+                if (repeats >= maxRepeats || repeats < 0) {
                     return;
                 }
-                cooldown++;
                 totalDuration = getRepeatInterval(stack);
                 duration -= getRepeatStartDelay(stack) + totalDuration * repeats;
                 if (duration >= totalDuration - 2 && !isLoaded(stack)) {
@@ -152,6 +150,8 @@ public class FluxCrossbowItem extends CrossbowItemCoFH implements IMultiModeFlux
                 if (duration >= totalDuration) {
                     if (shootLoadedAmmo(world, living, living.getUsedItemHand(), stack) || ++repeats >= maxRepeats) {
                         living.releaseUsingItem();
+                    } else {
+                        setRepeats(stack, repeats);
                     }
                     return;
                 }
@@ -171,8 +171,7 @@ public class FluxCrossbowItem extends CrossbowItemCoFH implements IMultiModeFlux
 
         if (!world.isClientSide()) {
             if (isEmpowered(stack)) {
-                repeats = maxRepeats + 1;
-                startCooldown(living, stack, getUseDuration(stack) - durationRemaining);
+                startCooldown(living, stack);
             } else if (durationRemaining < 0 && !isCharged(stack) && loadAmmo(living, stack)) {
                 setCharged(stack, true);
                 world.playSound(null, living.getX(), living.getY(), living.getZ(), SoundEvents.CROSSBOW_LOADING_END, living instanceof PlayerEntity ? SoundCategory.PLAYERS : SoundCategory.HOSTILE, 1.0F, 1.0F / (random.nextFloat() * 0.5F + 1.0F) + 0.2F);
@@ -183,7 +182,7 @@ public class FluxCrossbowItem extends CrossbowItemCoFH implements IMultiModeFlux
     @Override
     public boolean onDroppedByPlayer(ItemStack stack, PlayerEntity player) {
 
-        startCooldown(player, stack, getUseDuration(stack) - player.getUseItemRemainingTicks());
+        startCooldown(player, stack);
         return true;
     }
 
@@ -199,18 +198,18 @@ public class FluxCrossbowItem extends CrossbowItemCoFH implements IMultiModeFlux
 
     public void startCooldown(LivingEntity entity, ItemStack stack, int amount) {
 
-        if (!entity.level.isClientSide() && isEmpowered(stack) && entity instanceof PlayerEntity) {
-            PlayerEntity player = (PlayerEntity) entity;
-            if (amount >= getRepeatStartDelay(stack) + getRepeatInterval(stack)) {
-                player.getCooldowns().addCooldown(this, Math.min(amount, maxCooldown));
-                cooldown = 0;
-            }
+        if (amount > 0 && !entity.level.isClientSide && isEmpowered(stack) && entity instanceof PlayerEntity) {
+            setRepeats(stack, -1);
+            ((PlayerEntity) entity).getCooldowns().addCooldown(this, Math.min(amount, maxCooldown));
         }
     }
 
     public void startCooldown(LivingEntity entity, ItemStack stack) {
 
-        startCooldown(entity, stack, cooldown);
+        int repeats = getRepeats(stack);
+        if (repeats > 0) {
+            startCooldown(entity, stack, repeats * getRepeatInterval(stack));
+        }
     }
 
     @Override
@@ -229,6 +228,16 @@ public class FluxCrossbowItem extends CrossbowItemCoFH implements IMultiModeFlux
     public boolean isLoaded(ItemStack crossbow) {
 
         return !getLoadedAmmo(crossbow).isEmpty();
+    }
+
+    public void setRepeats(ItemStack stack, int repeats) {
+
+        stack.getOrCreateTag().putInt(NBTTags.TAG_AMOUNT, repeats);
+    }
+
+    public int getRepeats(ItemStack stack) {
+
+        return stack.getOrCreateTag().getInt(NBTTags.TAG_AMOUNT);
     }
 
     // region IEnergyContainerItem

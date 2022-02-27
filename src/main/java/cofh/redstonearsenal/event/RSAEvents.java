@@ -12,7 +12,6 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.inventory.EquipmentSlotType;
 import net.minecraft.item.ItemStack;
-import net.minecraft.potion.EffectInstance;
 import net.minecraft.potion.Effects;
 import net.minecraft.util.DamageSource;
 import net.minecraftforge.common.Tags;
@@ -29,30 +28,14 @@ import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
+import java.util.function.BiPredicate;
+
 import static cofh.lib.capability.CapabilityShieldItem.SHIELD_ITEM_CAPABILITY;
 import static cofh.lib.util.constants.Constants.ID_REDSTONE_ARSENAL;
 import static cofh.redstonearsenal.init.RSAReferences.FLUX_PATH;
 
 @Mod.EventBusSubscriber (modid = ID_REDSTONE_ARSENAL)
 public class RSAEvents {
-
-    // Janky code that cancels direct plunging attacks.
-    //@SubscribeEvent (priority = EventPriority.LOWEST)
-    //public static void handlePlayerTickEvent(TickEvent.PlayerTickEvent event) {
-    //
-    //    if (event.isCanceled()) {
-    //        return;
-    //    }
-    //    // Flux Trident
-    //    PlayerEntity player = event.player;
-    //    ItemStack stack = player.getMainHandItem();
-    //    if (stack.getItem() instanceof FluxTridentItem && player.isAutoSpinAttack()) {
-    //        FluxTridentItem trident = (FluxTridentItem) stack.getItem();
-    //        if (trident.isEmpowered(stack) && player.getDeltaMovement().y() < -0.70716) {
-    //            player.autoSpinAttackTicks = event.phase == TickEvent.Phase.START ? 0 : 10;
-    //        }
-    //    }
-    //}
 
     @SubscribeEvent (priority = EventPriority.LOWEST)
     public static void handleAttackEntityEvent(AttackEntityEvent event) {
@@ -67,7 +50,6 @@ public class RSAEvents {
             FluxTridentItem trident = (FluxTridentItem) stack.getItem();
             if (trident.plungeAttack(player.level, player, stack)) {
                 FluxTridentItem.stopSpinAttack(player);
-                player.addEffect(new EffectInstance(Effects.SLOW_FALLING, 35));
                 player.fallDistance = 0;
                 event.getTarget().invulnerableTime = 0;
             }
@@ -126,17 +108,23 @@ public class RSAEvents {
         ItemStack from = event.getFrom();
         ItemStack to = event.getTo();
         LivingEntity entity = event.getEntityLiving();
-        // Flux Crossbow
+        // Flux Crossbow - If the used item changes, enforce cooldown
         if (from.getItem() instanceof FluxCrossbowItem) {
-            EquipmentSlotType slot = event.getSlot();
-            //If the used item changes, enforce cooldown
-            if ((slot.equals(EquipmentSlotType.MAINHAND) || (slot.equals(EquipmentSlotType.OFFHAND) && !entity.getMainHandItem().isEmpty()))
-                    && !(to.getItem() instanceof FluxCrossbowItem
-                    && to.getEnchantmentTags().equals(from.getEnchantmentTags()) && from.getBaseRepairCost() == to.getBaseRepairCost())) {
-                ((FluxCrossbowItem) from.getItem()).startCooldown(entity, from);
+            // Tests if two stacks are roughly the same.
+            BiPredicate<ItemStack, ItemStack> stacksEqual = (stack1, stack2) ->
+                    stack1.getItem().equals(stack2.getItem()) && stack1.getEnchantmentTags().equals(stack2.getEnchantmentTags()) && stack1.getBaseRepairCost() == stack2.getBaseRepairCost();
+            if (!stacksEqual.test(from, to)) {
+                EquipmentSlotType slot = event.getSlot();
+                if (slot.equals(EquipmentSlotType.MAINHAND)) {
+                    ((FluxCrossbowItem) from.getItem()).startCooldown(entity, from);
+                } else if (slot.equals(EquipmentSlotType.OFFHAND) && stacksEqual.test(from, entity.getMainHandItem())) {
+                    ItemStack stack = entity.getMainHandItem();
+                    ((FluxCrossbowItem) from.getItem()).startCooldown(entity, from);
+                    ((FluxCrossbowItem) stack.getItem()).startCooldown(entity, stack);
+                }
             }
         } else if (event.getSlot().equals(EquipmentSlotType.MAINHAND) && entity.isAutoSpinAttack()
-                && from.getItem() instanceof FluxTridentItem && !(to.getItem() instanceof FluxTridentItem)) {
+                && from.getItem() instanceof FluxTridentItem && !(to.getItem() instanceof FluxTridentItem)) { //Flux Trident
             FluxTridentItem.stopSpinAttack(entity);
         }
     }
