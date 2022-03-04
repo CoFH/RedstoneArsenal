@@ -2,7 +2,10 @@ package cofh.redstonearsenal.event;
 
 import cofh.core.event.ShieldEvents;
 import cofh.lib.util.Utils;
-import cofh.redstonearsenal.item.*;
+import cofh.redstonearsenal.item.FluxAxeItem;
+import cofh.redstonearsenal.item.FluxShieldItem;
+import cofh.redstonearsenal.item.FluxShovelItem;
+import cofh.redstonearsenal.item.FluxTridentItem;
 import cofh.redstonearsenal.util.FluxShieldingHelper;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -10,7 +13,6 @@ import net.minecraft.client.entity.player.ClientPlayerEntity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.inventory.EquipmentSlotType;
 import net.minecraft.item.ItemStack;
 import net.minecraft.potion.Effects;
 import net.minecraft.util.DamageSource;
@@ -28,11 +30,10 @@ import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
-import java.util.function.BiPredicate;
-
 import static cofh.lib.capability.CapabilityShieldItem.SHIELD_ITEM_CAPABILITY;
 import static cofh.lib.util.constants.Constants.ID_REDSTONE_ARSENAL;
 import static cofh.redstonearsenal.init.RSAReferences.FLUX_PATH;
+import static net.minecraft.inventory.EquipmentSlotType.MAINHAND;
 
 @Mod.EventBusSubscriber (modid = ID_REDSTONE_ARSENAL)
 public class RSAEvents {
@@ -108,22 +109,7 @@ public class RSAEvents {
         ItemStack from = event.getFrom();
         ItemStack to = event.getTo();
         LivingEntity entity = event.getEntityLiving();
-        // Flux Crossbow - If the used item changes, enforce cooldown
-        if (from.getItem() instanceof FluxCrossbowItem) {
-            // Tests if two stacks are roughly the same.
-            BiPredicate<ItemStack, ItemStack> stacksEqual = (stack1, stack2) ->
-                    stack1.getItem().equals(stack2.getItem()) && stack1.getEnchantmentTags().equals(stack2.getEnchantmentTags()) && stack1.getBaseRepairCost() == stack2.getBaseRepairCost();
-            if (!stacksEqual.test(from, to)) {
-                EquipmentSlotType slot = event.getSlot();
-                if (slot.equals(EquipmentSlotType.MAINHAND)) {
-                    ((FluxCrossbowItem) from.getItem()).startCooldown(entity, from);
-                } else if (slot.equals(EquipmentSlotType.OFFHAND) && stacksEqual.test(from, entity.getMainHandItem())) {
-                    ItemStack stack = entity.getMainHandItem();
-                    ((FluxCrossbowItem) from.getItem()).startCooldown(entity, from);
-                    ((FluxCrossbowItem) stack.getItem()).startCooldown(entity, stack);
-                }
-            }
-        } else if (event.getSlot().equals(EquipmentSlotType.MAINHAND) && entity.isAutoSpinAttack()
+        if (event.getSlot().equals(MAINHAND) && entity.isAutoSpinAttack()
                 && from.getItem() instanceof FluxTridentItem && !(to.getItem() instanceof FluxTridentItem)) { //Flux Trident
             FluxTridentItem.stopSpinAttack(entity);
         }

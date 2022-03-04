@@ -2,6 +2,7 @@ package cofh.redstonearsenal.event;
 
 import cofh.core.network.packet.server.ItemLeftClickPacket;
 import cofh.redstonearsenal.client.renderer.FluxShieldingHUDRenderer;
+import cofh.redstonearsenal.item.FluxCrossbowItem;
 import cofh.redstonearsenal.item.FluxSwordItem;
 import cofh.redstonearsenal.item.FluxTridentItem;
 import net.minecraft.client.Minecraft;
@@ -45,6 +46,12 @@ public class RSAClientEvents {
                 event.setSwingHand(false);
                 ItemLeftClickPacket.createAndSend();
             }
+        }
+        // Flux Crossbow
+        if (stack.getItem() instanceof FluxCrossbowItem) {
+            ItemLeftClickPacket.createAndSend();
+            event.setCanceled(true);
+            event.setSwingHand(false);
         }
     }
 
