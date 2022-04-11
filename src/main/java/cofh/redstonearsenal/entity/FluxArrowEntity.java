@@ -37,7 +37,7 @@ import static cofh.redstonearsenal.init.RSAReferences.FLUX_ARROW_ENTITY;
 public class FluxArrowEntity extends AbstractArrowEntity {
 
     protected static final DataParameter<Byte> RSA_FLAGS = EntityDataManager.defineId(FluxArrowEntity.class, DataSerializers.BYTE);
-    protected static final int LIFESPAN = 100;
+    protected static final int LIFESPAN = 200;
     protected static final float EXPLOSION_RANGE = 4.0F;
 
     public FluxArrowEntity(EntityType<? extends FluxArrowEntity> entityIn, World worldIn) {

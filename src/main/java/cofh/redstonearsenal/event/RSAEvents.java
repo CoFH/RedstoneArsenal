@@ -1,11 +1,9 @@
 package cofh.redstonearsenal.event;
 
 import cofh.core.event.ShieldEvents;
+import cofh.core.network.packet.server.ItemLeftClickPacket;
 import cofh.lib.util.Utils;
-import cofh.redstonearsenal.item.FluxAxeItem;
-import cofh.redstonearsenal.item.FluxShieldItem;
-import cofh.redstonearsenal.item.FluxShovelItem;
-import cofh.redstonearsenal.item.FluxTridentItem;
+import cofh.redstonearsenal.item.*;
 import cofh.redstonearsenal.util.FluxShieldingHelper;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -44,9 +42,9 @@ public class RSAEvents {
         if (event.isCanceled()) {
             return;
         }
-        // Flux Trident
         PlayerEntity player = event.getPlayer();
         ItemStack stack = player.getMainHandItem();
+        // Flux Trident
         if (stack.getItem() instanceof FluxTridentItem && player.isAutoSpinAttack()) {
             FluxTridentItem trident = (FluxTridentItem) stack.getItem();
             if (trident.plungeAttack(player.level, player, stack)) {

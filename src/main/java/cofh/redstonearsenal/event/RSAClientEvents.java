@@ -8,9 +8,11 @@ import cofh.redstonearsenal.item.FluxTridentItem;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.math.RayTraceResult;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.InputEvent.ClickInputEvent;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
+import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -48,10 +50,16 @@ public class RSAClientEvents {
             }
         }
         // Flux Crossbow
-        if (stack.getItem() instanceof FluxCrossbowItem) {
-            ItemLeftClickPacket.createAndSend();
-            event.setCanceled(true);
+        if (stack.getItem() instanceof FluxCrossbowItem && ((FluxCrossbowItem) stack.getItem()).getLoadedAmmoCount(stack) > 0) {
+            RayTraceResult result = Minecraft.getInstance().hitResult;
+            if (result == null || !result.getType().equals(RayTraceResult.Type.BLOCK)) {
+                ItemLeftClickPacket.createAndSend();
+            } else if (player.attackStrengthTicker > 5) {
+                ItemLeftClickPacket.createAndSend();
+                player.resetAttackStrengthTicker();
+            }
             event.setSwingHand(false);
+            event.setCanceled(true);
         }
     }
 

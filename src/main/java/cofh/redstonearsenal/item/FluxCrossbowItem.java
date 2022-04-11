@@ -18,6 +18,7 @@ import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.ListNBT;
 import net.minecraft.stats.Stats;
 import net.minecraft.util.*;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
@@ -139,10 +140,16 @@ public class FluxCrossbowItem extends CrossbowItemCoFH implements IMultiModeFlux
                 }
                 player.xRot = xRot;
                 setCharged(stack, false);
-            } else if (!shootLoadedAmmo(player.level, player, Hand.MAIN_HAND, stack) && getLoadedAmmoCount(stack) <= 0) {
+            } else if (shootLoadedAmmo(player.level, player, Hand.MAIN_HAND, stack) && getLoadedAmmoCount(stack) <= 0) {
                 setCharged(stack, false);
             }
         }
+    }
+
+    @Override
+    public boolean onBlockStartBreak(ItemStack stack, BlockPos pos, PlayerEntity player) {
+
+        return player.isCreative();
     }
 
     @Override

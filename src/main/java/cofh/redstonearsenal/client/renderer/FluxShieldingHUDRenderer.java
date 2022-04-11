@@ -21,9 +21,6 @@ public class FluxShieldingHUDRenderer {
     public static void render(MatrixStack stack) {
 
         final Minecraft minecraft = Minecraft.getInstance();
-        final IProfiler profiler = minecraft.getProfiler();
-
-        profiler.push("fluxShielding");
 
         if (maxCharges <= 0) {
             return;
@@ -43,7 +40,6 @@ public class FluxShieldingHUDRenderer {
         }
 
         minecraft.textureManager.bind(AbstractGui.GUI_ICONS_LOCATION);
-        profiler.pop();
     }
 
 }
