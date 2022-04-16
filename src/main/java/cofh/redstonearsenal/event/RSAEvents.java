@@ -1,9 +1,11 @@
 package cofh.redstonearsenal.event;
 
 import cofh.core.event.ShieldEvents;
-import cofh.core.network.packet.server.ItemLeftClickPacket;
 import cofh.lib.util.Utils;
-import cofh.redstonearsenal.item.*;
+import cofh.redstonearsenal.item.FluxAxeItem;
+import cofh.redstonearsenal.item.FluxShieldItem;
+import cofh.redstonearsenal.item.FluxShovelItem;
+import cofh.redstonearsenal.item.FluxTridentItem;
 import cofh.redstonearsenal.util.FluxShieldingHelper;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -48,8 +50,6 @@ public class RSAEvents {
         if (stack.getItem() instanceof FluxTridentItem && player.isAutoSpinAttack()) {
             FluxTridentItem trident = (FluxTridentItem) stack.getItem();
             if (trident.plungeAttack(player.level, player, stack)) {
-                FluxTridentItem.stopSpinAttack(player);
-                player.fallDistance = 0;
                 event.getTarget().invulnerableTime = 0;
             }
         }
@@ -58,18 +58,18 @@ public class RSAEvents {
     @SubscribeEvent (priority = EventPriority.HIGH)
     public static void handleLivingFallEvent(LivingFallEvent event) {
 
-        // Flux Trident
-        LivingEntity living = event.getEntityLiving();
-        ItemStack stack = living.getMainHandItem();
-        if (stack.getItem() instanceof FluxTridentItem && living.isAutoSpinAttack()) {
-            FluxTridentItem trident = (FluxTridentItem) stack.getItem();
-            if (trident.plungeAttack(living.level, living, stack)) {
-                FluxTridentItem.stopSpinAttack(living);
-                if (event.isCancelable()) {
+        if (event.getEntityLiving() instanceof PlayerEntity) {
+            // Flux Trident
+            LivingEntity living = event.getEntityLiving();
+            ItemStack stack = living.getMainHandItem();
+            if (stack.getItem() instanceof FluxTridentItem && living.isAutoSpinAttack()) {
+                FluxTridentItem trident = (FluxTridentItem) stack.getItem();
+                if (trident.plungeAttack(living.level, living, stack)) {
+                    FluxTridentItem.stopSpinAttack(living);
                     event.setCanceled(true);
+                } else {
+                    event.setDamageMultiplier(0.4F);
                 }
-            } else {
-                event.setDamageMultiplier(0.4F);
             }
         }
     }

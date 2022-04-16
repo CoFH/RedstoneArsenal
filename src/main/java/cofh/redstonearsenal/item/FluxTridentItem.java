@@ -223,24 +223,28 @@ public class FluxTridentItem extends TridentItemCoFH implements IMultiModeFluxIt
         if (attacker.fallDistance <= attacker.getMaxFallDistance() || !isEmpowered(stack) || !useEnergy(stack, true, attacker)) {
             return false;
         }
+        double range = getPlungeRange();
+        if (world.isClientSide) {
+            world.addParticle(CoreReferences.BLAST_WAVE_PARTICLE, attacker.getX(), attacker.getY(), attacker.getZ(), 0.75D, range * 2.0F, 1.5F);
+            return true;
+        }
         if (Utils.getItemEnchantmentLevel(Enchantments.CHANNELING, stack) > 0) {
             if (world.canSeeSky(attacker.blockPosition()) && world instanceof ServerWorld && world.isThundering()) {
                 attacker.addEffect(new EffectInstance(LIGHTNING_RESISTANCE, 40, 0, false, false));
                 Utils.spawnLightningBolt(world, attacker.blockPosition(), attacker);
             }
         }
-        double range = getPlungeRange();
-        world.addParticle(CoreReferences.BLAST_WAVE_PARTICLE, attacker.getX(), attacker.getY(), attacker.getZ(), 0.75D, range, 3.0F);
         double r2 = range * range;
-        AxisAlignedBB searchArea = attacker.getBoundingBox().inflate(range, 1, range);
         boolean hit = false;
-        for (Entity target : world.getEntities(attacker, searchArea, EntityPredicates.NO_CREATIVE_OR_SPECTATOR)) {
+        for (Entity target : world.getEntities(attacker, attacker.getBoundingBox().inflate(range, 1, range), EntityPredicates.NO_CREATIVE_OR_SPECTATOR)) {
             if (attacker.distanceToSqr(target) <= r2) {
                 hit |= target.hurt(IFluxItem.fluxDirectDamage(attacker), getPlungeAttackDamage(attacker, stack));
             }
         }
         if (hit) {
             world.playSound(null, attacker.getX(), attacker.getY(), attacker.getZ(), SoundEvents.TRIDENT_RETURN, SoundCategory.PLAYERS, 10.0F, 1.0F);
+        } else {
+            world.playSound(null, attacker.getX(), attacker.getY(), attacker.getZ(), SoundEvents.TRIDENT_HIT_GROUND, SoundCategory.PLAYERS, 3.0F, 1.0F);
         }
         return hit;
     }
