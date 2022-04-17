@@ -1,5 +1,6 @@
 package cofh.redstonearsenal.init;
 
+import cofh.lib.client.renderer.entity.NothingRenderer;
 import cofh.redstonearsenal.client.renderer.*;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.entity.*;
@@ -29,7 +30,7 @@ public class RSAClient {
         RenderingRegistry.registerEntityRenderingHandler(FLUX_ARROW_ENTITY, FluxArrowRenderer::new);
         RenderingRegistry.registerEntityRenderingHandler(FLUX_TRIDENT_ENTITY, FluxTridentRenderer::new);
         RenderingRegistry.registerEntityRenderingHandler(FLUX_WRENCH_ENTITY, FluxWrenchRenderer::new);
-        RenderingRegistry.registerEntityRenderingHandler(SHOCKWAVE_ENTITY, ShockwaveRenderer::new);
+        RenderingRegistry.registerEntityRenderingHandler(SHOCKWAVE_ENTITY, NothingRenderer::new);
     }
 
 }

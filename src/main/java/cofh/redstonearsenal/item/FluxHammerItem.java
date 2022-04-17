@@ -14,6 +14,7 @@ import com.google.common.collect.HashMultimap;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Multimap;
 import net.minecraft.block.BlockState;
+import net.minecraft.block.material.Material;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.enchantment.Enchantment;
@@ -118,11 +119,12 @@ public class FluxHammerItem extends HammerItem implements IMultiModeFluxItem {
         World world = context.getLevel();
         BlockPos pos = context.getClickedPos();
         BlockState state = world.getBlockState(pos);
-        if (!world.isClientSide() && world.addFreshEntity(new ShockwaveEntity(world, player, Vector3d.atCenterOf(pos), player.yRot))) {
+        if (world.isClientSide) {
+            world.playSound(player, pos, state.getSoundType(world, pos, player).getBreakSound(), SoundCategory.BLOCKS, 1.0F, 1.0F);
+        } else if (world.addFreshEntity(new ShockwaveEntity(world, player, Vector3d.atCenterOf(pos), player.yRot))) {
             useEnergy(stack, energy, player.abilities.instabuild);
             player.getCooldowns().addCooldown(this, getSlamCooldown(stack));
         }
-        world.playSound(player, pos, state.getSoundType(world, pos, player).getBreakSound(), SoundCategory.BLOCKS, 1.0F, 1.0F);
         return ActionResultType.SUCCESS;
     }
 
@@ -139,7 +141,9 @@ public class FluxHammerItem extends HammerItem implements IMultiModeFluxItem {
     @Override
     public float getDestroySpeed(ItemStack stack, BlockState state) {
 
-        return getToolTypes(stack).stream().anyMatch(state::isToolEffective) ? getEfficiency(stack) : 1.0F;
+        Material material = state.getMaterial();
+        return material == Material.METAL || material == Material.HEAVY_METAL || material == Material.STONE ||
+                getToolTypes(stack).stream().anyMatch(state::isToolEffective) ? getEfficiency(stack) : 1.0F;
     }
 
     @Override

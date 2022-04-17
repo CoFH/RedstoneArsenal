@@ -2,17 +2,19 @@ package cofh.redstonearsenal.util;
 
 import cofh.core.compat.curios.CuriosProxy;
 import cofh.redstonearsenal.capability.IFluxShieldedItem;
+import cofh.redstonearsenal.client.renderer.FluxShieldingHUDRenderer;
+import cofh.redstonearsenal.network.client.FluxShieldingPacket;
+import net.minecraft.client.entity.player.ClientPlayerEntity;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.monster.MonsterEntity;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.particles.RedstoneParticleData;
-import net.minecraft.util.SoundCategory;
 import net.minecraft.util.SoundEvents;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.server.ServerWorld;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.util.LazyOptional;
 
 import java.util.function.Consumer;
@@ -28,15 +30,6 @@ public class FluxShieldingHelper {
 
         Predicate<ItemStack> isShieldedItem = i -> i.getCapability(FLUX_SHIELDED_ITEM_CAPABILITY).map(cap -> cap.currCharges(entity) > 0).orElse(false);
 
-        // HELD
-        ItemStack mainHand = entity.getMainHandItem();
-        if (isShieldedItem.test(mainHand)) {
-            return mainHand;
-        }
-        ItemStack offHand = entity.getOffhandItem();
-        if (isShieldedItem.test(offHand)) {
-            return offHand;
-        }
         //ARMOR
         for (ItemStack piece : entity.getArmorSlots()) {
             if (isShieldedItem.test(piece)) {
@@ -59,16 +52,16 @@ public class FluxShieldingHelper {
 
     public static int[] countCharges(LivingEntity entity) {
 
-        if (entity == null) {
-            return new int[]{0, 0};
-        }
         final int[] counter = {0, 0};
+        if (entity == null) {
+            return counter;
+        }
         Consumer<ItemStack> count = i -> {
             counter[0] += getCurrCharges(entity, i);
             counter[1] += getMaxCharges(entity, i);
         };
 
-        // HELD & ARMOR
+        // ARMOR
         for (ItemStack item : entity.getArmorSlots()) {
             count.accept(item);
         }
@@ -98,9 +91,6 @@ public class FluxShieldingHelper {
         }
         LazyOptional<IFluxShieldedItem> cap = stack.getCapability(FLUX_SHIELDED_ITEM_CAPABILITY);
         if (cap.map(c -> c.useCharge(entity)).orElse(false)) {
-            if (entity instanceof ServerPlayerEntity) {
-                cap.ifPresent(c -> c.scheduleUpdate((ServerPlayerEntity) entity));
-            }
             onUseFluxShieldCharge(entity);
             return true;
         }
@@ -109,12 +99,12 @@ public class FluxShieldingHelper {
 
     public static int getCurrCharges(LivingEntity entity, ItemStack stack) {
 
-        return stack.getCapability(FLUX_SHIELDED_ITEM_CAPABILITY).map(cap -> cap.currCharges(entity)).orElse(0);
+        return stack.isEmpty() ? 0 : stack.getCapability(FLUX_SHIELDED_ITEM_CAPABILITY).map(cap -> cap.currCharges(entity)).orElse(0);
     }
 
     public static int getMaxCharges(LivingEntity entity, ItemStack stack) {
 
-        return stack.getCapability(FLUX_SHIELDED_ITEM_CAPABILITY).map(cap -> cap.maxCharges(entity)).orElse(0);
+        return stack.isEmpty() ? 0 : stack.getCapability(FLUX_SHIELDED_ITEM_CAPABILITY).map(cap -> cap.maxCharges(entity)).orElse(0);
     }
 
     public static boolean equalCharges(LivingEntity entity, ItemStack a, ItemStack b) {
@@ -124,19 +114,36 @@ public class FluxShieldingHelper {
 
     protected static void onUseFluxShieldCharge(LivingEntity entity) {
 
-        SoundCategory category = SoundCategory.NEUTRAL;
-        if (entity instanceof PlayerEntity) {
-            category = SoundCategory.PLAYERS;
-        } else if (entity instanceof MonsterEntity) {
-            category = SoundCategory.HOSTILE;
-        }
-        entity.level.playSound(null, entity.getX(), entity.getY(), entity.getZ(), SoundEvents.ITEM_BREAK, category, 1.0F, 1.0F); //TODO: sound event
-
+        entity.level.playSound(null, entity.getX(), entity.getY(), entity.getZ(), SoundEvents.ITEM_BREAK, entity.getSoundSource(), 1.0F, 1.0F); //TODO: sound event
         AxisAlignedBB bounds = entity.getBoundingBox();
         Vector3d pos = bounds.getCenter();
         if (!entity.level.isClientSide()) {
             ((ServerWorld) entity.level).sendParticles(RedstoneParticleData.REDSTONE, pos.x(), pos.y(), pos.z(), 20, bounds.getXsize() * 0.5 + 0.2, bounds.getYsize() * 0.5 + 0.2, bounds.getZsize() * 0.5 + 0.2, 0);
         }
+    }
+
+    @OnlyIn(Dist.CLIENT)
+    public static void updateHUD(int currCharges, int maxCharges) {
+
+        FluxShieldingHUDRenderer.currCharges = currCharges;
+        FluxShieldingHUDRenderer.maxCharges = maxCharges;
+    }
+
+    @OnlyIn(Dist.CLIENT)
+    public static void updateHUD(int[] charges) {
+
+        updateHUD(charges[0], charges[1]);
+    }
+
+    @OnlyIn(Dist.CLIENT)
+    public static void updateHUD(ClientPlayerEntity player) {
+
+        updateHUD(countCharges(player));
+    }
+
+    public static void updateHUD(ServerPlayerEntity player) {
+
+        FluxShieldingPacket.sendToClient(countCharges(player), player);
     }
 
 }

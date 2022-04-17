@@ -3,7 +3,6 @@ package cofh.redstonearsenal.client.renderer;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.AbstractGui;
-import net.minecraft.profiler.IProfiler;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -21,9 +20,6 @@ public class FluxShieldingHUDRenderer {
     public static void render(MatrixStack stack) {
 
         final Minecraft minecraft = Minecraft.getInstance();
-        final IProfiler profiler = minecraft.getProfiler();
-
-        profiler.push("fluxShielding");
 
         if (maxCharges <= 0) {
             return;
@@ -43,7 +39,6 @@ public class FluxShieldingHUDRenderer {
         }
 
         minecraft.textureManager.bind(AbstractGui.GUI_ICONS_LOCATION);
-        profiler.pop();
     }
 
 }

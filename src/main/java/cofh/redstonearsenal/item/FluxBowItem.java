@@ -156,12 +156,6 @@ public class FluxBowItem extends BowItemCoFH implements IMultiModeFluxItem {
         @Override
         public float getAccuracyModifier(PlayerEntity shooter) {
 
-            if (isEmpowered(bowItem)) {
-                int duration = shooter.getTicksUsingItem();
-                if (duration > 20) {
-                    return Math.max(accuracyModifier * 20.0F / duration, 0.01F);
-                }
-            }
             return accuracyModifier;
         }
 

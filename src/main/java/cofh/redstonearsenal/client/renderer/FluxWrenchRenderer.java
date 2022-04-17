@@ -1,8 +1,8 @@
 package cofh.redstonearsenal.client.renderer;
 
+import cofh.core.util.helpers.RenderHelper;
 import cofh.redstonearsenal.entity.FluxWrenchEntity;
 import com.mojang.blaze3d.matrix.MatrixStack;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.IRenderTypeBuffer;
 import net.minecraft.client.renderer.ItemRenderer;
 import net.minecraft.client.renderer.entity.EntityRenderer;
@@ -16,7 +16,7 @@ import net.minecraft.util.math.vector.Vector3f;
 
 public class FluxWrenchRenderer extends EntityRenderer<FluxWrenchEntity> {
 
-    protected static final ItemRenderer itemRenderer = Minecraft.getInstance().getItemRenderer();
+    protected static final ItemRenderer itemRenderer = RenderHelper.renderItem();
 
     public FluxWrenchRenderer(EntityRendererManager manager) {
 

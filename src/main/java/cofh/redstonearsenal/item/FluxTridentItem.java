@@ -5,6 +5,7 @@ import cofh.core.util.ProxyUtils;
 import cofh.lib.item.ILeftClickHandlerItem;
 import cofh.lib.item.impl.TridentItemCoFH;
 import cofh.lib.util.Utils;
+import cofh.lib.util.references.CoreReferences;
 import cofh.redstonearsenal.entity.FluxTridentEntity;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
@@ -38,7 +39,6 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 
 import javax.annotation.Nullable;
 import java.util.List;
-import java.util.function.Predicate;
 
 import static cofh.lib.util.helpers.StringHelper.getTextComponent;
 import static cofh.lib.util.references.CoreReferences.LIGHTNING_RESISTANCE;
@@ -183,6 +183,17 @@ public class FluxTridentItem extends TridentItemCoFH implements IMultiModeFluxIt
         }
     }
 
+    @Override
+    public boolean onLeftClickEntity(ItemStack stack, PlayerEntity player, Entity entity) {
+
+        // Counteract riptide "bounce"
+        if (player.isAutoSpinAttack() && player.fallDistance > 3) {
+            player.fallDistance = 0;
+            player.setDeltaMovement(player.getDeltaMovement().scale(-5.0D));
+        }
+        return false;
+    }
+
     public boolean startPlunge(LivingEntity living) {
 
         if (!canStartPlunging(living)) {
@@ -212,24 +223,28 @@ public class FluxTridentItem extends TridentItemCoFH implements IMultiModeFluxIt
         if (attacker.fallDistance <= attacker.getMaxFallDistance() || !isEmpowered(stack) || !useEnergy(stack, true, attacker)) {
             return false;
         }
+        double range = getPlungeRange();
+        if (world.isClientSide) {
+            world.addParticle(CoreReferences.BLAST_WAVE_PARTICLE, attacker.getX(), attacker.getY(), attacker.getZ(), 0.75D, range * 2.0F, 1.5F);
+            return true;
+        }
         if (Utils.getItemEnchantmentLevel(Enchantments.CHANNELING, stack) > 0) {
             if (world.canSeeSky(attacker.blockPosition()) && world instanceof ServerWorld && world.isThundering()) {
                 attacker.addEffect(new EffectInstance(LIGHTNING_RESISTANCE, 40, 0, false, false));
                 Utils.spawnLightningBolt(world, attacker.blockPosition(), attacker);
             }
         }
-        double range = getPlungeRange();
         double r2 = range * range;
-        AxisAlignedBB searchArea = attacker.getBoundingBox().inflate(range, 1, range);
-        Predicate<Entity> filter = EntityPredicates.NO_CREATIVE_OR_SPECTATOR.and(entity -> entity instanceof LivingEntity);
         boolean hit = false;
-        for (Entity target : world.getEntities(attacker, searchArea, filter)) {
+        for (Entity target : world.getEntities(attacker, attacker.getBoundingBox().inflate(range, 1, range), EntityPredicates.NO_CREATIVE_OR_SPECTATOR)) {
             if (attacker.distanceToSqr(target) <= r2) {
                 hit |= target.hurt(IFluxItem.fluxDirectDamage(attacker), getPlungeAttackDamage(attacker, stack));
             }
         }
         if (hit) {
             world.playSound(null, attacker.getX(), attacker.getY(), attacker.getZ(), SoundEvents.TRIDENT_RETURN, SoundCategory.PLAYERS, 10.0F, 1.0F);
+        } else {
+            world.playSound(null, attacker.getX(), attacker.getY(), attacker.getZ(), SoundEvents.TRIDENT_HIT_GROUND, SoundCategory.PLAYERS, 3.0F, 1.0F);
         }
         return hit;
     }

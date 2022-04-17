@@ -1,0 +1,6 @@
+{
+  "parent": "redstone_arsenal:item/flux_crossbow_emp_arrow_0",
+  "textures": {
+    "layer1": "redstone_arsenal:item/flux_crossbow_loaded_2"
+  }
+}

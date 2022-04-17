@@ -4,7 +4,7 @@ import cofh.core.util.ProxyUtils;
 import cofh.lib.network.packet.IPacketClient;
 import cofh.lib.network.packet.PacketBase;
 import cofh.redstonearsenal.RedstoneArsenal;
-import cofh.redstonearsenal.util.FluxShieldingScheduler;
+import cofh.redstonearsenal.util.FluxShieldingHelper;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.network.PacketBuffer;
 
@@ -24,7 +24,7 @@ public class FluxShieldingPacket extends PacketBase implements IPacketClient {
     public void handleClient() {
 
         if (ProxyUtils.isClient()) {
-            FluxShieldingScheduler.updateHUD(currCharges, maxCharges);
+            FluxShieldingHelper.updateHUD(currCharges, maxCharges);
         }
     }
 
