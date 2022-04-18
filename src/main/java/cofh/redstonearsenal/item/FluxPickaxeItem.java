@@ -103,7 +103,7 @@ public class FluxPickaxeItem extends PickaxeItemCoFH implements IMultiModeFluxIt
 
     @Override
     public float getDestroySpeed(ItemStack stack, BlockState state) {
-        
+
         Material material = state.getMaterial();
         return material == Material.METAL || material == Material.HEAVY_METAL || material == Material.STONE ||
                 getToolTypes(stack).stream().anyMatch(state::isToolEffective) ? getEfficiency(stack) : 1.0F;

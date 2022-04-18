@@ -122,20 +122,20 @@ public class FluxShieldingHelper {
         }
     }
 
-    @OnlyIn(Dist.CLIENT)
+    @OnlyIn (Dist.CLIENT)
     public static void updateHUD(int currCharges, int maxCharges) {
 
         FluxShieldingHUDRenderer.currCharges = currCharges;
         FluxShieldingHUDRenderer.maxCharges = maxCharges;
     }
 
-    @OnlyIn(Dist.CLIENT)
+    @OnlyIn (Dist.CLIENT)
     public static void updateHUD(int[] charges) {
 
         updateHUD(charges[0], charges[1]);
     }
 
-    @OnlyIn(Dist.CLIENT)
+    @OnlyIn (Dist.CLIENT)
     public static void updateHUD(ClientPlayerEntity player) {
 
         updateHUD(countCharges(player));
