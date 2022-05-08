@@ -48,8 +48,10 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.List;
 
+import static cofh.lib.util.Utils.getItemEnchantmentLevel;
 import static cofh.lib.util.constants.Constants.UUID_TOOL_KNOCKBACK;
 import static cofh.lib.util.helpers.StringHelper.getTextComponent;
+import static cofh.lib.util.references.EnsorcReferences.EXCAVATING;
 import static net.minecraft.util.text.TextFormatting.GRAY;
 
 public class FluxHammerItem extends HammerItem implements IMultiModeFluxItem {
@@ -234,7 +236,7 @@ public class FluxHammerItem extends HammerItem implements IMultiModeFluxItem {
         @Override
         public ImmutableList<BlockPos> getAreaEffectBlocks(BlockPos pos, PlayerEntity player) {
 
-            return AreaEffectHelper.getBreakableBlocksRadius(container, pos, player, 1);
+            return AreaEffectHelper.getBreakableBlocksRadius(container, pos, player, 1 + getItemEnchantmentLevel(EXCAVATING, container));
         }
 
         // region ICapabilityProvider

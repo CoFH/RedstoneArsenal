@@ -71,7 +71,7 @@ public class FluxElytraItem extends FluxArmorItem implements IMultiModeFluxItem 
     public boolean elytraFlightTick(ItemStack stack, LivingEntity entity, int flightTicks) {
 
         boolean isCreative = Utils.isCreativePlayer(entity);
-        boolean shouldExtract = flightTicks % energyUseInterval == 0 && !isCreative;
+        boolean shouldExtract = !isCreative && flightTicks % energyUseInterval == 0;
         if (!useEnergy(stack, false, !shouldExtract)) {
             return false;
         }

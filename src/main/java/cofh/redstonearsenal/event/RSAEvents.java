@@ -9,7 +9,6 @@ import cofh.redstonearsenal.item.FluxTridentItem;
 import cofh.redstonearsenal.util.FluxShieldingHelper;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
-import net.minecraft.client.entity.player.ClientPlayerEntity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
@@ -17,7 +16,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.potion.Effects;
 import net.minecraft.util.DamageSource;
 import net.minecraftforge.common.Tags;
-import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.living.LivingAttackEvent;
 import net.minecraftforge.event.entity.living.LivingEquipmentChangeEvent;
 import net.minecraftforge.event.entity.living.LivingFallEvent;
@@ -188,15 +186,6 @@ public class RSAEvents {
             if (target instanceof ServerPlayerEntity) {
                 FluxShieldingHelper.updateHUD((ServerPlayerEntity) target);
             }
-        }
-    }
-
-    @SubscribeEvent
-    public static void onPlayerTick(TickEvent.PlayerTickEvent event) {
-
-        // Flux Shielding
-        if (event.phase == TickEvent.Phase.END && event.side.isClient() && (event.player.level.getGameTime() & 7) == 0) {
-            FluxShieldingHelper.updateHUD((ClientPlayerEntity) event.player);
         }
     }
 
