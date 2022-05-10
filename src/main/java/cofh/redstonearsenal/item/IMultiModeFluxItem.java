@@ -60,7 +60,7 @@ public interface IMultiModeFluxItem extends IFluxItem, IMultiModeItem {
             tooltip.add(getTextComponent("info.redstone_arsenal.mode.0").withStyle(TextFormatting.GRAY));
         }
         if (getNumModes(stack) > 1) {
-            addIncrementModeChangeTooltip(stack, worldIn, tooltip, flagIn);
+            addModeChangeTooltip(this, stack, worldIn, tooltip, flagIn);
         }
 
         IFluxItem.super.tooltipDelegate(stack, worldIn, tooltip, flagIn);
