@@ -6,14 +6,14 @@ import cofh.lib.item.ArmorMaterialCoFH;
 import cofh.lib.item.ItemTierCoFH;
 import cofh.redstonearsenal.client.renderer.FluxTridentISTER;
 import cofh.redstonearsenal.item.*;
-import net.minecraft.inventory.EquipmentSlotType;
-import net.minecraft.item.IItemTier;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemGroup;
-import net.minecraft.item.Rarity;
-import net.minecraft.item.crafting.Ingredient;
-import net.minecraft.util.SoundEvents;
+import net.minecraft.sounds.SoundEvents;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.item.CreativeModeTab;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.Rarity;
+import net.minecraft.world.item.Tier;
+import net.minecraft.world.item.crafting.Ingredient;
 
 import static cofh.redstonearsenal.RedstoneArsenal.*;
 import static cofh.redstonearsenal.init.RSAIDs.*;
@@ -26,10 +26,10 @@ public class RSAItems {
 
     public static void register() {
 
-        ItemGroup combat = RSA_GROUP;
-        ItemGroup transportation = RSA_GROUP;
-        ItemGroup tools = RSA_GROUP;
-        ItemGroup misc = RSA_GROUP;
+        CreativeModeTab combat = RSA_GROUP;
+        CreativeModeTab transportation = RSA_GROUP;
+        CreativeModeTab tools = RSA_GROUP;
+        CreativeModeTab misc = RSA_GROUP;
 
         Rarity rarity = Rarity.UNCOMMON;
 
@@ -68,11 +68,11 @@ public class RSAItems {
         ITEMS.register("flux_fishing_rod", () -> new FluxFishingRodItem(MATERIAL_FLUX_METAL.getEnchantmentValue(), 0, 0, new Item.Properties().stacksTo(1).tab(tools).rarity(rarity).setNoRepair(), energy, xfer));
         ITEMS.register(ID_FLUX_WRENCH, () -> new FluxWrenchItem(MATERIAL_FLUX_METAL, 2, -2.0F, new Item.Properties().stacksTo(1).tab(combat).rarity(rarity).setNoRepair(), energy, xfer));
 
-        ITEMS.register("flux_helmet", () -> new FluxArmorItem(FLUX_ARMOR, EquipmentSlotType.HEAD, new Item.Properties().stacksTo(1).tab(transportation).rarity(rarity).setNoRepair(), energy, xfer));
-        ITEMS.register("flux_chestplate", () -> new FluxArmorItem(FLUX_ARMOR, EquipmentSlotType.CHEST, new Item.Properties().stacksTo(1).tab(transportation).rarity(rarity).setNoRepair(), energy, xfer));
-        ITEMS.register("flux_leggings", () -> new FluxArmorItem(FLUX_ARMOR, EquipmentSlotType.LEGS, new Item.Properties().stacksTo(1).tab(transportation).rarity(rarity).setNoRepair(), energy, xfer));
-        ITEMS.register("flux_boots", () -> new FluxArmorItem(FLUX_ARMOR, EquipmentSlotType.FEET, new Item.Properties().stacksTo(1).tab(transportation).rarity(rarity).setNoRepair(), energy, xfer));
-        ITEMS.register("flux_elytra", () -> new FluxElytraItem(FLUX_ELYTRA, EquipmentSlotType.CHEST, new Item.Properties().stacksTo(1).tab(transportation).rarity(rarity).setNoRepair(), energy, xfer));
+        ITEMS.register("flux_helmet", () -> new FluxArmorItem(FLUX_ARMOR, EquipmentSlot.HEAD, new Item.Properties().stacksTo(1).tab(transportation).rarity(rarity).setNoRepair(), energy, xfer));
+        ITEMS.register("flux_chestplate", () -> new FluxArmorItem(FLUX_ARMOR, EquipmentSlot.CHEST, new Item.Properties().stacksTo(1).tab(transportation).rarity(rarity).setNoRepair(), energy, xfer));
+        ITEMS.register("flux_leggings", () -> new FluxArmorItem(FLUX_ARMOR, EquipmentSlot.LEGS, new Item.Properties().stacksTo(1).tab(transportation).rarity(rarity).setNoRepair(), energy, xfer));
+        ITEMS.register("flux_boots", () -> new FluxArmorItem(FLUX_ARMOR, EquipmentSlot.FEET, new Item.Properties().stacksTo(1).tab(transportation).rarity(rarity).setNoRepair(), energy, xfer));
+        ITEMS.register("flux_elytra", () -> new FluxElytraItem(FLUX_ELYTRA, EquipmentSlot.CHEST, new Item.Properties().stacksTo(1).tab(transportation).rarity(rarity).setNoRepair(), energy, xfer));
         ITEMS.register("flux_controller", () -> new FluxElytraControllerItem(new Item.Properties().stacksTo(1).tab(transportation).rarity(rarity).setNoRepair()));
     }
 
@@ -81,7 +81,7 @@ public class RSAItems {
         FluxWrenchItem.initEnchants();
     }
 
-    public static final IItemTier MATERIAL_FLUX_METAL = new ItemTierCoFH(4, 0, 8.0F, 3.0F, 18, () -> Ingredient.EMPTY);
+    public static final Tier MATERIAL_FLUX_METAL = new ItemTierCoFH(4, 0, 8.0F, 3.0F, 18, () -> Ingredient.EMPTY);
     public static final ArmorMaterialCoFH FLUX_ELYTRA = new ArmorMaterialCoFH("redstone_arsenal:elytra", 1, new int[]{0, 0, 5, 0}, 18, SoundEvents.ARMOR_EQUIP_ELYTRA, 1.0F, 0.0F, MATERIAL_FLUX_METAL::getRepairIngredient);
     public static final ArmorMaterialCoFH FLUX_ARMOR = new ArmorMaterialCoFH("redstone_arsenal:flux", 1, new int[]{3, 6, 8, 3}, 18, SoundEvents.ARMOR_EQUIP_GOLD, 1.0F, 0.0F, MATERIAL_FLUX_METAL::getRepairIngredient);
 

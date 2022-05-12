@@ -1,35 +1,36 @@
 package cofh.redstonearsenal.item;
 
-import cofh.core.init.CoreConfig;
+import cofh.core.config.CoreClientConfig;
 import cofh.core.util.ProxyUtils;
 import cofh.lib.item.impl.PickaxeItemCoFH;
 import cofh.lib.util.Utils;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.material.Material;
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.util.ITooltipFlag;
-import net.minecraft.enchantment.Enchantment;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.ai.attributes.Attribute;
-import net.minecraft.entity.ai.attributes.AttributeModifier;
-import net.minecraft.entity.ai.attributes.Attributes;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.inventory.EquipmentSlotType;
-import net.minecraft.item.IItemTier;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.ItemUseContext;
-import net.minecraft.particles.RedstoneParticleData;
-import net.minecraft.util.ActionResultType;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.SoundCategory;
-import net.minecraft.util.SoundEvents;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.world.World;
-import net.minecraft.world.server.ServerWorld;
+import net.minecraft.ChatFormatting;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.particles.DustParticleOptions;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.ai.attributes.Attribute;
+import net.minecraft.world.entity.ai.attributes.AttributeModifier;
+import net.minecraft.world.entity.ai.attributes.Attributes;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Tier;
+import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.item.context.UseOnContext;
+import net.minecraft.world.item.enchantment.Enchantment;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.material.Material;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
@@ -38,8 +39,7 @@ import java.util.List;
 
 import static cofh.lib.util.helpers.StringHelper.getTextComponent;
 import static cofh.redstonearsenal.init.RSAReferences.FLUX_GLOW_AIR;
-import static net.minecraft.block.Blocks.AIR;
-import static net.minecraft.util.text.TextFormatting.GRAY;
+import static net.minecraft.world.level.block.Blocks.AIR;
 
 public class FluxPickaxeItem extends PickaxeItemCoFH implements IMultiModeFluxItem {
 
@@ -52,7 +52,7 @@ public class FluxPickaxeItem extends PickaxeItemCoFH implements IMultiModeFluxIt
     protected final int extract;
     protected final int receive;
 
-    public FluxPickaxeItem(IItemTier tier, int attackDamageIn, float attackSpeedIn, Properties builder, int energy, int xfer) {
+    public FluxPickaxeItem(Tier tier, int attackDamageIn, float attackSpeedIn, Properties builder, int energy, int xfer) {
 
         super(tier, attackDamageIn, attackSpeedIn, builder);
 
@@ -69,12 +69,12 @@ public class FluxPickaxeItem extends PickaxeItemCoFH implements IMultiModeFluxIt
 
     @Override
     @OnlyIn (Dist.CLIENT)
-    public void appendHoverText(ItemStack stack, @Nullable World worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn) {
+    public void appendHoverText(ItemStack stack, @Nullable Level worldIn, List<Component> tooltip, TooltipFlag flagIn) {
 
-        if (Screen.hasShiftDown() || CoreConfig.alwaysShowDetails) {
+        if (Screen.hasShiftDown() || CoreClientConfig.alwaysShowDetails) {
             tooltipDelegate(stack, worldIn, tooltip, flagIn);
-        } else if (CoreConfig.holdShiftForDetails) {
-            tooltip.add(getTextComponent("info.cofh.hold_shift_for_details").withStyle(GRAY));
+        } else if (CoreClientConfig.holdShiftForDetails) {
+            tooltip.add(getTextComponent("info.cofh.hold_shift_for_details").withStyle(ChatFormatting.GRAY));
         }
     }
 
@@ -117,7 +117,7 @@ public class FluxPickaxeItem extends PickaxeItemCoFH implements IMultiModeFluxIt
     }
 
     @Override
-    public boolean mineBlock(ItemStack stack, World worldIn, BlockState state, BlockPos pos, LivingEntity entityLiving) {
+    public boolean mineBlock(ItemStack stack, Level worldIn, BlockState state, BlockPos pos, LivingEntity entityLiving) {
 
         if (Utils.isServerWorld(worldIn) && state.getDestroySpeed(worldIn, pos) != 0.0F) {
             useEnergy(stack, false, entityLiving);
@@ -126,10 +126,10 @@ public class FluxPickaxeItem extends PickaxeItemCoFH implements IMultiModeFluxIt
     }
 
     @Override
-    public Multimap<Attribute, AttributeModifier> getAttributeModifiers(EquipmentSlotType slot, ItemStack stack) {
+    public Multimap<Attribute, AttributeModifier> getAttributeModifiers(EquipmentSlot slot, ItemStack stack) {
 
         Multimap<Attribute, AttributeModifier> multimap = HashMultimap.create();
-        if (slot == EquipmentSlotType.MAINHAND) {
+        if (slot == EquipmentSlot.MAINHAND) {
             multimap.put(Attributes.ATTACK_DAMAGE, new AttributeModifier(BASE_ATTACK_DAMAGE_UUID, "Tool modifier", getAttackDamage(stack), AttributeModifier.Operation.ADDITION));
             multimap.put(Attributes.ATTACK_SPEED, new AttributeModifier(BASE_ATTACK_SPEED_UUID, "Tool modifier", getAttackSpeed(stack), AttributeModifier.Operation.ADDITION));
         }
@@ -137,12 +137,12 @@ public class FluxPickaxeItem extends PickaxeItemCoFH implements IMultiModeFluxIt
     }
 
     @Override
-    public ActionResultType useOn(ItemUseContext context) {
+    public InteractionResult useOn(UseOnContext context) {
 
         ItemStack tool = context.getItemInHand();
-        PlayerEntity player = context.getPlayer();
+        Player player = context.getPlayer();
         if (player != null) {
-            World world = context.getLevel();
+            Level world = context.getLevel();
             if (player.isShiftKeyDown()) {
                 if (useEnergy(tool, true, player.abilities.instabuild)) {
                     int r = REMOVE_RADIUS;
@@ -152,25 +152,25 @@ public class FluxPickaxeItem extends PickaxeItemCoFH implements IMultiModeFluxIt
                             extinguishAir(world, player, pos, 0.3F);
                         }
                     }
-                    return ActionResultType.SUCCESS;
+                    return InteractionResult.SUCCESS;
                 }
             } else {
                 BlockPos pos = context.getClickedPos().relative(context.getClickedFace());
                 BlockState state = world.getBlockState(pos);
                 if (state.getBlock().equals(FLUX_GLOW_AIR) && useEnergy(tool, false, player.abilities.instabuild)) {
                     extinguishAir(world, player, pos, 0.5F);
-                    return ActionResultType.SUCCESS;
+                    return InteractionResult.SUCCESS;
                 } else if (state.isAir() && useEnergy(tool, true, player.abilities.instabuild)) {
                     igniteAir(world, player, pos, 0.5F);
-                    return ActionResultType.SUCCESS;
+                    return InteractionResult.SUCCESS;
                 }
             }
         }
-        return ActionResultType.PASS;
+        return InteractionResult.PASS;
     }
 
     @Override
-    public void inventoryTick(ItemStack stack, World world, Entity entity, int itemSlot, boolean isSelected) {
+    public void inventoryTick(ItemStack stack, Level world, Entity entity, int itemSlot, boolean isSelected) {
 
         super.inventoryTick(stack, world, entity, itemSlot, isSelected);
 
@@ -182,20 +182,20 @@ public class FluxPickaxeItem extends PickaxeItemCoFH implements IMultiModeFluxIt
         }
     }
 
-    public void igniteAir(World world, PlayerEntity player, BlockPos pos, float volume) {
+    public void igniteAir(Level world, Player player, BlockPos pos, float volume) {
 
-        world.playSound(player, pos, SoundEvents.FLINTANDSTEEL_USE, SoundCategory.PLAYERS, volume, 1.0F);
+        world.playSound(player, pos, SoundEvents.FLINTANDSTEEL_USE, SoundSource.PLAYERS, volume, 1.0F);
         if (!world.isClientSide()) {
-            ((ServerWorld) world).sendParticles(RedstoneParticleData.REDSTONE, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, 4, 0.25, 0.25, 0.25, 0);
+            ((ServerLevel) world).sendParticles(DustParticleOptions.REDSTONE, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, 4, 0.25, 0.25, 0.25, 0);
         }
         world.setBlockAndUpdate(pos, FLUX_GLOW_AIR.defaultBlockState());
     }
 
-    public void extinguishAir(World world, PlayerEntity player, BlockPos pos, float volume) {
+    public void extinguishAir(Level world, Player player, BlockPos pos, float volume) {
 
-        world.playSound(player, pos, SoundEvents.FIRE_EXTINGUISH, SoundCategory.PLAYERS, 0.5F, 1.0F);
+        world.playSound(player, pos, SoundEvents.FIRE_EXTINGUISH, SoundSource.PLAYERS, 0.5F, 1.0F);
         if (!world.isClientSide()) {
-            ((ServerWorld) world).sendParticles(RedstoneParticleData.REDSTONE, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, 4, 0.25, 0.25, 0.25, 0);
+            ((ServerLevel) world).sendParticles(DustParticleOptions.REDSTONE, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, 4, 0.25, 0.25, 0.25, 0);
         }
         world.setBlockAndUpdate(pos, AIR.defaultBlockState());
     }

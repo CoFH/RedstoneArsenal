@@ -10,11 +10,19 @@ import cofh.redstonearsenal.util.FluxShieldingHelper;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.ServerPlayerEntity;
+import net.minecraft.entity.player.Player;
+import net.minecraft.entity.player.ServerPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.potion.Effects;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.DamageSource;
+import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.effect.MobEffects;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.common.Tags;
 import net.minecraftforge.event.entity.living.LivingAttackEvent;
 import net.minecraftforge.event.entity.living.LivingEquipmentChangeEvent;
@@ -31,7 +39,8 @@ import net.minecraftforge.fml.common.Mod;
 import static cofh.lib.capability.CapabilityShieldItem.SHIELD_ITEM_CAPABILITY;
 import static cofh.lib.util.constants.Constants.ID_REDSTONE_ARSENAL;
 import static cofh.redstonearsenal.init.RSAReferences.FLUX_PATH;
-import static net.minecraft.inventory.EquipmentSlotType.MAINHAND;
+import static net.minecraft.inventory.EquipmentSlot.MAINHAND;
+import static net.minecraft.world.entity.EquipmentSlot.MAINHAND;
 
 @Mod.EventBusSubscriber (modid = ID_REDSTONE_ARSENAL)
 public class RSAEvents {
@@ -42,7 +51,7 @@ public class RSAEvents {
         if (event.isCanceled()) {
             return;
         }
-        PlayerEntity player = event.getPlayer();
+        Player player = event.getPlayer();
         ItemStack stack = player.getMainHandItem();
         // Flux Trident
         if (stack.getItem() instanceof FluxTridentItem && player.isAutoSpinAttack()) {
@@ -56,7 +65,7 @@ public class RSAEvents {
     @SubscribeEvent (priority = EventPriority.HIGH)
     public static void handleLivingFallEvent(LivingFallEvent event) {
 
-        if (event.getEntityLiving() instanceof PlayerEntity) {
+        if (event.getEntityLiving() instanceof Player) {
             // Flux Trident
             LivingEntity living = event.getEntityLiving();
             ItemStack stack = living.getMainHandItem();
@@ -76,7 +85,7 @@ public class RSAEvents {
     public static void handlePlayerFlyableFallEvent(PlayerFlyableFallEvent event) {
 
         // Flux Trident
-        PlayerEntity player = event.getPlayer();
+        Player player = event.getPlayer();
         ItemStack stack = player.getMainHandItem();
         if (stack.getItem() instanceof FluxTridentItem && player.isAutoSpinAttack()) {
             FluxTridentItem trident = (FluxTridentItem) stack.getItem();
@@ -154,7 +163,7 @@ public class RSAEvents {
         }
 
         // Flux Shielding
-        if (event.getAmount() > 500.0F || Utils.isCreativePlayer(target) || target.isInvulnerableTo(source) || (target.hasEffect(Effects.FIRE_RESISTANCE) && source.isFire())) {
+        if (event.getAmount() > 500.0F || Utils.isCreativePlayer(target) || target.isInvulnerableTo(source) || (target.hasEffect(MobEffects.FIRE_RESISTANCE) && source.isFire())) {
             return;
         }
         ItemStack shieldedItem = FluxShieldingHelper.findShieldedItem(target);
@@ -166,8 +175,8 @@ public class RSAEvents {
         } else if (FluxShieldingHelper.useFluxShieldCharge(target, shieldedItem)) {
             target.invulnerableTime = 10;
             event.setCanceled(true);
-            if (target instanceof ServerPlayerEntity) {
-                FluxShieldingHelper.updateHUD((ServerPlayerEntity) target);
+            if (target instanceof ServerPlayer) {
+                FluxShieldingHelper.updateHUD((ServerPlayer) target);
             }
         }
     }
@@ -183,8 +192,8 @@ public class RSAEvents {
         float amount = event.getAmount();
         if (amount > 0.0F && FluxShieldingHelper.useFluxShieldCharge(target)) {
             event.setAmount(Math.max(amount - 500.0F, 0));
-            if (target instanceof ServerPlayerEntity) {
-                FluxShieldingHelper.updateHUD((ServerPlayerEntity) target);
+            if (target instanceof ServerPlayer) {
+                FluxShieldingHelper.updateHUD((ServerPlayer) target);
             }
         }
     }

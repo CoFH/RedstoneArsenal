@@ -1,7 +1,7 @@
 package cofh.redstonearsenal.client.renderer;
 
 import cofh.core.util.helpers.RenderHelper;
-import cofh.redstonearsenal.entity.FluxWrenchEntity;
+import cofh.redstonearsenal.entity.ThrownFluxWrench;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import net.minecraft.client.renderer.IRenderTypeBuffer;
 import net.minecraft.client.renderer.ItemRenderer;
@@ -14,7 +14,7 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.vector.Vector3f;
 
-public class FluxWrenchRenderer extends EntityRenderer<FluxWrenchEntity> {
+public class FluxWrenchRenderer extends EntityRenderer<ThrownFluxWrench> {
 
     protected static final ItemRenderer itemRenderer = RenderHelper.renderItem();
 
@@ -24,7 +24,7 @@ public class FluxWrenchRenderer extends EntityRenderer<FluxWrenchEntity> {
     }
 
     @Override
-    public void render(FluxWrenchEntity entityIn, float entityYaw, float partialTicks, MatrixStack matrixStackIn, IRenderTypeBuffer bufferIn, int packedLightIn) {
+    public void render(ThrownFluxWrench entityIn, float entityYaw, float partialTicks, MatrixStack matrixStackIn, IRenderTypeBuffer bufferIn, int packedLightIn) {
 
         matrixStackIn.pushPose();
         matrixStackIn.mulPose(Vector3f.YP.rotationDegrees(MathHelper.lerp(partialTicks, entityIn.yRotO, entityIn.yRot) + 180));
@@ -37,7 +37,7 @@ public class FluxWrenchRenderer extends EntityRenderer<FluxWrenchEntity> {
     }
 
     @Override
-    public ResourceLocation getTextureLocation(FluxWrenchEntity entity) {
+    public ResourceLocation getTextureLocation(ThrownFluxWrench entity) {
 
         return PlayerContainer.BLOCK_ATLAS;
     }

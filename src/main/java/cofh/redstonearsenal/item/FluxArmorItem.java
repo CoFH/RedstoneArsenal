@@ -1,23 +1,24 @@
 package cofh.redstonearsenal.item;
 
-import cofh.core.init.CoreConfig;
+import cofh.core.config.CoreClientConfig;
 import cofh.core.item.ArmorItemCoFH;
 import cofh.core.util.ProxyUtils;
 import cofh.redstonearsenal.capability.FluxShieldedEnergyItemWrapper;
 import com.google.common.collect.ImmutableMultimap;
 import com.google.common.collect.Multimap;
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.util.ITooltipFlag;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.ai.attributes.Attribute;
-import net.minecraft.entity.ai.attributes.AttributeModifier;
-import net.minecraft.inventory.EquipmentSlotType;
-import net.minecraft.item.IArmorMaterial;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.world.World;
+import net.minecraft.ChatFormatting;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.ai.attributes.Attribute;
+import net.minecraft.world.entity.ai.attributes.AttributeModifier;
+import net.minecraft.world.item.ArmorMaterial;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.level.Level;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.capabilities.ICapabilityProvider;
@@ -27,7 +28,6 @@ import java.util.List;
 import java.util.function.Consumer;
 
 import static cofh.lib.util.helpers.StringHelper.getTextComponent;
-import static net.minecraft.util.text.TextFormatting.GRAY;
 
 public class FluxArmorItem extends ArmorItemCoFH implements IFluxItem {
 
@@ -35,7 +35,7 @@ public class FluxArmorItem extends ArmorItemCoFH implements IFluxItem {
     protected int extract;
     protected int receive;
 
-    public FluxArmorItem(IArmorMaterial material, EquipmentSlotType slot, Properties builder, int maxEnergy, int maxTransfer) {
+    public FluxArmorItem(ArmorMaterial material, EquipmentSlot slot, Properties builder, int maxEnergy, int maxTransfer) {
 
         super(material, slot, builder);
 
@@ -48,12 +48,12 @@ public class FluxArmorItem extends ArmorItemCoFH implements IFluxItem {
 
     @Override
     @OnlyIn (Dist.CLIENT)
-    public void appendHoverText(ItemStack stack, @Nullable World worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn) {
+    public void appendHoverText(ItemStack stack, @Nullable Level worldIn, List<Component> tooltip, TooltipFlag flagIn) {
 
-        if (Screen.hasShiftDown() || CoreConfig.alwaysShowDetails) {
+        if (Screen.hasShiftDown() || CoreClientConfig.alwaysShowDetails) {
             tooltipDelegate(stack, worldIn, tooltip, flagIn);
-        } else if (CoreConfig.holdShiftForDetails) {
-            tooltip.add(getTextComponent("info.cofh.hold_shift_for_details").withStyle(GRAY));
+        } else if (CoreClientConfig.holdShiftForDetails) {
+            tooltip.add(getTextComponent("info.cofh.hold_shift_for_details").withStyle(ChatFormatting.GRAY));
         }
     }
 
@@ -64,7 +64,7 @@ public class FluxArmorItem extends ArmorItemCoFH implements IFluxItem {
     }
 
     @Override
-    public ICapabilityProvider initCapabilities(ItemStack stack, @Nullable CompoundNBT nbt) {
+    public ICapabilityProvider initCapabilities(ItemStack stack, @Nullable CompoundTag nbt) {
 
         return new FluxShieldedEnergyItemWrapper(stack, getEnergyPerUse(true));
     }
@@ -88,7 +88,7 @@ public class FluxArmorItem extends ArmorItemCoFH implements IFluxItem {
     }
 
     @Override
-    public Multimap<Attribute, AttributeModifier> getAttributeModifiers(EquipmentSlotType slot, ItemStack stack) {
+    public Multimap<Attribute, AttributeModifier> getAttributeModifiers(EquipmentSlot slot, ItemStack stack) {
 
         return hasEnergy(stack, false) && slot == this.slot ? super.getAttributeModifiers(slot, stack) : ImmutableMultimap.of();
     }

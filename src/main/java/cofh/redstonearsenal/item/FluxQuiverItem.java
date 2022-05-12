@@ -1,25 +1,25 @@
 package cofh.redstonearsenal.item;
 
-import cofh.core.init.CoreConfig;
+import cofh.core.config.CoreClientConfig;
 import cofh.core.item.ItemCoFH;
 import cofh.core.util.ProxyUtils;
 import cofh.lib.capability.IArcheryAmmoItem;
 import cofh.lib.energy.EnergyContainerItemWrapper;
 import cofh.lib.energy.IEnergyContainerItem;
 import cofh.redstonearsenal.entity.FluxArrowEntity;
+import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.Enchantments;
-import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.Player;
 import net.minecraft.entity.projectile.AbstractArrowEntity;
 import net.minecraft.item.CrossbowItem;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.util.Direction;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.world.World;
+import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.level.Level;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.capabilities.Capability;
@@ -33,7 +33,6 @@ import java.util.List;
 import static cofh.lib.capability.CapabilityArchery.AMMO_ITEM_CAPABILITY;
 import static cofh.lib.util.Utils.getItemEnchantmentLevel;
 import static cofh.lib.util.helpers.StringHelper.getTextComponent;
-import static net.minecraft.util.text.TextFormatting.GRAY;
 
 public class FluxQuiverItem extends ItemCoFH implements IMultiModeFluxItem {
 
@@ -65,17 +64,17 @@ public class FluxQuiverItem extends ItemCoFH implements IMultiModeFluxItem {
 
     @Override
     @OnlyIn (Dist.CLIENT)
-    public void appendHoverText(ItemStack stack, @Nullable World worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn) {
+    public void appendHoverText(ItemStack stack, @Nullable Level worldIn, List<Component> tooltip, TooltipFlag flagIn) {
 
-        if (Screen.hasShiftDown() || CoreConfig.alwaysShowDetails) {
+        if (Screen.hasShiftDown() || CoreClientConfig.alwaysShowDetails) {
             tooltipDelegate(stack, worldIn, tooltip, flagIn);
-        } else if (CoreConfig.holdShiftForDetails) {
-            tooltip.add(getTextComponent("info.cofh.hold_shift_for_details").withStyle(GRAY));
+        } else if (CoreClientConfig.holdShiftForDetails) {
+            tooltip.add(getTextComponent("info.cofh.hold_shift_for_details").withStyle(ChatFormatting.GRAY));
         }
     }
 
     @Override
-    public void tooltipDelegate(ItemStack stack, @Nullable World worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn) {
+    public void tooltipDelegate(ItemStack stack, @Nullable Level worldIn, List<Component> tooltip, TooltipFlag flagIn) {
 
         IMultiModeFluxItem.super.tooltipDelegate(stack, worldIn, tooltip, flagIn);
     }
@@ -93,7 +92,7 @@ public class FluxQuiverItem extends ItemCoFH implements IMultiModeFluxItem {
     }
 
     @Override
-    public ICapabilityProvider initCapabilities(ItemStack stack, @Nullable CompoundNBT nbt) {
+    public ICapabilityProvider initCapabilities(ItemStack stack, @Nullable CompoundTag nbt) {
 
         return new FluxQuiverItemWrapper(stack, this);
     }
@@ -138,13 +137,13 @@ public class FluxQuiverItem extends ItemCoFH implements IMultiModeFluxItem {
         }
 
         @Override
-        public void onArrowLoosed(PlayerEntity shooter) {
+        public void onArrowLoosed(Player shooter) {
 
             useEnergy(quiverItem, isEmpowered(quiverItem), shooter != null && shooter.abilities.instabuild);
         }
 
         @Override
-        public AbstractArrowEntity createArrowEntity(World world, PlayerEntity shooter) {
+        public AbstractArrowEntity createArrowEntity(Level world, Player shooter) {
 
             FluxArrowEntity arrow = new FluxArrowEntity(world, shooter);
             arrow.pickup = AbstractArrowEntity.PickupStatus.DISALLOWED;
@@ -163,13 +162,13 @@ public class FluxQuiverItem extends ItemCoFH implements IMultiModeFluxItem {
         }
 
         @Override
-        public boolean isEmpty(PlayerEntity shooter) {
+        public boolean isEmpty(Player shooter) {
 
             return !hasEnergy(quiverItem, isEmpowered(quiverItem));
         }
 
         @Override
-        public boolean isInfinite(ItemStack bow, PlayerEntity shooter) {
+        public boolean isInfinite(ItemStack bow, Player shooter) {
 
             return shooter != null && shooter.abilities.instabuild || getItemEnchantmentLevel(Enchantments.INFINITY_ARROWS, bow) > 0;
         }

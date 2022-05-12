@@ -3,10 +3,10 @@ package cofh.redstonearsenal.capability;
 import cofh.lib.energy.EnergyContainerItemWrapper;
 import cofh.lib.energy.IEnergyContainerItem;
 import cofh.lib.util.Utils;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.util.Direction;
+import net.minecraft.core.Direction;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.LazyOptional;
 
@@ -42,7 +42,7 @@ public class FluxShieldedEnergyItemWrapper extends EnergyContainerItemWrapper im
     @Override
     public int currCharges(LivingEntity entity) {
 
-        CompoundNBT nbt = shieldedItem.getOrCreateTag();
+        CompoundTag nbt = shieldedItem.getOrCreateTag();
         if (energyPerUse > 0 && getEnergyStored() < energyPerUse) {
             return 0;
         }

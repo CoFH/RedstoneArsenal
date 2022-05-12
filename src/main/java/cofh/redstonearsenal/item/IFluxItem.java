@@ -4,19 +4,18 @@ import cofh.lib.energy.EnergyContainerItemWrapper;
 import cofh.lib.energy.IEnergyContainerItem;
 import cofh.lib.item.ICoFHItem;
 import cofh.lib.util.Utils;
-import cofh.lib.util.helpers.MathHelper;
 import cofh.redstonearsenal.util.RSAEnergyHelper;
-import net.minecraft.client.util.ITooltipFlag;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.projectile.ProjectileEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.util.DamageSource;
-import net.minecraft.util.EntityDamageSource;
-import net.minecraft.util.IndirectEntityDamageSource;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.world.World;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.damagesource.EntityDamageSource;
+import net.minecraft.world.damagesource.IndirectEntityDamageSource;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.projectile.Projectile;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.level.Level;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.ICapabilityProvider;
 import net.minecraftforge.energy.IEnergyStorage;
@@ -92,39 +91,36 @@ public interface IFluxItem extends ICoFHItem, IEnergyContainerItem {
         return !oldStack.equals(newStack) && (slotChanged || getEnergyStored(oldStack) > 0 != getEnergyStored(newStack) > 0);
     }
 
-    @Override
-    default boolean showDurabilityBar(ItemStack stack) {
+    default boolean isBarVisible(ItemStack stack) {
 
         return getEnergyStored(stack) > 0;
     }
 
-    @Override
-    default int getRGBDurabilityForDisplay(ItemStack stack) {
+    default int getBarColor(ItemStack stack) {
 
         return RGB_DURABILITY_FLUX;
     }
 
-    @Override
-    default double getDurabilityForDisplay(ItemStack stack) {
+    default int getBarWidth(ItemStack stack) {
 
         if (stack.getTag() == null) {
             return 0;
         }
-        return MathHelper.clamp(1.0D - getEnergyStored(stack) / (double) getMaxEnergyStored(stack), 0.0D, 1.0D);
+        return (int) Math.round(13.0D * getEnergyStored(stack) / (double) getMaxEnergyStored(stack));
     }
 
-    default float getChargedModelProperty(ItemStack stack, World world, LivingEntity entity) {
+    default float getChargedModelProperty(ItemStack stack, Level world, LivingEntity entity, int seed) {
 
         return getEnergyStored(stack) > 0 ? 1F : 0F;
     }
 
     @Override
-    default ICapabilityProvider initCapabilities(ItemStack stack, @Nullable CompoundNBT nbt) {
+    default ICapabilityProvider initCapabilities(ItemStack stack, @Nullable CompoundTag nbt) {
 
         return new EnergyContainerItemWrapper(stack, this, getEnergyCapability());
     }
 
-    default void tooltipDelegate(ItemStack stack, @Nullable World worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn) {
+    default void tooltipDelegate(ItemStack stack, @Nullable Level worldIn, List<Component> tooltip, TooltipFlag flagIn) {
 
         boolean creative = isCreative(stack, ENERGY);
         tooltip.add(getTextComponent(localize("info.cofh.energy") + ": "
@@ -139,7 +135,7 @@ public interface IFluxItem extends ICoFHItem, IEnergyContainerItem {
         return (new EntityDamageSource("flux", attacker)).bypassArmor();
     }
 
-    static DamageSource fluxRangedDamage(ProjectileEntity projectile, @Nullable Entity shooter) {
+    static DamageSource fluxRangedDamage(Projectile projectile, @Nullable Entity shooter) {
 
         return (new IndirectEntityDamageSource("flux", projectile, shooter)).setProjectile().bypassArmor();
     }

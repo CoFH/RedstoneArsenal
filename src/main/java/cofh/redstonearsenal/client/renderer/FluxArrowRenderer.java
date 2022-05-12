@@ -1,23 +1,26 @@
 package cofh.redstonearsenal.client.renderer;
 
 import net.minecraft.client.renderer.entity.ArrowRenderer;
-import net.minecraft.client.renderer.entity.EntityRendererManager;
-import net.minecraft.entity.Entity;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.client.renderer.entity.EntityRendererProvider;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.projectile.AbstractArrow;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 
 import static cofh.lib.util.constants.Constants.ID_REDSTONE_ARSENAL;
 
-public class FluxArrowRenderer<T> extends ArrowRenderer {
+@OnlyIn (Dist.CLIENT)
+public class FluxArrowRenderer extends ArrowRenderer<AbstractArrow> {
 
     private static final ResourceLocation TEXTURE = new ResourceLocation(ID_REDSTONE_ARSENAL + ":textures/entity/flux_arrow.png");
 
-    public FluxArrowRenderer(EntityRendererManager manager) {
+    public FluxArrowRenderer(EntityRendererProvider.Context ctx) {
 
-        super(manager);
+        super(ctx);
     }
 
     @Override
-    public ResourceLocation getTextureLocation(Entity entity) {
+    public ResourceLocation getTextureLocation(AbstractArrow entity) {
 
         return TEXTURE;
     }

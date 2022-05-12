@@ -1,6 +1,6 @@
 package cofh.redstonearsenal.capability;
 
-import net.minecraft.entity.LivingEntity;
+import net.minecraft.world.entity.LivingEntity;
 
 /**
  * Implement this interface as a capability for an equippable item with a flux shield.

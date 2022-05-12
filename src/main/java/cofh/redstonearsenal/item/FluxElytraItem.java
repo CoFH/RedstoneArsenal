@@ -1,23 +1,24 @@
 package cofh.redstonearsenal.item;
 
-import cofh.core.init.CoreConfig;
+import cofh.core.config.CoreClientConfig;
 import cofh.core.util.ProxyUtils;
 import cofh.lib.energy.EnergyContainerItemWrapper;
 import cofh.lib.util.Utils;
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.util.ITooltipFlag;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.inventory.EquipmentSlotType;
-import net.minecraft.item.IArmorMaterial;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.particles.RedstoneParticleData;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.vector.Vector3d;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.world.World;
+import net.minecraft.ChatFormatting;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.core.particles.DustParticleOptions;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ArmorMaterial;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.capabilities.ICapabilityProvider;
@@ -26,7 +27,6 @@ import javax.annotation.Nullable;
 import java.util.List;
 
 import static cofh.lib.util.helpers.StringHelper.getTextComponent;
-import static net.minecraft.util.text.TextFormatting.GRAY;
 
 public class FluxElytraItem extends FluxArmorItem implements IMultiModeFluxItem {
 
@@ -37,7 +37,7 @@ public class FluxElytraItem extends FluxArmorItem implements IMultiModeFluxItem 
 
     protected int propelTime = 0;
 
-    public FluxElytraItem(IArmorMaterial material, EquipmentSlotType slot, Properties builder, int maxEnergy, int maxTransfer) {
+    public FluxElytraItem(ArmorMaterial material, EquipmentSlot slot, Properties builder, int maxEnergy, int maxTransfer) {
 
         super(material, slot, builder, maxEnergy, maxTransfer);
 
@@ -46,17 +46,17 @@ public class FluxElytraItem extends FluxArmorItem implements IMultiModeFluxItem 
 
     @Override
     @OnlyIn (Dist.CLIENT)
-    public void appendHoverText(ItemStack stack, @Nullable World worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn) {
+    public void appendHoverText(ItemStack stack, @Nullable Level worldIn, List<Component> tooltip, TooltipFlag flagIn) {
 
-        if (Screen.hasShiftDown() || CoreConfig.alwaysShowDetails) {
+        if (Screen.hasShiftDown() || CoreClientConfig.alwaysShowDetails) {
             tooltipDelegate(stack, worldIn, tooltip, flagIn);
-        } else if (CoreConfig.holdShiftForDetails) {
-            tooltip.add(getTextComponent("info.cofh.hold_shift_for_details").withStyle(GRAY));
+        } else if (CoreClientConfig.holdShiftForDetails) {
+            tooltip.add(getTextComponent("info.cofh.hold_shift_for_details").withStyle(ChatFormatting.GRAY));
         }
     }
 
     @Override
-    public ICapabilityProvider initCapabilities(ItemStack stack, @Nullable CompoundNBT nbt) {
+    public ICapabilityProvider initCapabilities(ItemStack stack, @Nullable CompoundTag nbt) {
 
         return new EnergyContainerItemWrapper(stack, this, getEnergyCapability());
     }
@@ -90,7 +90,7 @@ public class FluxElytraItem extends FluxArmorItem implements IMultiModeFluxItem 
     }
 
     @Override
-    public void inventoryTick(ItemStack stack, World world, Entity entity, int slot, boolean selected) {
+    public void inventoryTick(ItemStack stack, Level world, Entity entity, int slot, boolean selected) {
 
         if (!world.isClientSide() && entity instanceof LivingEntity && !((LivingEntity) entity).isFallFlying()) {
             propelTime = 0;
@@ -100,16 +100,16 @@ public class FluxElytraItem extends FluxArmorItem implements IMultiModeFluxItem 
     //Used to boost a single time, similar to a rocket.
     public boolean boost(ItemStack stack, LivingEntity entity, int time) {
 
-        if (!entity.getItemBySlot(EquipmentSlotType.CHEST).canElytraFly(entity)) {
+        if (!entity.getItemBySlot(EquipmentSlot.CHEST).canElytraFly(entity)) {
             return false;
         }
-        boolean isPlayer = entity instanceof PlayerEntity;
-        boolean isCreative = isPlayer && ((PlayerEntity) entity).abilities.instabuild;
+        boolean isPlayer = entity instanceof Player;
+        boolean isCreative = isPlayer && ((Player) entity).abilities.instabuild;
         if (!useEnergy(stack, getEnergyPerUse(true) * time / energyUseInterval, isCreative)) {
             return false;
         }
         if (!entity.isFallFlying() && isPlayer) {
-            ((PlayerEntity) entity).startFallFlying();
+            ((Player) entity).startFallFlying();
         }
         propel(entity, propelSpeed);
         propelTime = time;
@@ -125,12 +125,12 @@ public class FluxElytraItem extends FluxArmorItem implements IMultiModeFluxItem 
     public void propel(LivingEntity entity, double speed) {
 
         if (entity.isFallFlying()) {
-            Vector3d look = entity.getLookAngle();
-            Vector3d velocity = entity.getDeltaMovement();
+            Vec3 look = entity.getLookAngle();
+            Vec3 velocity = entity.getDeltaMovement();
             entity.setDeltaMovement(velocity.add(look.x * speed - velocity.x * 0.5, look.y * speed - velocity.y * 0.5, look.z * speed - velocity.z * 0.5));
 
             if (entity.level.isClientSide()) {
-                entity.level.addParticle(RedstoneParticleData.REDSTONE, entity.getX(), entity.getY(), entity.getZ(), 0, 0, 0);
+                entity.level.addParticle(DustParticleOptions.REDSTONE, entity.getX(), entity.getY(), entity.getZ(), 0, 0, 0);
             }
         }
     }
@@ -143,7 +143,7 @@ public class FluxElytraItem extends FluxArmorItem implements IMultiModeFluxItem 
     public void brake(LivingEntity entity, double rate) {
 
         if (entity.isFallFlying()) {
-            Vector3d velocity = entity.getDeltaMovement();
+            Vec3 velocity = entity.getDeltaMovement();
             double horzBrake = velocity.x() * velocity.x() + velocity.z() * velocity.z() > 0.16 ? rate : 1;
             double vertBrake = velocity.y() * velocity.y() > 0.2 ? rate : 1;
             entity.setDeltaMovement(velocity.multiply(horzBrake, vertBrake, horzBrake));

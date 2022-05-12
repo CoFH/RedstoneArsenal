@@ -1,6 +1,6 @@
 package cofh.redstonearsenal.item;
 
-import cofh.core.init.CoreConfig;
+import cofh.core.config.CoreClientConfig;
 import cofh.core.util.ProxyUtils;
 import cofh.lib.capability.CapabilityAreaEffect;
 import cofh.lib.capability.IAreaEffect;
@@ -9,35 +9,36 @@ import cofh.lib.energy.IEnergyContainerItem;
 import cofh.lib.item.impl.HammerItem;
 import cofh.lib.util.Utils;
 import cofh.lib.util.helpers.AreaEffectHelper;
-import cofh.redstonearsenal.entity.ShockwaveEntity;
+import cofh.redstonearsenal.entity.Shockwave;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Multimap;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.material.Material;
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.util.ITooltipFlag;
-import net.minecraft.enchantment.Enchantment;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.ai.attributes.Attribute;
-import net.minecraft.entity.ai.attributes.AttributeModifier;
-import net.minecraft.entity.ai.attributes.Attributes;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.inventory.EquipmentSlotType;
-import net.minecraft.item.IItemTier;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.ItemUseContext;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.potion.EffectInstance;
-import net.minecraft.potion.Effects;
-import net.minecraft.util.ActionResultType;
-import net.minecraft.util.Direction;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.SoundCategory;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.vector.Vector3d;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.world.World;
+import net.minecraft.ChatFormatting;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.sounds.SoundSource;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.effect.MobEffects;
+import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.ai.attributes.Attribute;
+import net.minecraft.world.entity.ai.attributes.AttributeModifier;
+import net.minecraft.world.entity.ai.attributes.Attributes;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Tier;
+import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.item.context.UseOnContext;
+import net.minecraft.world.item.enchantment.Enchantment;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.material.Material;
+import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.capabilities.Capability;
@@ -52,7 +53,6 @@ import static cofh.lib.util.Utils.getItemEnchantmentLevel;
 import static cofh.lib.util.constants.Constants.UUID_TOOL_KNOCKBACK;
 import static cofh.lib.util.helpers.StringHelper.getTextComponent;
 import static cofh.lib.util.references.EnsorcReferences.EXCAVATING;
-import static net.minecraft.util.text.TextFormatting.GRAY;
 
 public class FluxHammerItem extends HammerItem implements IMultiModeFluxItem {
 
@@ -65,7 +65,7 @@ public class FluxHammerItem extends HammerItem implements IMultiModeFluxItem {
     protected final int extract;
     protected final int receive;
 
-    public FluxHammerItem(IItemTier tier, float attackDamageIn, float attackSpeedIn, Properties builder, int energy, int xfer) {
+    public FluxHammerItem(Tier tier, float attackDamageIn, float attackSpeedIn, Properties builder, int energy, int xfer) {
 
         super(tier, attackDamageIn, attackSpeedIn, builder);
 
@@ -82,12 +82,12 @@ public class FluxHammerItem extends HammerItem implements IMultiModeFluxItem {
 
     @Override
     @OnlyIn (Dist.CLIENT)
-    public void appendHoverText(ItemStack stack, @Nullable World worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn) {
+    public void appendHoverText(ItemStack stack, @Nullable Level worldIn, List<Component> tooltip, TooltipFlag flagIn) {
 
-        if (Screen.hasShiftDown() || CoreConfig.alwaysShowDetails) {
+        if (Screen.hasShiftDown() || CoreClientConfig.alwaysShowDetails) {
             tooltipDelegate(stack, worldIn, tooltip, flagIn);
-        } else if (CoreConfig.holdShiftForDetails) {
-            tooltip.add(getTextComponent("info.cofh.hold_shift_for_details").withStyle(GRAY));
+        } else if (CoreClientConfig.holdShiftForDetails) {
+            tooltip.add(getTextComponent("info.cofh.hold_shift_for_details").withStyle(ChatFormatting.GRAY));
         }
     }
 
@@ -104,30 +104,30 @@ public class FluxHammerItem extends HammerItem implements IMultiModeFluxItem {
     }
 
     @Override
-    public ICapabilityProvider initCapabilities(ItemStack stack, @Nullable CompoundNBT nbt) {
+    public ICapabilityProvider initCapabilities(ItemStack stack, @Nullable CompoundTag nbt) {
 
         return new FluxHammerItemWrapper(stack, this);
     }
 
     @Override
-    public ActionResultType useOn(ItemUseContext context) {
+    public InteractionResult useOn(UseOnContext context) {
 
-        PlayerEntity player = context.getPlayer();
+        Player player = context.getPlayer();
         ItemStack stack = context.getItemInHand();
         int energy = getEnergyPerUse(true) * 2;
         if (player == null || !player.isOnGround() || !isEmpowered(stack) || !(hasEnergy(stack, energy) || player.abilities.instabuild)) {
-            return ActionResultType.FAIL;
+            return InteractionResult.FAIL;
         }
-        World world = context.getLevel();
+        Level world = context.getLevel();
         BlockPos pos = context.getClickedPos();
         BlockState state = world.getBlockState(pos);
         if (world.isClientSide) {
-            world.playSound(player, pos, state.getSoundType(world, pos, player).getBreakSound(), SoundCategory.BLOCKS, 1.0F, 1.0F);
-        } else if (world.addFreshEntity(new ShockwaveEntity(world, player, Vector3d.atCenterOf(pos), player.yRot))) {
+            world.playSound(player, pos, state.getSoundType(world, pos, player).getBreakSound(), SoundSource.BLOCKS, 1.0F, 1.0F);
+        } else if (world.addFreshEntity(new Shockwave(world, player, Vec3.atCenterOf(pos), player.yRot))) {
             useEnergy(stack, energy, player.abilities.instabuild);
             player.getCooldowns().addCooldown(this, getSlamCooldown(stack));
         }
-        return ActionResultType.SUCCESS;
+        return InteractionResult.SUCCESS;
     }
 
     protected int getSlamCooldown(ItemStack stack) {
@@ -152,9 +152,9 @@ public class FluxHammerItem extends HammerItem implements IMultiModeFluxItem {
     public boolean hurtEnemy(ItemStack stack, LivingEntity target, LivingEntity attacker) {
 
         if (useEnergy(stack, isEmpowered(stack), attacker) && isEmpowered(stack)) {
-            attacker.addEffect(new EffectInstance(Effects.MOVEMENT_SPEED, 40, 0));
-            if (attacker.hasEffect(Effects.DAMAGE_BOOST)) {
-                attacker.addEffect(new EffectInstance(Effects.DAMAGE_BOOST, attacker.getEffect(Effects.DAMAGE_BOOST).getDuration() + 10, 0));
+            attacker.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SPEED, 40, 0));
+            if (attacker.hasEffect(MobEffects.DAMAGE_BOOST)) {
+                attacker.addEffect(new MobEffectInstance(MobEffects.DAMAGE_BOOST, attacker.getEffect(MobEffects.DAMAGE_BOOST).getDuration() + 10, 0));
             }
             attacker.setSprinting(true);
         }
@@ -162,7 +162,7 @@ public class FluxHammerItem extends HammerItem implements IMultiModeFluxItem {
     }
 
     @Override
-    public boolean mineBlock(ItemStack stack, World worldIn, BlockState state, BlockPos pos, LivingEntity entityLiving) {
+    public boolean mineBlock(ItemStack stack, Level worldIn, BlockState state, BlockPos pos, LivingEntity entityLiving) {
 
         if (Utils.isServerWorld(worldIn) && state.getDestroySpeed(worldIn, pos) != 0.0F) {
             useEnergy(stack, false, entityLiving);
@@ -177,10 +177,10 @@ public class FluxHammerItem extends HammerItem implements IMultiModeFluxItem {
     }
 
     @Override
-    public Multimap<Attribute, AttributeModifier> getAttributeModifiers(EquipmentSlotType slot, ItemStack stack) {
+    public Multimap<Attribute, AttributeModifier> getAttributeModifiers(EquipmentSlot slot, ItemStack stack) {
 
         Multimap<Attribute, AttributeModifier> multimap = HashMultimap.create();
-        if (slot == EquipmentSlotType.MAINHAND) {
+        if (slot == EquipmentSlot.MAINHAND) {
             multimap.put(Attributes.ATTACK_DAMAGE, new AttributeModifier(BASE_ATTACK_DAMAGE_UUID, "Tool modifier", getAttackDamage(stack), AttributeModifier.Operation.ADDITION));
             multimap.put(Attributes.ATTACK_SPEED, new AttributeModifier(BASE_ATTACK_SPEED_UUID, "Tool modifier", getAttackSpeed(stack), AttributeModifier.Operation.ADDITION));
             multimap.put(Attributes.ATTACK_KNOCKBACK, new AttributeModifier(UUID_TOOL_KNOCKBACK, "Tool modifier", getKnockbackModifier(stack), AttributeModifier.Operation.ADDITION));
@@ -234,7 +234,7 @@ public class FluxHammerItem extends HammerItem implements IMultiModeFluxItem {
         }
 
         @Override
-        public ImmutableList<BlockPos> getAreaEffectBlocks(BlockPos pos, PlayerEntity player) {
+        public ImmutableList<BlockPos> getAreaEffectBlocks(BlockPos pos, Player player) {
 
             return AreaEffectHelper.getBreakableBlocksRadius(container, pos, player, 1 + getItemEnchantmentLevel(EXCAVATING, container));
         }

@@ -1,7 +1,7 @@
 package cofh.redstonearsenal.util;
 
 import cofh.lib.capability.CapabilityRedstoneFlux;
-import net.minecraft.item.ItemStack;
+import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.energy.CapabilityEnergy;
 import net.minecraftforge.energy.IEnergyStorage;

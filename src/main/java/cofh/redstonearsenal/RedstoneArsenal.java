@@ -4,14 +4,15 @@ import cofh.lib.network.PacketHandler;
 import cofh.lib.util.DeferredRegisterCoFH;
 import cofh.redstonearsenal.capability.CapabilityFluxShielding;
 import cofh.redstonearsenal.init.*;
-import net.minecraft.block.Block;
-import net.minecraft.entity.EntityType;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemGroup;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.item.CreativeModeTab;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.block.Block;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraftforge.common.capabilities.RegisterCapabilitiesEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
@@ -52,11 +53,14 @@ public class RedstoneArsenal {
     }
 
     // region INITIALIZATION
+    private void capSetup(RegisterCapabilitiesEvent event) {
+
+        CapabilityFluxShielding.register(event);
+    }
+
     private void commonSetup(final FMLCommonSetupEvent event) {
 
         RSAConfig.register();
-
-        CapabilityFluxShielding.register();
 
         event.enqueueWork(RSAItems::setup);
     }
@@ -80,7 +84,7 @@ public class RedstoneArsenal {
     }
     // endregion
 
-    public static final ItemGroup RSA_GROUP = new ItemGroup(-1, ID_REDSTONE_ARSENAL) {
+    public static final CreativeModeTab RSA_GROUP = new CreativeModeTab(-1, ID_REDSTONE_ARSENAL) {
 
         @Override
         @OnlyIn (Dist.CLIENT)

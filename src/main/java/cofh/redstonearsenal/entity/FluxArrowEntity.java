@@ -1,56 +1,57 @@
 package cofh.redstonearsenal.entity;
 
+import cofh.lib.util.helpers.MathHelper;
 import cofh.redstonearsenal.item.IFluxItem;
 import com.google.common.collect.Lists;
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
 import net.minecraft.advancements.CriteriaTriggers;
-import net.minecraft.enchantment.EnchantmentHelper;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.entity.projectile.AbstractArrowEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.network.IPacket;
-import net.minecraft.network.datasync.DataParameter;
-import net.minecraft.network.datasync.DataSerializers;
-import net.minecraft.network.datasync.EntityDataManager;
-import net.minecraft.network.play.server.SChangeGameStatePacket;
-import net.minecraft.particles.ParticleTypes;
-import net.minecraft.util.DamageSource;
-import net.minecraft.util.EntityPredicates;
-import net.minecraft.util.SoundCategory;
-import net.minecraft.util.SoundEvents;
-import net.minecraft.util.math.*;
-import net.minecraft.util.math.vector.Vector3d;
-import net.minecraft.world.World;
-import net.minecraft.world.server.ServerWorld;
-import net.minecraftforge.fml.network.NetworkHooks;
+import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.protocol.Packet;
+import net.minecraft.network.protocol.game.ClientboundGameEventPacket;
+import net.minecraft.network.syncher.EntityDataAccessor;
+import net.minecraft.network.syncher.EntityDataSerializers;
+import net.minecraft.network.syncher.SynchedEntityData;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
+import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntitySelector;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.projectile.AbstractArrow;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.enchantment.EnchantmentHelper;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.*;
+import net.minecraftforge.network.NetworkHooks;
 
 import javax.annotation.Nullable;
 import java.util.Arrays;
 
 import static cofh.redstonearsenal.init.RSAReferences.FLUX_ARROW_ENTITY;
 
-public class FluxArrowEntity extends AbstractArrowEntity {
+public class FluxArrowEntity extends AbstractArrow {
 
-    protected static final DataParameter<Byte> RSA_FLAGS = EntityDataManager.defineId(FluxArrowEntity.class, DataSerializers.BYTE);
+    protected static final EntityDataAccessor<Byte> RSA_FLAGS = SynchedEntityData.defineId(FluxArrowEntity.class, EntityDataSerializers.BYTE);
+
     protected static final int LIFESPAN = 200;
     protected static final float EXPLOSION_RANGE = 4.0F;
 
-    public FluxArrowEntity(EntityType<? extends FluxArrowEntity> entityIn, World worldIn) {
+    public FluxArrowEntity(EntityType<? extends FluxArrowEntity> entityIn, Level worldIn) {
 
         super(entityIn, worldIn);
     }
 
-    public FluxArrowEntity(World worldIn, LivingEntity shooter) {
+    public FluxArrowEntity(Level worldIn, LivingEntity shooter) {
 
         super(FLUX_ARROW_ENTITY, shooter, worldIn);
     }
 
-    public FluxArrowEntity(World worldIn, double x, double y, double z) {
+    public FluxArrowEntity(Level worldIn, double x, double y, double z) {
 
         super(FLUX_ARROW_ENTITY, x, y, z, worldIn);
     }
@@ -89,29 +90,29 @@ public class FluxArrowEntity extends AbstractArrowEntity {
     }
 
     @Override
-    public IPacket<?> getAddEntityPacket() {
+    public Packet<?> getAddEntityPacket() {
 
         return NetworkHooks.getEntitySpawningPacket(this);
     }
 
-    public DamageSource getDamageSource(AbstractArrowEntity arrow, @Nullable Entity shooter) {
+    public DamageSource getDamageSource(AbstractArrow arrow, @Nullable Entity shooter) {
 
         return IFluxItem.fluxRangedDamage(arrow, shooter == null ? arrow : shooter);
     }
 
-    public void explode(Vector3d pos) {
+    public void explode(Vec3 pos) {
 
         if (!level.isClientSide()) {
-            ((ServerWorld) level).sendParticles(ParticleTypes.EXPLOSION, this.getX(), this.getY(), this.getZ(), 1, 0, 0, 0, 0);
-            level.playSound(null, this.getX(), this.getY(), this.getZ(), SoundEvents.GENERIC_EXPLODE, SoundCategory.BLOCKS, 0.5F, (1.0F + (this.level.random.nextFloat() - this.level.random.nextFloat()) * 0.2F) * 0.7F);
+            ((ServerLevel) level).sendParticles(ParticleTypes.EXPLOSION, this.getX(), this.getY(), this.getZ(), 1, 0, 0, 0, 0);
+            level.playSound(null, this.getX(), this.getY(), this.getZ(), SoundEvents.GENERIC_EXPLODE, SoundSource.BLOCKS, 0.5F, (1.0F + (this.level.random.nextFloat() - this.level.random.nextFloat()) * 0.2F) * 0.7F);
             double r2 = EXPLOSION_RANGE * EXPLOSION_RANGE;
-            AxisAlignedBB searchArea = this.getBoundingBox().move(pos.subtract(this.position())).inflate(EXPLOSION_RANGE);
-            for (Entity target : level.getEntities(this, searchArea, EntityPredicates.NO_CREATIVE_OR_SPECTATOR)) {
+            AABB searchArea = this.getBoundingBox().move(pos.subtract(this.position())).inflate(EXPLOSION_RANGE);
+            for (Entity target : level.getEntities(this, searchArea, EntitySelector.NO_CREATIVE_OR_SPECTATOR)) {
                 if (pos.distanceToSqr(target.getBoundingBox().getCenter()) < r2) {
                     target.hurt(getDamageSource(this, getOwner()), (float) getBaseDamage());
                 }
             }
-            remove();
+            discard();
         }
     }
 
@@ -119,7 +120,7 @@ public class FluxArrowEntity extends AbstractArrowEntity {
     public void tick() {
 
         if (!level.isClientSide() && tickCount > LIFESPAN) {
-            remove();
+            discard();
         } else {
             super.tick();
             //if (!this.leftOwner) {
@@ -161,7 +162,7 @@ public class FluxArrowEntity extends AbstractArrowEntity {
             //    }
             //    Entity target = entityResult.getEntity();
             //    Entity owner = this.getOwner();
-            //    if (target instanceof PlayerEntity && owner instanceof PlayerEntity && !((PlayerEntity)owner).canHarmPlayer((PlayerEntity)target)) {
+            //    if (target instanceof Player && owner instanceof Player && !((Player)owner).canHarmPlayer((Player)target)) {
             //        break;
             //    }
             //    if (!noPhysics && !ForgeEventFactory.onProjectileImpact(this, entityResult)) {
@@ -224,22 +225,22 @@ public class FluxArrowEntity extends AbstractArrowEntity {
     }
 
     @Override
-    protected void onHit(RayTraceResult result) {
+    protected void onHit(HitResult result) {
 
         if (isExplodeArrow()) {
             explode(result.getLocation());
         } else {
-            RayTraceResult.Type type = result.getType();
-            if (type == RayTraceResult.Type.ENTITY) {
-                this.onHitEntity((EntityRayTraceResult) result);
-            } else if (type == RayTraceResult.Type.BLOCK) {
-                this.onHitBlock((BlockRayTraceResult) result);
+            HitResult.Type type = result.getType();
+            if (type == HitResult.Type.ENTITY) {
+                this.onHitEntity((EntityHitResult) result);
+            } else if (type == HitResult.Type.BLOCK) {
+                this.onHitBlock((BlockHitResult) result);
             }
         }
     }
 
     @Override
-    protected void onHitEntity(EntityRayTraceResult result) {
+    protected void onHitEntity(EntityHitResult result) {
 
         Entity target = result.getEntity();
         float speed = (float) this.getDeltaMovement().length();
@@ -248,79 +249,66 @@ public class FluxArrowEntity extends AbstractArrowEntity {
             if (this.piercingIgnoreEntityIds == null) {
                 this.piercingIgnoreEntityIds = new IntOpenHashSet(5);
             }
-
             if (this.piercedAndKilledEntities == null) {
                 this.piercedAndKilledEntities = Lists.newArrayListWithCapacity(5);
             }
-
             if (this.piercingIgnoreEntityIds.size() >= this.getPierceLevel() + 1) {
-                this.remove();
+                this.discard();
                 return;
             }
-
             this.piercingIgnoreEntityIds.add(target.getId());
         }
-
         if (this.isCritArrow()) {
             dmg = Math.min(this.random.nextInt(dmg / 2 + 2) + dmg, Integer.MAX_VALUE);
         }
-
         Entity owner = this.getOwner();
         DamageSource dmgSource = getDamageSource(this, owner);
         if (owner instanceof LivingEntity) {
             ((LivingEntity) owner).setLastHurtMob(target);
         }
-
         boolean canHurt = canHurtEntity(target);
         if (target.hurt(dmgSource, (float) dmg)) {
             if (!canHurt) {
                 return;
             }
-
             if (target instanceof LivingEntity) {
                 LivingEntity living = (LivingEntity) target;
-
                 if (this.knockback > 0) {
-                    Vector3d vector3d = this.getDeltaMovement().multiply(1.0D, 0.0D, 1.0D).normalize().scale((double) this.knockback * 0.6D);
+                    Vec3 vector3d = this.getDeltaMovement().multiply(1.0D, 0.0D, 1.0D).normalize().scale((double) this.knockback * 0.6D);
                     if (vector3d.lengthSqr() > 0.0D) {
                         living.push(vector3d.x, 0.1D, vector3d.z);
                     }
                 }
-
                 if (!this.level.isClientSide && owner instanceof LivingEntity) {
                     EnchantmentHelper.doPostHurtEffects(living, owner);
                     EnchantmentHelper.doPostDamageEffects((LivingEntity) owner, living);
                 }
-
                 this.doPostHurtEffects(living);
-                if (living != owner && living instanceof PlayerEntity && owner instanceof ServerPlayerEntity && !this.isSilent()) {
-                    ((ServerPlayerEntity) owner).connection.send(new SChangeGameStatePacket(SChangeGameStatePacket.ARROW_HIT_PLAYER, 0.0F));
+                if (living != owner && living instanceof Player && owner instanceof ServerPlayer && !this.isSilent()) {
+                    ((ServerPlayer) owner).connection.send(new ClientboundGameEventPacket(ClientboundGameEventPacket.ARROW_HIT_PLAYER, 0.0F));
                 }
-
                 if (!target.isAlive() && this.piercedAndKilledEntities != null) {
                     this.piercedAndKilledEntities.add(living);
                 }
-
-                if (!this.level.isClientSide && owner instanceof ServerPlayerEntity) {
-                    ServerPlayerEntity serverplayerentity = (ServerPlayerEntity) owner;
+                if (!this.level.isClientSide && owner instanceof ServerPlayer) {
+                    ServerPlayer serverPlayer = (ServerPlayer) owner;
                     if (this.piercedAndKilledEntities != null && this.shotFromCrossbow()) {
-                        CriteriaTriggers.KILLED_BY_CROSSBOW.trigger(serverplayerentity, this.piercedAndKilledEntities);
+                        CriteriaTriggers.KILLED_BY_CROSSBOW.trigger(serverPlayer, this.piercedAndKilledEntities);
                     } else if (!target.isAlive() && this.shotFromCrossbow()) {
-                        CriteriaTriggers.KILLED_BY_CROSSBOW.trigger(serverplayerentity, Arrays.asList(target));
+                        CriteriaTriggers.KILLED_BY_CROSSBOW.trigger(serverPlayer, Arrays.asList(target));
                     }
                 }
             }
-
             this.playSound(getDefaultHitGroundSoundEvent(), 1.0F, 1.2F / (this.random.nextFloat() * 0.2F + 0.9F));
             if (this.getPierceLevel() <= 0) {
-                this.remove();
+                this.discard();
             }
         } else {
             this.setDeltaMovement(this.getDeltaMovement().scale(-0.1D));
             this.yRot += 180.0F;
             this.yRotO += 180.0F;
             if (!this.level.isClientSide && this.getDeltaMovement().lengthSqr() < 1.0E-7D) {
-                this.remove();
+                this.discard();
             }
         }
     }
@@ -331,25 +319,25 @@ public class FluxArrowEntity extends AbstractArrowEntity {
     }
 
     @Override
-    protected void onHitBlock(BlockRayTraceResult result) {
+    protected void onHitBlock(BlockHitResult result) {
 
         if (isExplodeArrow()) {
             this.explode(result.getLocation());
             return;
         }
         level.broadcastEntityEvent(this, (byte) 3);
-        this.remove();
+        this.discard();
     }
 
     @Override
-    public void addAdditionalSaveData(CompoundNBT nbt) {
+    public void addAdditionalSaveData(CompoundTag nbt) {
 
         super.addAdditionalSaveData(nbt);
         nbt.putBoolean("explode", this.isExplodeArrow());
     }
 
     @Override
-    public void readAdditionalSaveData(CompoundNBT nbt) {
+    public void readAdditionalSaveData(CompoundTag nbt) {
 
         super.readAdditionalSaveData(nbt);
         this.setExplodeArrow(nbt.getBoolean("explode"));

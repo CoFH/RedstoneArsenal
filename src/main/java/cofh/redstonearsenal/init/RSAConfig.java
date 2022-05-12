@@ -6,6 +6,7 @@ import net.minecraftforge.common.ForgeConfigSpec.BooleanValue;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.config.ModConfig;
+import net.minecraftforge.fml.event.config.ModConfigEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 
 public class RSAConfig {
@@ -80,7 +81,7 @@ public class RSAConfig {
 
     // region CONFIGURATION
     @SubscribeEvent
-    public static void configLoading(ModConfig.Loading event) {
+    public static void configLoading(ModConfigEvent.Loading event) {
 
         switch (event.getConfig().getType()) {
             case CLIENT:
@@ -92,7 +93,7 @@ public class RSAConfig {
     }
 
     @SubscribeEvent
-    public static void configReloading(ModConfig.Reloading event) {
+    public static void configReloading(ModConfigEvent.Reloading event) {
 
         switch (event.getConfig().getType()) {
             case CLIENT:

@@ -1,9 +1,8 @@
 package cofh.redstonearsenal.client.renderer;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.AbstractGui;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.client.gui.ForgeIngameGui;
@@ -17,7 +16,7 @@ public class FluxShieldingHUDRenderer {
     public static int currCharges = 0;
     public static int maxCharges = 0;
 
-    public static void render(MatrixStack stack) {
+    public static void render(PoseStack stack) {
 
         final Minecraft minecraft = Minecraft.getInstance();
 

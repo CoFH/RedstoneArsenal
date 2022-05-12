@@ -8,10 +8,10 @@ import cofh.redstonearsenal.item.FluxSwordItem;
 import cofh.redstonearsenal.item.FluxTridentItem;
 import cofh.redstonearsenal.util.FluxShieldingHelper;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.entity.player.ClientPlayerEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.math.RayTraceResult;
+import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.phys.HitResult;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.InputEvent.ClickInputEvent;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
@@ -31,7 +31,7 @@ public class RSAClientEvents {
         if (event.isCanceled() || !event.isAttack()) {
             return;
         }
-        PlayerEntity player = Minecraft.getInstance().player;
+        Player player = Minecraft.getInstance().player;
         if (player == null) {
             return;
         }
@@ -54,8 +54,8 @@ public class RSAClientEvents {
         }
         // Flux Crossbow
         if (stack.getItem() instanceof FluxCrossbowItem && ((FluxCrossbowItem) stack.getItem()).getLoadedAmmoCount(stack) > 0) {
-            RayTraceResult result = Minecraft.getInstance().hitResult;
-            if (result == null || !result.getType().equals(RayTraceResult.Type.BLOCK)) {
+            HitResult result = Minecraft.getInstance().hitResult;
+            if (result == null || !result.getType().equals(HitResult.Type.BLOCK)) {
                 ItemLeftClickPacket.createAndSend();
             } else if (player.attackStrengthTicker > 5) {
                 ItemLeftClickPacket.createAndSend();
@@ -80,7 +80,7 @@ public class RSAClientEvents {
 
         // Flux Shielding
         if (event.phase == TickEvent.Phase.END && ProxyUtils.isClient()) {
-            ClientPlayerEntity player = Minecraft.getInstance().player;
+            LocalPlayer player = Minecraft.getInstance().player;
             if (player != null && (player.level.getGameTime() & 7) == 0) {
                 FluxShieldingHelper.updateHUD(player);
             }

@@ -1,28 +1,33 @@
 package cofh.redstonearsenal.item;
 
-import cofh.core.init.CoreConfig;
+import cofh.core.config.CoreClientConfig;
 import cofh.core.util.ProxyUtils;
 import cofh.lib.energy.EnergyContainerItemWrapper;
 import cofh.lib.item.ILeftClickHandlerItem;
 import cofh.lib.item.impl.CrossbowItemCoFH;
 import cofh.lib.util.helpers.ArcheryHelper;
+import net.minecraft.ChatFormatting;
 import net.minecraft.advancements.CriteriaTriggers;
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.util.ITooltipFlag;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.core.BlockPos;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListNBT;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.stats.Stats;
-import net.minecraft.util.*;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.StringTextComponent;
-import net.minecraft.util.text.TranslationTextComponent;
-import net.minecraft.world.World;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResultHolder;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.level.Level;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.capabilities.ICapabilityProvider;
@@ -32,8 +37,7 @@ import java.util.List;
 
 import static cofh.lib.util.constants.NBTTags.TAG_AMMO;
 import static cofh.lib.util.helpers.StringHelper.getTextComponent;
-import static net.minecraft.util.text.TextFormatting.GRAY;
-import static net.minecraftforge.common.util.Constants.NBT.TAG_COMPOUND;
+import static net.minecraft.nbt.Tag.TAG_COMPOUND;
 
 public class FluxCrossbowItem extends CrossbowItemCoFH implements IMultiModeFluxItem, ILeftClickHandlerItem {
 
@@ -58,18 +62,18 @@ public class FluxCrossbowItem extends CrossbowItemCoFH implements IMultiModeFlux
 
     @Override
     @OnlyIn (Dist.CLIENT)
-    public void appendHoverText(ItemStack stack, @Nullable World worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn) {
+    public void appendHoverText(ItemStack stack, @Nullable Level worldIn, List<Component> tooltip, TooltipFlag flagIn) {
 
         if (getLoadedAmmoCount(stack) > 0) {
-            tooltip.add(new TranslationTextComponent("info.cofh.crossbow_loaded"));
+            tooltip.add(new TranslatableComponent("info.cofh.crossbow_loaded"));
             for (ItemStack ammo : getAllLoadedAmmo(stack)) {
-                tooltip.add((new StringTextComponent("• ")).append(ammo.getHoverName()));
+                tooltip.add((new TextComponent("• ")).append(ammo.getHoverName()));
             }
         }
-        if (Screen.hasShiftDown() || CoreConfig.alwaysShowDetails) {
+        if (Screen.hasShiftDown() || CoreClientConfig.alwaysShowDetails) {
             tooltipDelegate(stack, worldIn, tooltip, flagIn);
-        } else if (CoreConfig.holdShiftForDetails) {
-            tooltip.add(getTextComponent("info.cofh.hold_shift_for_details").withStyle(GRAY));
+        } else if (CoreClientConfig.holdShiftForDetails) {
+            tooltip.add(getTextComponent("info.cofh.hold_shift_for_details").withStyle(ChatFormatting.GRAY));
         }
     }
 
@@ -80,44 +84,44 @@ public class FluxCrossbowItem extends CrossbowItemCoFH implements IMultiModeFlux
     }
 
     @Override
-    public ICapabilityProvider initCapabilities(ItemStack stack, @Nullable CompoundNBT nbt) {
+    public ICapabilityProvider initCapabilities(ItemStack stack, @Nullable CompoundTag nbt) {
 
         return new EnergyContainerItemWrapper(stack, this, getEnergyCapability());
     }
 
     @Override
-    public float getAmmoModelProperty(ItemStack stack, World world, LivingEntity entity) {
+    public float getAmmoModelProperty(ItemStack stack, Level world, LivingEntity entity) {
 
         return getLoadedAmmoCount(stack) * 0.334F;
     }
 
     @Override
-    public ActionResult<ItemStack> use(World world, PlayerEntity player, Hand hand) {
+    public InteractionResultHolder<ItemStack> use(Level world, Player player, InteractionHand hand) {
 
         ItemStack stack = player.getItemInHand(hand);
         if (hasEnergy(stack, false) && getLoadedAmmoCount(stack) < maxCharges && (player.abilities.instabuild || !ArcheryHelper.findAmmo(player, stack).isEmpty())) {
             player.startUsingItem(hand);
-            return ActionResult.consume(stack);
+            return InteractionResultHolder.consume(stack);
         }
-        return ActionResult.fail(stack);
+        return InteractionResultHolder.fail(stack);
     }
 
     @Override
-    public ItemStack finishUsingItem(ItemStack stack, World world, LivingEntity living) {
+    public ItemStack finishUsingItem(ItemStack stack, Level world, LivingEntity living) {
 
         if (!world.isClientSide && getLoadedAmmoCount(stack) < maxCharges && loadAmmo(living, stack)) {
             setCharged(stack, true);
-            world.playSound(null, living.getX(), living.getY(), living.getZ(), SoundEvents.CROSSBOW_LOADING_END, living instanceof PlayerEntity ? SoundCategory.PLAYERS : SoundCategory.HOSTILE, 1.0F, 1.0F / (random.nextFloat() * 0.5F + 1.0F) + 0.2F);
+            world.playSound(null, living.getX(), living.getY(), living.getZ(), SoundEvents.CROSSBOW_LOADING_END, living instanceof Player ? SoundSource.PLAYERS : SoundSource.HOSTILE, 1.0F, 1.0F / (random.nextFloat() * 0.5F + 1.0F) + 0.2F);
         }
         return stack;
     }
 
     @Override
-    public void releaseUsing(ItemStack stack, World world, LivingEntity living, int durationRemaining) {
+    public void releaseUsing(ItemStack stack, Level world, LivingEntity living, int durationRemaining) {
 
         if (!world.isClientSide && durationRemaining < 0 && getLoadedAmmoCount(stack) < maxCharges && loadAmmo(living, stack)) {
             setCharged(stack, true);
-            world.playSound(null, living.getX(), living.getY(), living.getZ(), SoundEvents.CROSSBOW_LOADING_END, living instanceof PlayerEntity ? SoundCategory.PLAYERS : SoundCategory.HOSTILE, 1.0F, 1.0F / (random.nextFloat() * 0.5F + 1.0F) + 0.2F);
+            world.playSound(null, living.getX(), living.getY(), living.getZ(), SoundEvents.CROSSBOW_LOADING_END, living instanceof Player ? SoundSource.PLAYERS : SoundSource.HOSTILE, 1.0F, 1.0F / (random.nextFloat() * 0.5F + 1.0F) + 0.2F);
         }
     }
 
@@ -128,7 +132,7 @@ public class FluxCrossbowItem extends CrossbowItemCoFH implements IMultiModeFlux
     }
 
     @Override
-    public void onLeftClick(PlayerEntity player, ItemStack stack) {
+    public void onLeftClick(Player player, ItemStack stack) {
 
         if (isCharged(stack)) {
             if (isEmpowered(stack)) {
@@ -136,30 +140,30 @@ public class FluxCrossbowItem extends CrossbowItemCoFH implements IMultiModeFlux
                 int count = getLoadedAmmoCount(stack);
                 for (int i = (1 - count) / 2; i <= count / 2; ++i) {
                     player.xRot = xRot - 10 * i;
-                    shootLoadedAmmo(player.level, player, Hand.MAIN_HAND, stack);
+                    shootLoadedAmmo(player.level, player, InteractionHand.MAIN_HAND, stack);
                 }
                 player.xRot = xRot;
                 setCharged(stack, false);
-            } else if (shootLoadedAmmo(player.level, player, Hand.MAIN_HAND, stack) && getLoadedAmmoCount(stack) <= 0) {
+            } else if (shootLoadedAmmo(player.level, player, InteractionHand.MAIN_HAND, stack) && getLoadedAmmoCount(stack) <= 0) {
                 setCharged(stack, false);
             }
         }
     }
 
     @Override
-    public boolean onBlockStartBreak(ItemStack stack, BlockPos pos, PlayerEntity player) {
+    public boolean onBlockStartBreak(ItemStack stack, BlockPos pos, Player player) {
 
         return player.isCreative();
     }
 
     @Override
-    public void onCrossbowShot(PlayerEntity shooter, Hand hand, ItemStack crossbow, int damage) {
+    public void onCrossbowShot(Player shooter, InteractionHand hand, ItemStack crossbow, int damage) {
 
         useEnergy(crossbow, Math.min(getEnergyPerUse(false) * damage, getEnergyStored(crossbow)), shooter.abilities.instabuild);
 
-        if (shooter instanceof ServerPlayerEntity) {
+        if (shooter instanceof ServerPlayer) {
             if (!shooter.level.isClientSide()) {
-                CriteriaTriggers.SHOT_CROSSBOW.trigger((ServerPlayerEntity) shooter, crossbow);
+                CriteriaTriggers.SHOT_CROSSBOW.trigger((ServerPlayer) shooter, crossbow);
             }
             shooter.awardStat(Stats.ITEM_USED.get(crossbow.getItem()));
         }
@@ -168,7 +172,7 @@ public class FluxCrossbowItem extends CrossbowItemCoFH implements IMultiModeFlux
     // region LOADING
     public ListNBT getLoadedAmmoNBT(ItemStack crossbow) {
 
-        CompoundNBT tag = crossbow.getOrCreateTag();
+        CompoundTag tag = crossbow.getOrCreateTag();
         if (tag.contains(TAG_AMMO) && tag.getTagType(TAG_AMMO) == 9) {
             return tag.getList(TAG_AMMO, TAG_COMPOUND);
         }
@@ -177,7 +181,7 @@ public class FluxCrossbowItem extends CrossbowItemCoFH implements IMultiModeFlux
 
     public ItemStack[] getAllLoadedAmmo(ItemStack crossbow) {
 
-        return getLoadedAmmoNBT(crossbow).stream().map(nbt -> nbt instanceof CompoundNBT ? ItemStack.of((CompoundNBT) nbt) : ItemStack.EMPTY).toArray(ItemStack[]::new);
+        return getLoadedAmmoNBT(crossbow).stream().map(nbt -> nbt instanceof CompoundTag ? ItemStack.of((CompoundTag) nbt) : ItemStack.EMPTY).toArray(ItemStack[]::new);
     }
 
     public int getLoadedAmmoCount(ItemStack crossbow) {
@@ -186,10 +190,10 @@ public class FluxCrossbowItem extends CrossbowItemCoFH implements IMultiModeFlux
     }
 
     @Override
-    public boolean loadAmmo(PlayerEntity player, ItemStack crossbow, ItemStack ammo) {
+    public boolean loadAmmo(Player player, ItemStack crossbow, ItemStack ammo) {
 
         ListNBT list = getLoadedAmmoNBT(crossbow);
-        list.add(ammo.save(new CompoundNBT()));
+        list.add(ammo.save(new CompoundTag()));
         crossbow.getOrCreateTag().put(TAG_AMMO, list);
         setCharged(crossbow, true);
         return true;
@@ -233,12 +237,12 @@ public class FluxCrossbowItem extends CrossbowItemCoFH implements IMultiModeFlux
     // endregion
 
     @Override
-    public void onModeChange(PlayerEntity player, ItemStack stack) {
+    public void onModeChange(Player player, ItemStack stack) {
 
         if (isEmpowered(stack)) {
-            player.level.playSound(null, player.blockPosition(), SoundEvents.LIGHTNING_BOLT_THUNDER, SoundCategory.PLAYERS, 0.4F, 1.0F);
+            player.level.playSound(null, player.blockPosition(), SoundEvents.LIGHTNING_BOLT_THUNDER, SoundSource.PLAYERS, 0.4F, 1.0F);
         } else {
-            player.level.playSound(null, player.blockPosition(), SoundEvents.EXPERIENCE_ORB_PICKUP, SoundCategory.PLAYERS, 0.2F, 0.6F);
+            player.level.playSound(null, player.blockPosition(), SoundEvents.EXPERIENCE_ORB_PICKUP, SoundSource.PLAYERS, 0.2F, 0.6F);
         }
     }
 

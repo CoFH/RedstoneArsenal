@@ -4,15 +4,15 @@ import cofh.core.compat.curios.CuriosProxy;
 import cofh.redstonearsenal.capability.IFluxShieldedItem;
 import cofh.redstonearsenal.client.renderer.FluxShieldingHUDRenderer;
 import cofh.redstonearsenal.network.client.FluxShieldingPacket;
-import net.minecraft.client.entity.player.ClientPlayerEntity;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.particles.RedstoneParticleData;
-import net.minecraft.util.SoundEvents;
-import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.math.vector.Vector3d;
-import net.minecraft.world.server.ServerWorld;
+import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.core.particles.DustParticleOptions;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.util.LazyOptional;
@@ -115,10 +115,10 @@ public class FluxShieldingHelper {
     protected static void onUseFluxShieldCharge(LivingEntity entity) {
 
         entity.level.playSound(null, entity.getX(), entity.getY(), entity.getZ(), SoundEvents.ITEM_BREAK, entity.getSoundSource(), 1.0F, 1.0F); //TODO: sound event
-        AxisAlignedBB bounds = entity.getBoundingBox();
-        Vector3d pos = bounds.getCenter();
+        AABB bounds = entity.getBoundingBox();
+        Vec3 pos = bounds.getCenter();
         if (!entity.level.isClientSide()) {
-            ((ServerWorld) entity.level).sendParticles(RedstoneParticleData.REDSTONE, pos.x(), pos.y(), pos.z(), 20, bounds.getXsize() * 0.5 + 0.2, bounds.getYsize() * 0.5 + 0.2, bounds.getZsize() * 0.5 + 0.2, 0);
+            ((ServerLevel) entity.level).sendParticles(DustParticleOptions.REDSTONE, pos.x(), pos.y(), pos.z(), 20, bounds.getXsize() * 0.5 + 0.2, bounds.getYsize() * 0.5 + 0.2, bounds.getZsize() * 0.5 + 0.2, 0);
         }
     }
 
@@ -136,12 +136,12 @@ public class FluxShieldingHelper {
     }
 
     @OnlyIn (Dist.CLIENT)
-    public static void updateHUD(ClientPlayerEntity player) {
+    public static void updateHUD(LocalPlayer player) {
 
         updateHUD(countCharges(player));
     }
 
-    public static void updateHUD(ServerPlayerEntity player) {
+    public static void updateHUD(ServerPlayer player) {
 
         FluxShieldingPacket.sendToClient(countCharges(player), player);
     }

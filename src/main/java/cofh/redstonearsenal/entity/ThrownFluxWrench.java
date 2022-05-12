@@ -5,55 +5,60 @@ import cofh.lib.util.helpers.ArcheryHelper;
 import cofh.redstonearsenal.RedstoneArsenal;
 import cofh.redstonearsenal.item.FluxWrenchItem;
 import cofh.redstonearsenal.item.IFluxItem;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
-import net.minecraft.enchantment.EnchantmentHelper;
-import net.minecraft.enchantment.Enchantments;
-import net.minecraft.entity.CreatureAttribute;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.item.ItemEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.projectile.ProjectileEntity;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.network.IPacket;
-import net.minecraft.network.datasync.DataParameter;
-import net.minecraft.network.datasync.DataSerializers;
-import net.minecraft.network.datasync.EntityDataManager;
-import net.minecraft.particles.ParticleTypes;
-import net.minecraft.tileentity.EndGatewayTileEntity;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.Util;
-import net.minecraft.util.math.*;
-import net.minecraft.util.math.vector.Vector3d;
-import net.minecraft.world.World;
-import net.minecraftforge.fml.network.NetworkHooks;
+import net.minecraft.Util;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.protocol.Packet;
+import net.minecraft.network.syncher.EntityDataAccessor;
+import net.minecraft.network.syncher.EntityDataSerializers;
+import net.minecraft.network.syncher.SynchedEntityData;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.MobType;
+import net.minecraft.world.entity.item.ItemEntity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.projectile.Projectile;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.enchantment.EnchantmentHelper;
+import net.minecraft.world.item.enchantment.Enchantments;
+import net.minecraft.world.level.ClipContext;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.TheEndGatewayBlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.EntityHitResult;
+import net.minecraft.world.phys.HitResult;
+import net.minecraft.world.phys.Vec3;
+import net.minecraftforge.network.NetworkHooks;
 
 import static cofh.redstonearsenal.init.RSAIDs.ID_FLUX_WRENCH;
 import static cofh.redstonearsenal.init.RSAReferences.FLUX_WRENCH_ENTITY;
 
-public class FluxWrenchEntity extends ProjectileEntity {
+public class ThrownFluxWrench extends Projectile {
 
-    protected static final DataParameter<ItemStack> DATA_ITEM_STACK = EntityDataManager.defineId(FluxWrenchEntity.class, DataSerializers.ITEM_STACK);
+    protected static final EntityDataAccessor<ItemStack> DATA_ITEM_STACK = SynchedEntityData.defineId(ThrownFluxWrench.class, EntityDataSerializers.ITEM_STACK);
+
     public float speed = 1.3F;
     public float range = 16.0F;
     public boolean hitSomething = false;
 
-    public FluxWrenchEntity(EntityType<? extends ProjectileEntity> type, World worldIn) {
+    public ThrownFluxWrench(EntityType<? extends Projectile> type, Level worldIn) {
 
         super(type, worldIn);
     }
 
-    public FluxWrenchEntity(World worldIn, double x, double y, double z) {
+    public ThrownFluxWrench(Level worldIn, double x, double y, double z) {
 
         this(FLUX_WRENCH_ENTITY, worldIn);
         this.setPos(x, y, z);
     }
 
-    public FluxWrenchEntity(World worldIn, LivingEntity livingEntityIn, ItemStack stackIn) {
+    public ThrownFluxWrench(Level worldIn, LivingEntity livingEntityIn, ItemStack stackIn) {
 
         this(worldIn, livingEntityIn.getX(), livingEntityIn.getEyeY() - 0.1F, livingEntityIn.getZ());
         this.setOwner(livingEntityIn);
@@ -68,14 +73,14 @@ public class FluxWrenchEntity extends ProjectileEntity {
     }
 
     @Override
-    public IPacket<?> getAddEntityPacket() {
+    public Packet<?> getAddEntityPacket() {
 
         return NetworkHooks.getEntitySpawningPacket(this);
     }
 
     protected Item getDefaultItem() {
 
-        return RedstoneArsenal.ITEMS.get(ID_FLUX_WRENCH).getItem();
+        return RedstoneArsenal.ITEMS.get(ID_FLUX_WRENCH).asItem();
     }
 
     protected ItemStack getItemRaw() {
@@ -113,10 +118,10 @@ public class FluxWrenchEntity extends ProjectileEntity {
         if (!this.isAlive()) {
             return;
         }
-        Vector3d velocity = getDeltaMovement();
+        Vec3 velocity = getDeltaMovement();
         Entity owner = this.getOwner();
         if (owner != null) {
-            Vector3d relPos = owner.getEyePosition(0).subtract(this.position());
+            Vec3 relPos = owner.getEyePosition(0).subtract(this.position());
             double distance = relPos.length();
             if (distance > range) {
                 this.hitSomething = true;
@@ -141,41 +146,39 @@ public class FluxWrenchEntity extends ProjectileEntity {
         setPos(getX() + velocity.x, getY() + velocity.y, getZ() + velocity.z);
     }
 
-    public void calculateCollision(World world) {
+    public void calculateCollision(Level world) {
 
-        Vector3d start = this.position();
-        Vector3d end = start.add(this.getDeltaMovement());
-        BlockRayTraceResult blockResult = this.getBlockHitResult(world, start, end);
+        Vec3 start = this.position();
+        Vec3 end = start.add(this.getDeltaMovement());
+        BlockHitResult blockResult = this.getBlockHitResult(world, start, end);
         boolean blockCollision = false;
-        if (blockResult.getType() != RayTraceResult.Type.MISS) {
+        if (blockResult.getType() != HitResult.Type.MISS) {
             end = blockResult.getLocation();
             BlockPos blockpos = blockResult.getBlockPos();
             BlockState blockstate = world.getBlockState(blockpos);
             if (blockstate.is(Blocks.NETHER_PORTAL)) {
                 this.handleInsidePortal(blockpos);
             } else if (blockstate.is(Blocks.END_GATEWAY)) {
-                TileEntity tileentity = world.getBlockEntity(blockpos);
-                if (tileentity instanceof EndGatewayTileEntity && EndGatewayTileEntity.canEntityTeleport(this)) {
-                    ((EndGatewayTileEntity) tileentity).teleportEntity(this);
+                BlockEntity blockentity = this.level.getBlockEntity(blockpos);
+                if (blockentity instanceof TheEndGatewayBlockEntity && TheEndGatewayBlockEntity.canEntityTeleport(this)) {
+                    TheEndGatewayBlockEntity.teleportEntity(this.level, blockpos, blockstate, this, (TheEndGatewayBlockEntity) blockentity);
                 }
             } else {
                 blockCollision = true;
             }
         }
-
         this.hitEntities(this.level, start, end);
-
         if (blockCollision && !net.minecraftforge.event.ForgeEventFactory.onProjectileImpact(this, blockResult)) {
             this.onHitBlock(blockResult);
         }
     }
 
-    public BlockRayTraceResult getBlockHitResult(World world, Vector3d startPos, Vector3d endPos) {
+    public BlockHitResult getBlockHitResult(Level world, Vec3 startPos, Vec3 endPos) {
 
-        return world.clip(new RayTraceContext(startPos, endPos, RayTraceContext.BlockMode.COLLIDER, RayTraceContext.FluidMode.NONE, this));
+        return world.clip(new ClipContext(startPos, endPos, ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, this));
     }
 
-    public void hitEntities(World world, Vector3d startPos, Vector3d endPos) {
+    public void hitEntities(Level world, Vec3 startPos, Vec3 endPos) {
 
         ArcheryHelper.findHitEntities(world, this, startPos, endPos, this::canHitEntity)
                 .filter(result -> !net.minecraftforge.event.ForgeEventFactory.onProjectileImpact(this, result))
@@ -183,12 +186,12 @@ public class FluxWrenchEntity extends ProjectileEntity {
     }
 
     @Override
-    protected void onHit(RayTraceResult result) {
+    protected void onHit(HitResult result) {
 
         if (!this.hitSomething) {
             Entity owner = this.getOwner();
             if (owner != null) {
-                Vector3d relPos = owner.getEyePosition(1).subtract(this.position());
+                Vec3 relPos = owner.getEyePosition(1).subtract(this.position());
                 double distance = relPos.length();
                 if (distance < 1.5) {
                     returnToInventory();
@@ -208,14 +211,14 @@ public class FluxWrenchEntity extends ProjectileEntity {
         if (owner == null) {
             return;
         }
-        if (!(owner instanceof PlayerEntity && ((PlayerEntity) owner).inventory.add(this.getItem()))) {
+        if (!(owner instanceof Player && ((Player) owner).inventory.add(this.getItem()))) {
             level.addFreshEntity(new ItemEntity(level, owner.getX(), owner.getY(), owner.getZ(), this.getItem()));
         }
-        this.remove();
+        this.discard();
     }
 
     @Override
-    protected void onHitEntity(EntityRayTraceResult result) {
+    protected void onHitEntity(EntityHitResult result) {
 
         if (!this.isAlive() || level.isClientSide()) {
             return;
@@ -246,13 +249,13 @@ public class FluxWrenchEntity extends ProjectileEntity {
                 stack.getItem().hurtEnemy(stack, (LivingEntity) target, (LivingEntity) owner);
             }
         } else {
-            damage += EnchantmentHelper.getDamageBonus(stack, CreatureAttribute.UNDEFINED);
+            damage += EnchantmentHelper.getDamageBonus(stack, MobType.UNDEFINED);
         }
         return damage;
     }
 
     @Override
-    protected void onHitBlock(BlockRayTraceResult result) {
+    protected void onHitBlock(BlockHitResult result) {
 
         if (!this.isAlive() || level.isClientSide()) {
             return;
@@ -261,14 +264,14 @@ public class FluxWrenchEntity extends ProjectileEntity {
         state.onProjectileHit(this.level, state, result, this);
         Entity owner = this.getOwner();
         ItemStack stack = this.getItem();
-        if (owner instanceof PlayerEntity && stack.getItem() instanceof FluxWrenchItem) {
-            ((FluxWrenchItem) stack.getItem()).useRanged(level, stack, (PlayerEntity) owner, result);
+        if (owner instanceof Player && stack.getItem() instanceof FluxWrenchItem) {
+            ((FluxWrenchItem) stack.getItem()).useRanged(level, stack, (Player) owner, result);
         }
         onHit(result);
     }
 
     @Override
-    public void readAdditionalSaveData(CompoundNBT nbt) {
+    public void readAdditionalSaveData(CompoundTag nbt) {
 
         super.readAdditionalSaveData(nbt);
 
@@ -278,13 +281,13 @@ public class FluxWrenchEntity extends ProjectileEntity {
     }
 
     @Override
-    public void addAdditionalSaveData(CompoundNBT nbt) {
+    public void addAdditionalSaveData(CompoundTag nbt) {
 
         super.addAdditionalSaveData(nbt);
 
         ItemStack itemstack = this.getItemRaw();
         if (!itemstack.isEmpty()) {
-            nbt.put("item", itemstack.save(new CompoundNBT()));
+            nbt.put("item", itemstack.save(new CompoundTag()));
         }
         nbt.putBoolean("hit", hitSomething);
     }

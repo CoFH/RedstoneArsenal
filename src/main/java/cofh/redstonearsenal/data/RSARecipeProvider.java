@@ -1,10 +1,8 @@
 package cofh.redstonearsenal.data;
 
 import cofh.lib.data.RecipeProviderCoFH;
-import cofh.lib.util.DeferredRegisterCoFH;
 import net.minecraft.data.DataGenerator;
-import net.minecraft.data.IFinishedRecipe;
-import net.minecraft.item.Item;
+import net.minecraft.data.recipes.FinishedRecipe;
 
 import java.util.function.Consumer;
 
@@ -26,9 +24,9 @@ public class RSARecipeProvider extends RecipeProviderCoFH {
     }
 
     @Override
-    protected void buildShapelessRecipes(Consumer<IFinishedRecipe> consumer) {
+    protected void buildCraftingRecipes(Consumer<FinishedRecipe> consumer) {
 
-        DeferredRegisterCoFH<Item> reg = ITEMS;
+        var reg = ITEMS;
 
         generateStorageRecipes(consumer, reg.get(ID_FLUX_METAL_BLOCK), reg.get(ID_FLUX_INGOT));
         generateStorageRecipes(consumer, reg.get(ID_FLUX_GEM_BLOCK), reg.get(ID_FLUX_GEM));

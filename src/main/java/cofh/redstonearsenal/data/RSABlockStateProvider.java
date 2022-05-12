@@ -1,8 +1,6 @@
 package cofh.redstonearsenal.data;
 
 import cofh.lib.data.BlockStateProviderCoFH;
-import cofh.lib.util.DeferredRegisterCoFH;
-import net.minecraft.block.Block;
 import net.minecraft.data.DataGenerator;
 import net.minecraftforge.common.data.ExistingFileHelper;
 
@@ -27,7 +25,7 @@ public class RSABlockStateProvider extends BlockStateProviderCoFH {
     @Override
     protected void registerStatesAndModels() {
 
-        DeferredRegisterCoFH<Block> reg = BLOCKS;
+        var reg = BLOCKS;
 
         simpleBlock(reg.getSup(ID_FLUX_METAL_BLOCK));
         simpleBlock(reg.getSup(ID_FLUX_GEM_BLOCK));

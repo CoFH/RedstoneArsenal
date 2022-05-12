@@ -3,7 +3,9 @@ package cofh.redstonearsenal.init;
 import cofh.lib.client.renderer.entity.NothingRenderer;
 import cofh.redstonearsenal.client.renderer.*;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.entity.*;
+import net.minecraft.client.renderer.entity.ArmorStandRenderer;
+import net.minecraft.client.renderer.entity.EntityRenderer;
+import net.minecraft.client.renderer.entity.player.PlayerRenderer;
 import net.minecraftforge.fml.client.registry.RenderingRegistry;
 
 import static cofh.redstonearsenal.init.RSAReferences.*;
