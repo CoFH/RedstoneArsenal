@@ -5,10 +5,10 @@ import cofh.core.util.ProxyUtils;
 import cofh.lib.item.impl.HoeItemCoFH;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
+import com.mojang.datafixers.util.Pair;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvents;
@@ -29,9 +29,12 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraftforge.common.ToolActions;
 
 import javax.annotation.Nullable;
 import java.util.List;
+import java.util.function.Consumer;
+import java.util.function.Predicate;
 
 import static cofh.lib.util.helpers.StringHelper.getTextComponent;
 
@@ -91,25 +94,29 @@ public class FluxHoeItem extends HoeItemCoFH implements IMultiModeFluxItem {
         if (!hasEnergy(stack, false)) {
             return InteractionResult.PASS;
         }
-        Level world = context.getLevel();
+        Level level = context.getLevel();
         BlockPos blockpos = context.getClickedPos();
-        int hook = net.minecraftforge.event.ForgeEventFactory.onHoeUse(context);
-        if (hook != 0) return hook > 0 ? InteractionResult.SUCCESS : InteractionResult.FAIL;
-        if (context.getClickedFace() != Direction.DOWN && world.isEmptyBlock(blockpos.above())) {
-            BlockState blockstate = world.getBlockState(blockpos).getToolModifiedState(world, blockpos, context.getPlayer(), context.getItemInHand(), net.minecraftforge.common.ToolType.HOE);
-            if (blockstate != null) {
+        BlockState toolModifiedState = level.getBlockState(blockpos).getToolModifiedState(context, ToolActions.HOE_TILL, false);
+        Pair<Predicate<UseOnContext>, Consumer<UseOnContext>> pair = toolModifiedState == null ? null : Pair.of(ctx -> true, changeIntoState(toolModifiedState));
+        if (pair == null) {
+            return InteractionResult.PASS;
+        } else {
+            Predicate<UseOnContext> predicate = pair.getFirst();
+            Consumer<UseOnContext> consumer = pair.getSecond();
+            if (predicate.test(context)) {
                 Player player = context.getPlayer();
-                world.playSound(player, blockpos, SoundEvents.HOE_TILL, SoundSource.BLOCKS, 1.0F, 1.0F);
-                if (!world.isClientSide) {
-                    world.setBlock(blockpos, blockstate, 11);
+                level.playSound(player, blockpos, SoundEvents.HOE_TILL, SoundSource.BLOCKS, 1.0F, 1.0F);
+                if (!level.isClientSide) {
+                    consumer.accept(context);
                     if (player != null) {
                         useEnergy(stack, false, player.abilities.instabuild);
                     }
                 }
-                return InteractionResult.sidedSuccess(world.isClientSide);
+                return InteractionResult.sidedSuccess(level.isClientSide);
+            } else {
+                return InteractionResult.PASS;
             }
         }
-        return InteractionResult.PASS;
     }
 
     @Override
@@ -117,6 +124,12 @@ public class FluxHoeItem extends HoeItemCoFH implements IMultiModeFluxItem {
 
         useEnergy(stack, false, attacker);
         return true;
+    }
+
+    @Override
+    public boolean isCorrectToolForDrops(ItemStack stack, BlockState state) {
+
+        return hasEnergy(stack, getEnergyPerUse(isEmpowered(stack))) && super.isCorrectToolForDrops(stack, state);
     }
 
     @Override

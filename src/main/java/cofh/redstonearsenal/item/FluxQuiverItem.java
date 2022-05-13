@@ -8,17 +8,18 @@ import cofh.lib.energy.EnergyContainerItemWrapper;
 import cofh.lib.energy.IEnergyContainerItem;
 import cofh.redstonearsenal.entity.FluxArrowEntity;
 import net.minecraft.ChatFormatting;
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.enchantment.Enchantment;
-import net.minecraft.enchantment.Enchantments;
-import net.minecraft.entity.player.Player;
-import net.minecraft.entity.projectile.AbstractArrowEntity;
-import net.minecraft.item.CrossbowItem;
-import net.minecraft.item.ItemStack;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.util.Direction;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.projectile.AbstractArrow;
+import net.minecraft.world.item.CrossbowItem;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.item.enchantment.Enchantment;
+import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -143,10 +144,10 @@ public class FluxQuiverItem extends ItemCoFH implements IMultiModeFluxItem {
         }
 
         @Override
-        public AbstractArrowEntity createArrowEntity(Level world, Player shooter) {
+        public AbstractArrow createArrowEntity(Level world, Player shooter) {
 
             FluxArrowEntity arrow = new FluxArrowEntity(world, shooter);
-            arrow.pickup = AbstractArrowEntity.PickupStatus.DISALLOWED;
+            arrow.pickup = AbstractArrow.Pickup.DISALLOWED;
             if (isEmpowered(quiverItem)) {
                 ItemStack weapon = shooter.getMainHandItem().isEmpty() ? shooter.getOffhandItem() : shooter.getMainHandItem();
                 if (!weapon.isEmpty()) {

@@ -2,7 +2,8 @@ package cofh.redstonearsenal.client.renderer;
 
 import cofh.redstonearsenal.item.FluxElytraItem;
 import net.minecraft.client.model.EntityModel;
-import net.minecraft.client.renderer.entity.EntityRenderer;
+import net.minecraft.client.model.geom.EntityModelSet;
+import net.minecraft.client.renderer.entity.RenderLayerParent;
 import net.minecraft.client.renderer.entity.layers.ElytraLayer;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.LivingEntity;
@@ -16,9 +17,9 @@ public class FluxElytraLayer<T extends LivingEntity, M extends EntityModel<T>> e
     //protected static final ResourceLocation CHARGED = new ResourceLocation(ID_REDSTONE_ARSENAL + ":textures/entity/flux_elytra.png");
     //protected static final ResourceLocation EMPOWERED = new ResourceLocation(ID_REDSTONE_ARSENAL + ":textures/entity/flux_elytra.png");
 
-    public FluxElytraLayer(EntityRenderer renderer) {
+    public FluxElytraLayer(RenderLayerParent<T, M> parent, EntityModelSet set) {
 
-        super(renderer);
+        super(parent, set);
     }
 
     @Override

@@ -20,7 +20,6 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Tier;
 import net.minecraft.world.item.TooltipFlag;
-import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.api.distmarker.Dist;
@@ -57,11 +56,6 @@ public class FluxAxeItem extends AxeItemCoFH implements IMultiModeFluxItem {
         ProxyUtils.registerItemModelProperty(this, new ResourceLocation("empowered"), this::getEmpoweredModelProperty);
     }
 
-    protected float getEfficiency(ItemStack stack) {
-
-        return hasEnergy(stack, false) ? speed : 1.0F;
-    }
-
     @Override
     @OnlyIn (Dist.CLIENT)
     public void appendHoverText(ItemStack stack, @Nullable Level worldIn, List<Component> tooltip, TooltipFlag flagIn) {
@@ -74,21 +68,9 @@ public class FluxAxeItem extends AxeItemCoFH implements IMultiModeFluxItem {
     }
 
     @Override
-    public boolean canApplyAtEnchantingTable(ItemStack stack, Enchantment enchantment) {
-
-        return super.canApplyAtEnchantingTable(stack, enchantment);
-    }
-
-    @Override
     public boolean isEnchantable(ItemStack stack) {
 
         return getItemEnchantability(stack) > 0;
-    }
-
-    @Override
-    public float getDestroySpeed(ItemStack stack, BlockState state) {
-
-        return getToolTypes(stack).stream().anyMatch(state::isToolEffective) ? getEfficiency(stack) : 1.0F;
     }
 
     @Override
@@ -115,6 +97,12 @@ public class FluxAxeItem extends AxeItemCoFH implements IMultiModeFluxItem {
             useEnergy(stack, false, entityLiving);
         }
         return true;
+    }
+
+    @Override
+    public boolean isCorrectToolForDrops(ItemStack stack, BlockState state) {
+
+        return hasEnergy(stack, getEnergyPerUse(isEmpowered(stack))) && super.isCorrectToolForDrops(stack, state);
     }
 
     @Override

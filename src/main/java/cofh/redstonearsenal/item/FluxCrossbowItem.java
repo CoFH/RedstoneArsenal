@@ -11,7 +11,7 @@ import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListNBT;
+import net.minecraft.nbt.ListTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.network.chat.TranslatableComponent;
@@ -90,7 +90,7 @@ public class FluxCrossbowItem extends CrossbowItemCoFH implements IMultiModeFlux
     }
 
     @Override
-    public float getAmmoModelProperty(ItemStack stack, Level world, LivingEntity entity) {
+    public float getAmmoModelProperty(ItemStack stack, Level world, LivingEntity entity, int seed) {
 
         return getLoadedAmmoCount(stack) * 0.334F;
     }
@@ -111,7 +111,7 @@ public class FluxCrossbowItem extends CrossbowItemCoFH implements IMultiModeFlux
 
         if (!world.isClientSide && getLoadedAmmoCount(stack) < maxCharges && loadAmmo(living, stack)) {
             setCharged(stack, true);
-            world.playSound(null, living.getX(), living.getY(), living.getZ(), SoundEvents.CROSSBOW_LOADING_END, living instanceof Player ? SoundSource.PLAYERS : SoundSource.HOSTILE, 1.0F, 1.0F / (random.nextFloat() * 0.5F + 1.0F) + 0.2F);
+            world.playSound(null, living.getX(), living.getY(), living.getZ(), SoundEvents.CROSSBOW_LOADING_END, living instanceof Player ? SoundSource.PLAYERS : SoundSource.HOSTILE, 1.0F, 1.0F / (world.random.nextFloat() * 0.5F + 1.0F) + 0.2F);
         }
         return stack;
     }
@@ -121,7 +121,7 @@ public class FluxCrossbowItem extends CrossbowItemCoFH implements IMultiModeFlux
 
         if (!world.isClientSide && durationRemaining < 0 && getLoadedAmmoCount(stack) < maxCharges && loadAmmo(living, stack)) {
             setCharged(stack, true);
-            world.playSound(null, living.getX(), living.getY(), living.getZ(), SoundEvents.CROSSBOW_LOADING_END, living instanceof Player ? SoundSource.PLAYERS : SoundSource.HOSTILE, 1.0F, 1.0F / (random.nextFloat() * 0.5F + 1.0F) + 0.2F);
+            world.playSound(null, living.getX(), living.getY(), living.getZ(), SoundEvents.CROSSBOW_LOADING_END, living instanceof Player ? SoundSource.PLAYERS : SoundSource.HOSTILE, 1.0F, 1.0F / (world.random.nextFloat() * 0.5F + 1.0F) + 0.2F);
         }
     }
 
@@ -170,13 +170,13 @@ public class FluxCrossbowItem extends CrossbowItemCoFH implements IMultiModeFlux
     }
 
     // region LOADING
-    public ListNBT getLoadedAmmoNBT(ItemStack crossbow) {
+    public ListTag getLoadedAmmoNBT(ItemStack crossbow) {
 
         CompoundTag tag = crossbow.getOrCreateTag();
         if (tag.contains(TAG_AMMO) && tag.getTagType(TAG_AMMO) == 9) {
             return tag.getList(TAG_AMMO, TAG_COMPOUND);
         }
-        return new ListNBT();
+        return new ListTag();
     }
 
     public ItemStack[] getAllLoadedAmmo(ItemStack crossbow) {
@@ -192,7 +192,7 @@ public class FluxCrossbowItem extends CrossbowItemCoFH implements IMultiModeFlux
     @Override
     public boolean loadAmmo(Player player, ItemStack crossbow, ItemStack ammo) {
 
-        ListNBT list = getLoadedAmmoNBT(crossbow);
+        ListTag list = getLoadedAmmoNBT(crossbow);
         list.add(ammo.save(new CompoundTag()));
         crossbow.getOrCreateTag().put(TAG_AMMO, list);
         setCharged(crossbow, true);
@@ -202,14 +202,14 @@ public class FluxCrossbowItem extends CrossbowItemCoFH implements IMultiModeFlux
     @Override
     public ItemStack getLoadedAmmo(ItemStack crossbow) {
 
-        ListNBT list = getLoadedAmmoNBT(crossbow);
+        ListTag list = getLoadedAmmoNBT(crossbow);
         return list.isEmpty() ? ItemStack.EMPTY : ItemStack.of(list.getCompound(0));
     }
 
     @Override
     public void removeLoadedAmmo(ItemStack crossbow) {
 
-        ListNBT list = getLoadedAmmoNBT(crossbow);
+        ListTag list = getLoadedAmmoNBT(crossbow);
         if (!list.isEmpty()) {
             list.remove(0);
         }

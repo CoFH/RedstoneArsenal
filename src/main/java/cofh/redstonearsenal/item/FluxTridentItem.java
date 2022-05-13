@@ -200,11 +200,11 @@ public class FluxTridentItem extends TridentItemCoFH implements IMultiModeFluxIt
         if (!canStartPlunging(living)) {
             return false;
         }
-        if (living instanceof Player) {
-            ((Player) living).stopFallFlying();
-            ((Player) living).abilities.flying = false;
+        if (living instanceof Player player) {
+            player.stopFallFlying();
+            player.abilities.flying = false;
+            player.startAutoSpinAttack(200);
         }
-        living.startAutoSpinAttack(200);
         Vec3 motion = getPlungeVector(living.getLookAngle(), getPlungeSpeed());
         living.push(motion.x(), motion.y(), motion.z());
         return true;
@@ -300,7 +300,7 @@ public class FluxTridentItem extends TridentItemCoFH implements IMultiModeFluxIt
             multimap.put(Attributes.ATTACK_DAMAGE, new AttributeModifier(BASE_ATTACK_DAMAGE_UUID, "Weapon modifier", getAttackDamage(stack), AttributeModifier.Operation.ADDITION));
             multimap.put(Attributes.ATTACK_SPEED, new AttributeModifier(BASE_ATTACK_SPEED_UUID, "Weapon modifier", getAttackSpeed(stack), AttributeModifier.Operation.ADDITION));
             // Add this back when Forge fixes attack reach distance.
-            //multimap.put(ForgeMod.REACH_DISTANCE.get(), new AttributeModifier(UUID_TOOL_REACH, "Weapon modifier", getAddedReach(stack), AttributeModifier.Operation.ADDITION));
+            // multimap.put(ForgeMod.REACH_DISTANCE.get(), new AttributeModifier(UUID_TOOL_REACH, "Weapon modifier", getAddedReach(stack), AttributeModifier.Operation.ADDITION));
         }
         return multimap;
     }

@@ -183,17 +183,6 @@ public class FluxExcavatorItem extends ExcavatorItem implements IMultiModeFluxIt
         return -1;
     }
 
-    protected float getEfficiency(ItemStack stack) {
-
-        return hasEnergy(stack, false) ? speed : 1.0F;
-    }
-
-    @Override
-    public float getDestroySpeed(ItemStack stack, BlockState state) {
-
-        return getToolTypes(stack).stream().anyMatch(state::isToolEffective) ? getEfficiency(stack) : 1.0F;
-    }
-
     @Override
     public boolean hurtEnemy(ItemStack stack, LivingEntity target, LivingEntity attacker) {
 
@@ -208,6 +197,12 @@ public class FluxExcavatorItem extends ExcavatorItem implements IMultiModeFluxIt
             useEnergy(stack, false, entityLiving);
         }
         return true;
+    }
+
+    @Override
+    public boolean isCorrectToolForDrops(ItemStack stack, BlockState state) {
+
+        return hasEnergy(stack, getEnergyPerUse(isEmpowered(stack))) && super.isCorrectToolForDrops(stack, state);
     }
 
     @Override

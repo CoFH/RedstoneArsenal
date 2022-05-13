@@ -31,6 +31,7 @@ import net.minecraft.world.level.block.CampfireBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraftforge.common.ToolActions;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -88,39 +89,40 @@ public class FluxShovelItem extends ShovelItemCoFH implements IMultiModeFluxItem
     @Override
     public InteractionResult useOn(UseOnContext context) {
 
-        Level world = context.getLevel();
-        BlockPos pos = context.getClickedPos();
-        Player player = context.getPlayer();
-        if (context.getClickedFace() == Direction.DOWN || player == null) {
+        Level level = context.getLevel();
+        BlockPos blockpos = context.getClickedPos();
+        BlockState blockstate = level.getBlockState(blockpos);
+        if (context.getClickedFace() == Direction.DOWN) {
             return InteractionResult.PASS;
-        }
-        ItemStack stack = context.getItemInHand();
-        BlockState state = world.getBlockState(pos);
-        BlockState newState = state.getToolModifiedState(world, pos, player, context.getItemInHand(), ToolType.SHOVEL);
-        if (newState != null && world.getBlockState(pos.above()).canBeReplaced(new BlockItemUseContext(context)) && useEnergy(stack, newState.is(FLUX_PATH), player.abilities.instabuild)) {
-            world.playSound(player, pos, SoundEvents.SHOVEL_FLATTEN, SoundSource.BLOCKS, 1.0F, 1.0F);
-            world.setBlock(pos, newState, 11);
-            return InteractionResult.sidedSuccess(world.isClientSide());
-        } else if (state.getBlock() instanceof CampfireBlock && state.getValue(CampfireBlock.LIT) && useEnergy(stack, false, player.abilities.instabuild)) {
-            CampfireBlock.dowse(world, pos, state);
-            if (!world.isClientSide()) {
-                world.levelEvent(null, 1009, pos, 0);
-                world.setBlock(pos, state.setValue(CampfireBlock.LIT, Boolean.FALSE), 11);
+        } else {
+            ItemStack stack = context.getItemInHand();
+            Player player = context.getPlayer();
+            BlockState blockstate1 = blockstate.getToolModifiedState(context, ToolActions.SHOVEL_FLATTEN, false);
+            BlockState blockstate2 = null;
+            if (blockstate1 != null && level.isEmptyBlock(blockpos.above()) && useEnergy(stack, blockstate1.is(FLUX_PATH), player.abilities.instabuild)) {
+                level.playSound(player, blockpos, SoundEvents.SHOVEL_FLATTEN, SoundSource.BLOCKS, 1.0F, 1.0F);
+                blockstate2 = blockstate1;
+            } else if (blockstate.getBlock() instanceof CampfireBlock && blockstate.getValue(CampfireBlock.LIT)) {
+                if (!level.isClientSide()) {
+                    level.levelEvent(null, 1009, blockpos, 0);
+                }
+                CampfireBlock.dowse(context.getPlayer(), level, blockpos, blockstate);
+                blockstate2 = blockstate.setValue(CampfireBlock.LIT, Boolean.FALSE);
             }
-            return InteractionResult.sidedSuccess(world.isClientSide());
+            if (blockstate2 != null) {
+                if (!level.isClientSide) {
+                    level.setBlock(blockpos, blockstate2, 11);
+                    if (player != null) {
+                        context.getItemInHand().hurtAndBreak(1, player, (p_43122_) -> {
+                            p_43122_.broadcastBreakEvent(context.getHand());
+                        });
+                    }
+                }
+                return InteractionResult.sidedSuccess(level.isClientSide);
+            } else {
+                return InteractionResult.PASS;
+            }
         }
-        return InteractionResult.PASS;
-    }
-
-    protected float getEfficiency(ItemStack stack) {
-
-        return hasEnergy(stack, false) ? speed : 1.0F;
-    }
-
-    @Override
-    public float getDestroySpeed(ItemStack stack, BlockState state) {
-
-        return getToolTypes(stack).stream().anyMatch(state::isToolEffective) ? getEfficiency(stack) : 1.0F;
     }
 
     @Override
@@ -137,6 +139,12 @@ public class FluxShovelItem extends ShovelItemCoFH implements IMultiModeFluxItem
             useEnergy(stack, false, entityLiving);
         }
         return true;
+    }
+
+    @Override
+    public boolean isCorrectToolForDrops(ItemStack stack, BlockState state) {
+
+        return hasEnergy(stack, getEnergyPerUse(isEmpowered(stack))) && super.isCorrectToolForDrops(stack, state);
     }
 
     @Override

@@ -7,15 +7,7 @@ import cofh.redstonearsenal.item.FluxShieldItem;
 import cofh.redstonearsenal.item.FluxShovelItem;
 import cofh.redstonearsenal.item.FluxTridentItem;
 import cofh.redstonearsenal.util.FluxShieldingHelper;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.player.Player;
-import net.minecraft.entity.player.ServerPlayer;
-import net.minecraft.item.ItemStack;
-import net.minecraft.potion.Effects;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.util.DamageSource;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.LivingEntity;
@@ -23,7 +15,6 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.common.Tags;
 import net.minecraftforge.event.entity.living.LivingAttackEvent;
 import net.minecraftforge.event.entity.living.LivingEquipmentChangeEvent;
 import net.minecraftforge.event.entity.living.LivingFallEvent;
@@ -39,7 +30,6 @@ import net.minecraftforge.fml.common.Mod;
 import static cofh.lib.capability.CapabilityShieldItem.SHIELD_ITEM_CAPABILITY;
 import static cofh.lib.util.constants.Constants.ID_REDSTONE_ARSENAL;
 import static cofh.redstonearsenal.init.RSAReferences.FLUX_PATH;
-import static net.minecraft.inventory.EquipmentSlot.MAINHAND;
 import static net.minecraft.world.entity.EquipmentSlot.MAINHAND;
 
 @Mod.EventBusSubscriber (modid = ID_REDSTONE_ARSENAL)
@@ -131,15 +121,15 @@ public class RSAEvents {
         BlockState state = event.getState();
         if (stack.getItem() instanceof FluxShovelItem) {
             FluxShovelItem shovel = (FluxShovelItem) stack.getItem();
-            if (state.is(Blocks.GRASS_PATH) || state.is(FLUX_PATH) || state.is(Blocks.FARMLAND)) {
+            if (state.is(Blocks.DIRT_PATH) || state.is(FLUX_PATH) || state.is(Blocks.FARMLAND)) {
                 event.setFinalState(Blocks.DIRT.defaultBlockState());
                 //} else if (state.getBlock() instanceof TilledSoilBlock) { //TODO: Thermal phyto-soil
             } else if (shovel.isEmpowered(stack)) {
-                if (state.is(Tags.Blocks.DIRT)) {
+                if (state.is(Blocks.DIRT)) {
                     event.setFinalState(FLUX_PATH.defaultBlockState());
                 }
             } else if (state.is(Blocks.DIRT)) { //TODO: configurable?
-                event.setFinalState(Blocks.GRASS_PATH.defaultBlockState());
+                event.setFinalState(Blocks.DIRT_PATH.defaultBlockState());
             }
         }
     }

@@ -30,7 +30,6 @@ import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.material.Material;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
@@ -90,25 +89,6 @@ public class FluxPickaxeItem extends PickaxeItemCoFH implements IMultiModeFluxIt
         return getItemEnchantability(stack) > 0;
     }
 
-    protected float getEfficiency(ItemStack stack) {
-
-        return hasEnergy(stack, false) ? speed : 1.0F;
-    }
-
-    @Override
-    public boolean canHarvestBlock(ItemStack stack, BlockState state) {
-
-        return isCorrectToolForDrops(state);
-    }
-
-    @Override
-    public float getDestroySpeed(ItemStack stack, BlockState state) {
-
-        Material material = state.getMaterial();
-        return material == Material.METAL || material == Material.HEAVY_METAL || material == Material.STONE ||
-                getToolTypes(stack).stream().anyMatch(state::isToolEffective) ? getEfficiency(stack) : 1.0F;
-    }
-
     @Override
     public boolean hurtEnemy(ItemStack stack, LivingEntity target, LivingEntity attacker) {
 
@@ -123,6 +103,12 @@ public class FluxPickaxeItem extends PickaxeItemCoFH implements IMultiModeFluxIt
             useEnergy(stack, false, entityLiving);
         }
         return true;
+    }
+
+    @Override
+    public boolean isCorrectToolForDrops(ItemStack stack, BlockState state) {
+
+        return hasEnergy(stack, getEnergyPerUse(isEmpowered(stack))) && super.isCorrectToolForDrops(stack, state);
     }
 
     @Override
