@@ -2,7 +2,7 @@ package cofh.redstonearsenal.util;
 
 import cofh.core.compat.curios.CuriosProxy;
 import cofh.redstonearsenal.capability.IFluxShieldedItem;
-import cofh.redstonearsenal.client.renderer.FluxShieldingHUDRenderer;
+import cofh.redstonearsenal.client.renderer.FluxShieldingOverlay;
 import cofh.redstonearsenal.network.client.FluxShieldingPacket;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.core.particles.DustParticleOptions;
@@ -125,8 +125,8 @@ public class FluxShieldingHelper {
     @OnlyIn (Dist.CLIENT)
     public static void updateHUD(int currCharges, int maxCharges) {
 
-        FluxShieldingHUDRenderer.currCharges = currCharges;
-        FluxShieldingHUDRenderer.maxCharges = maxCharges;
+        FluxShieldingOverlay.currCharges = currCharges;
+        FluxShieldingOverlay.maxCharges = maxCharges;
     }
 
     @OnlyIn (Dist.CLIENT)

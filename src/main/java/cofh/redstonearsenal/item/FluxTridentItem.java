@@ -7,11 +7,13 @@ import cofh.lib.item.impl.TridentItemCoFH;
 import cofh.lib.util.Utils;
 import cofh.lib.util.helpers.MathHelper;
 import cofh.lib.util.references.CoreReferences;
+import cofh.redstonearsenal.client.renderer.FluxTridentBEWLR;
 import cofh.redstonearsenal.entity.ThrownFluxTrident;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -43,9 +45,11 @@ import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraftforge.client.IItemRenderProperties;
 
 import javax.annotation.Nullable;
 import java.util.List;
+import java.util.function.Consumer;
 
 import static cofh.lib.util.helpers.StringHelper.getTextComponent;
 import static cofh.lib.util.references.CoreReferences.LIGHTNING_RESISTANCE;
@@ -334,6 +338,21 @@ public class FluxTridentItem extends TridentItemCoFH implements IMultiModeFluxIt
 
         return addedReach;
     }
+
+    // region CLIENT
+    @Override
+    public void initializeClient(Consumer<IItemRenderProperties> consumer) {
+
+        consumer.accept(new IItemRenderProperties() {
+
+            @Override
+            public BlockEntityWithoutLevelRenderer getItemStackRenderer() {
+
+                return FluxTridentBEWLR.INSTANCE;
+            }
+        });
+    }
+    // endregion
 
     // region IEnergyContainerItem
     @Override

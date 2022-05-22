@@ -2,6 +2,7 @@ package cofh.redstonearsenal.event;
 
 import cofh.core.event.ShieldEvents;
 import cofh.lib.util.Utils;
+import cofh.redstonearsenal.client.renderer.FluxTridentBEWLR;
 import cofh.redstonearsenal.item.FluxAxeItem;
 import cofh.redstonearsenal.item.FluxShieldItem;
 import cofh.redstonearsenal.item.FluxShovelItem;
@@ -15,6 +16,9 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraftforge.common.ToolAction;
+import net.minecraftforge.common.ToolActions;
+import net.minecraftforge.event.AddReloadListenerEvent;
 import net.minecraftforge.event.entity.living.LivingAttackEvent;
 import net.minecraftforge.event.entity.living.LivingEquipmentChangeEvent;
 import net.minecraftforge.event.entity.living.LivingFallEvent;
@@ -110,26 +114,25 @@ public class RSAEvents {
         }
     }
 
-    @SubscribeEvent
-    public static void handleBlockToolInteractEvent(BlockEvent.BlockToolInteractEvent event) {
+    @SubscribeEvent (priority = EventPriority.LOWEST)
+    public static void handleBlockToolModificationEvent(BlockEvent.BlockToolModificationEvent event) {
 
         if (event.isCanceled()) {
             return;
         }
         // Flux Shovel
+        ToolAction action = event.getToolAction();
+        if (!action.equals(ToolActions.SHOVEL_FLATTEN)) {
+            return;
+        }
         ItemStack stack = event.getHeldItemStack();
-        BlockState state = event.getState();
-        if (stack.getItem() instanceof FluxShovelItem) {
-            FluxShovelItem shovel = (FluxShovelItem) stack.getItem();
+        if (stack.getItem() instanceof FluxShovelItem shovel) {
+            BlockState state = event.getState();
             if (state.is(Blocks.DIRT_PATH) || state.is(FLUX_PATH) || state.is(Blocks.FARMLAND)) {
                 event.setFinalState(Blocks.DIRT.defaultBlockState());
-                //} else if (state.getBlock() instanceof TilledSoilBlock) { //TODO: Thermal phyto-soil
-            } else if (shovel.isEmpowered(stack)) {
-                if (state.is(Blocks.DIRT)) {
-                    event.setFinalState(FLUX_PATH.defaultBlockState());
-                }
-            } else if (state.is(Blocks.DIRT)) { //TODO: configurable?
-                event.setFinalState(Blocks.DIRT_PATH.defaultBlockState());
+            } else if (shovel.isEmpowered(stack) && (event.getFinalState().is(Blocks.DIRT_PATH) ||
+                    state.getBlock().getToolModifiedState(state, event.getContext(), action, event.isSimulated()).is(Blocks.DIRT_PATH))) {
+                event.setFinalState(FLUX_PATH.defaultBlockState());
             }
         }
     }
@@ -187,5 +190,13 @@ public class RSAEvents {
             }
         }
     }
+
+    // region RELOAD
+    @SubscribeEvent
+    public static void addReloadListener(final AddReloadListenerEvent event) {
+
+        event.addListener(FluxTridentBEWLR.INSTANCE);
+    }
+    // endregion
 
 }

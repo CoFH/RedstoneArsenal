@@ -6,7 +6,7 @@ import cofh.core.util.ProxyUtils;
 import cofh.lib.capability.IArcheryAmmoItem;
 import cofh.lib.energy.EnergyContainerItemWrapper;
 import cofh.lib.energy.IEnergyContainerItem;
-import cofh.redstonearsenal.entity.FluxArrowEntity;
+import cofh.redstonearsenal.entity.FluxArrow;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.core.Direction;
@@ -146,7 +146,7 @@ public class FluxQuiverItem extends ItemCoFH implements IMultiModeFluxItem {
         @Override
         public AbstractArrow createArrowEntity(Level world, Player shooter) {
 
-            FluxArrowEntity arrow = new FluxArrowEntity(world, shooter);
+            FluxArrow arrow = new FluxArrow(world, shooter);
             arrow.pickup = AbstractArrow.Pickup.DISALLOWED;
             if (isEmpowered(quiverItem)) {
                 ItemStack weapon = shooter.getMainHandItem().isEmpty() ? shooter.getOffhandItem() : shooter.getMainHandItem();

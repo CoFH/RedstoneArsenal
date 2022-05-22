@@ -77,6 +77,7 @@ public class FluxSlashRenderer extends EntityRenderer<FluxSlash> {
                     RenderType.CompositeState.builder().setTextureState(new RenderStateShard.TextureStateShard(texture, false, false))
                             .setTransparencyState(TRANSLUCENT_TRANSPARENCY)
                             .setOutputState(ITEM_ENTITY_TARGET)
+                            .setShaderState(NEW_ENTITY_SHADER)
                             // alpha?
                             .setCullState(NO_CULL)
                             .setDepthTestState(LEQUAL_DEPTH_TEST)

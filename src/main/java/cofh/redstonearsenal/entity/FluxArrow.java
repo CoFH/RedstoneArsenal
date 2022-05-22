@@ -34,24 +34,24 @@ import java.util.Arrays;
 
 import static cofh.redstonearsenal.init.RSAReferences.FLUX_ARROW_ENTITY;
 
-public class FluxArrowEntity extends AbstractArrow {
+public class FluxArrow extends AbstractArrow {
 
-    protected static final EntityDataAccessor<Byte> RSA_FLAGS = SynchedEntityData.defineId(FluxArrowEntity.class, EntityDataSerializers.BYTE);
+    protected static final EntityDataAccessor<Byte> RSA_FLAGS = SynchedEntityData.defineId(FluxArrow.class, EntityDataSerializers.BYTE);
 
     protected static final int LIFESPAN = 200;
     protected static final float EXPLOSION_RANGE = 4.0F;
 
-    public FluxArrowEntity(EntityType<? extends FluxArrowEntity> entityIn, Level worldIn) {
+    public FluxArrow(EntityType<? extends FluxArrow> entityIn, Level worldIn) {
 
         super(entityIn, worldIn);
     }
 
-    public FluxArrowEntity(Level worldIn, LivingEntity shooter) {
+    public FluxArrow(Level worldIn, LivingEntity shooter) {
 
         super(FLUX_ARROW_ENTITY, shooter, worldIn);
     }
 
-    public FluxArrowEntity(Level worldIn, double x, double y, double z) {
+    public FluxArrow(Level worldIn, double x, double y, double z) {
 
         super(FLUX_ARROW_ENTITY, x, y, z, worldIn);
     }

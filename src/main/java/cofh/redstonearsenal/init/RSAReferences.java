@@ -23,7 +23,7 @@ public class RSAReferences {
     @ObjectHolder (ID_FLUX_WRENCH)
     public static final EntityType<ThrownFluxWrench> FLUX_WRENCH_ENTITY = null;
     @ObjectHolder (ID_FLUX_ARROW)
-    public static final EntityType<FluxArrowEntity> FLUX_ARROW_ENTITY = null;
+    public static final EntityType<FluxArrow> FLUX_ARROW_ENTITY = null;
     @ObjectHolder (ID_SHOCKWAVE)
     public static final EntityType<Shockwave> SHOCKWAVE_ENTITY = null;
     // endregion

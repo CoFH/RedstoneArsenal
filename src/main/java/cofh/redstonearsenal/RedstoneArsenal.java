@@ -3,6 +3,7 @@ package cofh.redstonearsenal;
 import cofh.lib.network.PacketHandler;
 import cofh.lib.util.DeferredRegisterCoFH;
 import cofh.redstonearsenal.capability.CapabilityFluxShielding;
+import cofh.redstonearsenal.client.renderer.FluxShieldingOverlay;
 import cofh.redstonearsenal.init.*;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.EntityType;
@@ -12,6 +13,8 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Block;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraftforge.client.gui.ForgeIngameGui;
+import net.minecraftforge.client.gui.OverlayRegistry;
 import net.minecraftforge.common.capabilities.RegisterCapabilitiesEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.common.Mod;
@@ -79,8 +82,7 @@ public class RedstoneArsenal {
         //            };
         //        }
 
-        RSAClient.registerEntityRenderingHandlers();
-        RSAClient.registerRenderLayers();
+        OverlayRegistry.registerOverlayAbove(ForgeIngameGui.FOOD_LEVEL_ELEMENT, "Flux Shielding", FluxShieldingOverlay::render);
     }
     // endregion
 
