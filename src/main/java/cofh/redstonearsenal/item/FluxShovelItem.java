@@ -171,6 +171,26 @@ public class FluxShovelItem extends ShovelItemCoFH implements IMultiModeFluxItem
         return attackSpeed;
     }
 
+    // region DURABILITY BAR
+    @Override
+    public boolean isBarVisible(ItemStack stack) {
+
+        return IMultiModeFluxItem.super.isBarVisible(stack);
+    }
+
+    @Override
+    public int getBarColor(ItemStack stack) {
+
+        return IMultiModeFluxItem.super.getBarColor(stack);
+    }
+
+    @Override
+    public int getBarWidth(ItemStack stack) {
+
+        return IMultiModeFluxItem.super.getBarWidth(stack);
+    }
+    // endregion
+
     // region IEnergyContainerItem
     @Override
     public int getExtract(ItemStack container) {

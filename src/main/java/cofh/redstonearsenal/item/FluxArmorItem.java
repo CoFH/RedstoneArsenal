@@ -100,6 +100,26 @@ public class FluxArmorItem extends ArmorItemCoFH implements IFluxItem {
         return 0;
     }
 
+    // region DURABILITY BAR
+    @Override
+    public boolean isBarVisible(ItemStack stack) {
+
+        return IFluxItem.super.isBarVisible(stack);
+    }
+
+    @Override
+    public int getBarColor(ItemStack stack) {
+
+        return IFluxItem.super.getBarColor(stack);
+    }
+
+    @Override
+    public int getBarWidth(ItemStack stack) {
+
+        return IFluxItem.super.getBarWidth(stack);
+    }
+    // endregion
+
     // region IEnergyContainerItem
     @Override
     public int getExtract(ItemStack container) {
