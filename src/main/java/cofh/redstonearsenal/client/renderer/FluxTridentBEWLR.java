@@ -27,10 +27,12 @@ public class FluxTridentBEWLR extends BlockEntityWithoutLevelRenderer {
     protected TridentModel tridentModel;
 
     public FluxTridentBEWLR(BlockEntityRenderDispatcher p_172550_, EntityModelSet p_172551_) {
+
         super(p_172550_, p_172551_);
     }
 
     public void onResourceManagerReload(ResourceManager p_172555_) {
+
         this.tridentModel = new TridentModel(this.entityModelSet.bakeLayer(ModelLayers.TRIDENT)); //TODO Hek: AT modelSet
     }
 
