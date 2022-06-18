@@ -41,4 +41,5 @@ public class FluxShieldingOverlay {
             x += 8;
         }
     }
+
 }
