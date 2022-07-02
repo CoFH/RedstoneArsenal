@@ -1,11 +1,13 @@
 package cofh.redstonearsenal.event;
 
 import cofh.lib.client.renderer.entity.NothingRenderer;
-import cofh.redstonearsenal.client.renderer.FluxArrowRenderer;
-import cofh.redstonearsenal.client.renderer.FluxSlashRenderer;
-import cofh.redstonearsenal.client.renderer.FluxWrenchRenderer;
-import cofh.redstonearsenal.client.renderer.ThrownFluxTridentRenderer;
+import cofh.redstonearsenal.client.renderer.*;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.model.EntityModel;
 import net.minecraft.client.model.geom.EntityModelSet;
+import net.minecraft.client.renderer.entity.*;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.EntityRenderersEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -18,14 +20,14 @@ import static cofh.redstonearsenal.init.RSAReferences.*;
 public class RSAClientSetupEvents {
 
     @SubscribeEvent
-    public static void entityLayerSetup(final EntityRenderersEvent.AddLayers event) {
+    public static <T extends LivingEntity, M extends EntityModel<T>> void entityLayerSetup(final EntityRenderersEvent.AddLayers event) {
 
-        EntityModelSet models = event.getEntityModels();
+        //EntityModelSet models = event.getEntityModels();
         //for (String skin : event.getSkins()) {
-        //    LivingEntityRenderer<? extends Player, ? extends EntityModel<? extends Player>> renderer = event.getSkin(skin);
-        //    renderer.addLayer(new FluxElytraLayer<>(renderer, models));
+        //    LivingEntityRenderer<T, M> renderer = event.getSkin(skin);
+        //    renderer.addLayer(new FluxElytraLayer<T extends Player, ? extends EntityModel<? extends Player>>(renderer, models));
         //}
-        //
+
         //EntityRenderDispatcher manager = Minecraft.getInstance().getEntityRenderDispatcher();
         //for (EntityRenderer<?> renderer : manager.renderers.values()) {
         //    if (renderer instanceof HumanoidMobRenderer || renderer instanceof ArmorStandRenderer) {
@@ -43,6 +45,7 @@ public class RSAClientSetupEvents {
         event.registerEntityRenderer(FLUX_TRIDENT_ENTITY, ThrownFluxTridentRenderer::new);
         event.registerEntityRenderer(FLUX_WRENCH_ENTITY, FluxWrenchRenderer::new);
         event.registerEntityRenderer(SHOCKWAVE_ENTITY, NothingRenderer::new);
+        event.registerEntityRenderer(FISH_HOOK_ENTITY, FluxFishingHookRenderer::new);
     }
 
 }

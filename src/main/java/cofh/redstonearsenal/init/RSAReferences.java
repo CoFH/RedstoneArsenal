@@ -26,6 +26,8 @@ public class RSAReferences {
     public static final EntityType<FluxArrow> FLUX_ARROW_ENTITY = null;
     @ObjectHolder (ID_SHOCKWAVE)
     public static final EntityType<Shockwave> SHOCKWAVE_ENTITY = null;
+    @ObjectHolder (ID_FISH_HOOK)
+    public static final EntityType<FluxFishingHook> FISH_HOOK_ENTITY = null;
     // endregion
 
     // region BLOCKS

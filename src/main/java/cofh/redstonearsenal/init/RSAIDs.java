@@ -10,6 +10,7 @@ public class RSAIDs {
     public static final String ID_FLUX_SLASH = "flux_slash";
     public static final String ID_FLUX_ARROW = "flux_arrow";
     public static final String ID_SHOCKWAVE = "shockwave";
+    public static final String ID_FISH_HOOK = "fish_hook";
     // endregion
 
     // region BLOCKS
