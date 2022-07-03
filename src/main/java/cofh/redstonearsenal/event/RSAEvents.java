@@ -130,9 +130,11 @@ public class RSAEvents {
             BlockState state = event.getState();
             if (state.is(Blocks.DIRT_PATH) || state.is(FLUX_PATH) || state.is(Blocks.FARMLAND)) {
                 event.setFinalState(Blocks.DIRT.defaultBlockState());
-            } else if (shovel.isEmpowered(stack) && (event.getFinalState().is(Blocks.DIRT_PATH) ||
-                    state.getBlock().getToolModifiedState(state, event.getContext(), action, event.isSimulated()).is(Blocks.DIRT_PATH))) {
-                event.setFinalState(FLUX_PATH.defaultBlockState());
+            } else if (shovel.isEmpowered(stack)) {
+                BlockState modified = state.getBlock().getToolModifiedState(state, event.getContext(), action, event.isSimulated());
+                if (modified != null && modified.is(Blocks.DIRT_PATH)){ //event.getFinalState().is(Blocks.DIRT_PATH) ||
+                    event.setFinalState(FLUX_PATH.defaultBlockState());
+                }
             }
         }
     }

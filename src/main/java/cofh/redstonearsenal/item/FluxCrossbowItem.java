@@ -67,7 +67,7 @@ public class FluxCrossbowItem extends CrossbowItemCoFH implements IMultiModeFlux
         if (getLoadedAmmoCount(stack) > 0) {
             tooltip.add(new TranslatableComponent("info.cofh.crossbow_loaded"));
             for (ItemStack ammo : getAllLoadedAmmo(stack)) {
-                tooltip.add((new TextComponent("• ")).append(ammo.getHoverName()));
+                tooltip.add((new TextComponent("- ")).append(ammo.getHoverName()));
             }
         }
         if (Screen.hasShiftDown() || CoreClientConfig.alwaysShowDetails) {
