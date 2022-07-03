@@ -191,12 +191,4 @@ public class RSAEvents {
         }
     }
 
-    // region RELOAD
-    @SubscribeEvent
-    public static void addReloadListener(final AddReloadListenerEvent event) {
-
-        event.addListener(FluxTridentBEWLR.INSTANCE);
-    }
-    // endregion
-
 }

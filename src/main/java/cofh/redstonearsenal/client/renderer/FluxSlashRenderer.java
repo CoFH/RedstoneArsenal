@@ -18,11 +18,18 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 
 import static cofh.lib.util.constants.Constants.ID_REDSTONE_ARSENAL;
+import static net.minecraft.client.renderer.RenderStateShard.*;
 
 public class FluxSlashRenderer extends EntityRenderer<FluxSlash> {
 
     private static final ResourceLocation TEXTURE = new ResourceLocation(ID_REDSTONE_ARSENAL + ":textures/entity/flux_slash.png");
-    private static final RenderType RENDER_TYPE = FluxRenderType.flux(TEXTURE);
+    private static final RenderType RENDER_TYPE = RenderType.create("flux_projectile",
+            DefaultVertexFormat.NEW_ENTITY, VertexFormat.Mode.QUADS, 256, true, true,
+            RenderType.CompositeState.builder().setTextureState(new RenderStateShard.TextureStateShard(TEXTURE, false, false))
+                    .setShaderState(RENDERTYPE_TEXT_SEE_THROUGH_SHADER)
+                    .setTransparencyState(TRANSLUCENT_TRANSPARENCY)
+                    .setCullState(NO_CULL)
+                    .createCompositeState(true));
 
     public FluxSlashRenderer(EntityRendererProvider.Context ctx) {
 
@@ -30,26 +37,27 @@ public class FluxSlashRenderer extends EntityRenderer<FluxSlash> {
     }
 
     @Override
-    public void render(FluxSlash entityIn, float entityYaw, float partialTicks, PoseStack matrixStackIn, MultiBufferSource bufferIn, int packedLightIn) {
+    public void render(FluxSlash entity, float entityYaw, float partialTicks, PoseStack matrixStackIn, MultiBufferSource buffer, int packedLight) {
 
         matrixStackIn.pushPose();
 
-        matrixStackIn.mulPose(Vector3f.YP.rotationDegrees(Mth.lerp(partialTicks, entityIn.yRotO, entityIn.yRot) - 90));
-        matrixStackIn.mulPose(Vector3f.ZP.rotationDegrees(Mth.lerp(partialTicks, entityIn.xRotO, entityIn.xRot) + 10));
-        matrixStackIn.mulPose(Vector3f.XP.rotationDegrees(entityIn.zRot));
+        matrixStackIn.mulPose(Vector3f.YP.rotationDegrees(Mth.lerp(partialTicks, entity.yRotO, entity.yRot) - 90));
+        matrixStackIn.mulPose(Vector3f.ZP.rotationDegrees(Mth.lerp(partialTicks, entity.xRotO, entity.xRot) + 10));
+        matrixStackIn.mulPose(Vector3f.XP.rotationDegrees(entity.zRot));
         matrixStackIn.scale(0.6F, 0.6F, 1.8F);
         PoseStack.Pose matrixStackEntry = matrixStackIn.last();
         Matrix4f pose = matrixStackEntry.pose();
         Matrix3f normal = matrixStackEntry.normal();
-        VertexConsumer builder = bufferIn.getBuffer(RENDER_TYPE);
+        VertexConsumer builder = buffer.getBuffer(RENDER_TYPE);
 
-        this.vertex(pose, normal, builder, 1, 0, 1, 1, 0, 0, 1, 0, packedLightIn);
-        this.vertex(pose, normal, builder, 1, 0, -1, 0, 0, 0, 1, 0, packedLightIn);
-        this.vertex(pose, normal, builder, -1, 0, -1, 0, 1, 0, 1, 0, packedLightIn);
-        this.vertex(pose, normal, builder, -1, 0, 1, 1, 1, 0, 1, 0, packedLightIn);
+        packedLight = 0x00F000F0;
+        this.vertex(pose, normal, builder, 1, 0, 1, 1, 0, 0, 1, 0, packedLight);
+        this.vertex(pose, normal, builder, 1, 0, -1, 0, 0, 0, 1, 0, packedLight);
+        this.vertex(pose, normal, builder, -1, 0, -1, 0, 1, 0, 1, 0, packedLight);
+        this.vertex(pose, normal, builder, -1, 0, 1, 1, 1, 0, 1, 0, packedLight);
 
         matrixStackIn.popPose();
-        super.render(entityIn, entityYaw, partialTicks, matrixStackIn, bufferIn, packedLightIn);
+        super.render(entity, entityYaw, partialTicks, matrixStackIn, buffer, packedLight);
     }
 
     @Override
@@ -61,29 +69,6 @@ public class FluxSlashRenderer extends EntityRenderer<FluxSlash> {
     public void vertex(Matrix4f pose, Matrix3f normal, VertexConsumer builder, float x, float y, float z, float u, float v, int nx, int nz, int ny, int packedLight) {
 
         builder.vertex(pose, x, y, z).color(255, 255, 255, 200).uv(u, v).overlayCoords(OverlayTexture.NO_OVERLAY).uv2(packedLight).normal(normal, nx, ny, nz).endVertex();
-    }
-
-    public static class FluxRenderType extends RenderType {
-
-        public FluxRenderType(String name, VertexFormat format, VertexFormat.Mode mode, int bufferSize, boolean affectsCrumbling, boolean sortOnUpload, Runnable setupState, Runnable clearState) {
-
-            super(name, format, mode, bufferSize, affectsCrumbling, sortOnUpload, setupState, clearState);
-        }
-
-        public static final RenderType flux(ResourceLocation texture) {
-
-            return RenderType.create("flux_projectile",
-                    DefaultVertexFormat.NEW_ENTITY, VertexFormat.Mode.QUADS, 256, true, true,
-                    RenderType.CompositeState.builder().setTextureState(new RenderStateShard.TextureStateShard(texture, false, false))
-                            .setTransparencyState(TRANSLUCENT_TRANSPARENCY)
-                            .setOutputState(ITEM_ENTITY_TARGET)
-                            .setShaderState(NEW_ENTITY_SHADER)
-                            // alpha?
-                            .setCullState(NO_CULL)
-                            .setDepthTestState(LEQUAL_DEPTH_TEST)
-                            .createCompositeState(true));
-        }
-
     }
 
 }

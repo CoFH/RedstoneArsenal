@@ -1,17 +1,24 @@
 package cofh.redstonearsenal.event;
 
 import cofh.lib.client.renderer.entity.NothingRenderer;
+import cofh.redstonearsenal.RedstoneArsenal;
 import cofh.redstonearsenal.client.renderer.*;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.EntityModel;
 import net.minecraft.client.model.geom.EntityModelSet;
 import net.minecraft.client.renderer.entity.*;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.EntityRenderersEvent;
+import net.minecraftforge.client.event.RegisterClientReloadListenersEvent;
+import net.minecraftforge.event.AddReloadListenerEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.registries.ForgeRegistries;
+import org.apache.logging.log4j.Level;
 
 import static cofh.lib.util.constants.Constants.ID_REDSTONE_ARSENAL;
 import static cofh.redstonearsenal.init.RSAReferences.*;
@@ -20,21 +27,36 @@ import static cofh.redstonearsenal.init.RSAReferences.*;
 public class RSAClientSetupEvents {
 
     @SubscribeEvent
-    public static <T extends LivingEntity, M extends EntityModel<T>> void entityLayerSetup(final EntityRenderersEvent.AddLayers event) {
+    public static void entityLayerSetup(final EntityRenderersEvent.AddLayers event) {
 
-        //EntityModelSet models = event.getEntityModels();
-        //for (String skin : event.getSkins()) {
-        //    LivingEntityRenderer<T, M> renderer = event.getSkin(skin);
-        //    renderer.addLayer(new FluxElytraLayer<T extends Player, ? extends EntityModel<? extends Player>>(renderer, models));
-        //}
+        EntityModelSet models = event.getEntityModels();
+        for (String skin : event.getSkins()) {
+            LivingEntityRenderer<? extends Player, ? extends EntityModel<? extends Player>> renderer = event.getSkin(skin);
+            if (renderer != null) {
+                try {
+                    castRenderer(renderer).addLayer(new FluxElytraLayer<>(castRenderer(renderer), models));
+                } catch (ClassCastException e) {
+                    RedstoneArsenal.LOG.log(Level.ERROR, "Failed render layer cast: " + renderer);
+                }
+            }
+        }
+        EntityRenderDispatcher manager = Minecraft.getInstance().getEntityRenderDispatcher();
+        for (EntityRenderer<?> renderer : manager.renderers.values()) {
+            if (renderer instanceof HumanoidMobRenderer || renderer instanceof ArmorStandRenderer) {
+                LivingEntityRenderer<? extends LivingEntity, ? extends EntityModel<? extends LivingEntity>> livingRenderer = (LivingEntityRenderer<? extends LivingEntity, ? extends EntityModel<? extends LivingEntity>>) renderer;
+                try {
+                    castRenderer(livingRenderer).addLayer(new FluxElytraLayer<>(castRenderer(livingRenderer), models));
+                } catch (ClassCastException e) {
+                    RedstoneArsenal.LOG.log(Level.ERROR, "Failed render layer cast: " + renderer);
+                }
+            }
+        }
+    }
 
-        //EntityRenderDispatcher manager = Minecraft.getInstance().getEntityRenderDispatcher();
-        //for (EntityRenderer<?> renderer : manager.renderers.values()) {
-        //    if (renderer instanceof HumanoidMobRenderer || renderer instanceof ArmorStandRenderer) {
-        //        LivingEntityRenderer<?, ?> livingRenderer = (LivingEntityRenderer<?, ?>) renderer;
-        //        livingRenderer.addLayer(new FluxElytraLayer<>(livingRenderer, models));
-        //    }
-        //}
+    // pain
+    private static <T extends LivingEntity, M extends EntityModel<T>> LivingEntityRenderer<T, M> castRenderer(LivingEntityRenderer<? extends LivingEntity, ? extends EntityModel<? extends LivingEntity>> renderer) throws ClassCastException {
+
+        return (LivingEntityRenderer<T, M>) renderer;
     }
 
     @SubscribeEvent
@@ -47,5 +69,13 @@ public class RSAClientSetupEvents {
         event.registerEntityRenderer(SHOCKWAVE_ENTITY, NothingRenderer::new);
         event.registerEntityRenderer(FISH_HOOK_ENTITY, FluxFishingHookRenderer::new);
     }
+
+    // region RELOAD
+    @SubscribeEvent
+    public static void registerReloadListeners(final RegisterClientReloadListenersEvent event) {
+
+        event.registerReloadListener(FluxTridentBEWLR.INSTANCE);
+    }
+    // endregion
 
 }

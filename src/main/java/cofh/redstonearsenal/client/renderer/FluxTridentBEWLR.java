@@ -24,18 +24,19 @@ public class FluxTridentBEWLR extends BlockEntityWithoutLevelRenderer {
     private static final ResourceLocation UNCHARGED = new ResourceLocation(ID_REDSTONE_ARSENAL + ":textures/entity/flux_trident.png");
     private static final ResourceLocation CHARGED = new ResourceLocation(ID_REDSTONE_ARSENAL + ":textures/entity/flux_trident.png");
     private static final ResourceLocation EMPOWERED = new ResourceLocation(ID_REDSTONE_ARSENAL + ":textures/entity/flux_trident.png");
-    protected TridentModel tridentModel;
 
-    public FluxTridentBEWLR(BlockEntityRenderDispatcher p_172550_, EntityModelSet p_172551_) {
+    public FluxTridentBEWLR(BlockEntityRenderDispatcher dispatcher, EntityModelSet modelSet) {
 
-        super(p_172550_, p_172551_);
+        super(dispatcher, modelSet);
     }
 
-    public void onResourceManagerReload(ResourceManager p_172555_) {
+    //@Override
+    //public void onResourceManagerReload(ResourceManager manager) {
+    //
+    //    this.tridentModel = new TridentModel(this.entityModelSet.bakeLayer(ModelLayers.TRIDENT));
+    //}
 
-        this.tridentModel = new TridentModel(this.entityModelSet.bakeLayer(ModelLayers.TRIDENT)); //TODO Hek: AT modelSet
-    }
-
+    @Override
     public void renderByItem(ItemStack stack, ItemTransforms.TransformType transformType, PoseStack matrixStack, MultiBufferSource buffer, int p_239207_5_, int p_239207_6_) {
 
         if (stack.getItem() instanceof FluxTridentItem) {
