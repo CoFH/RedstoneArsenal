@@ -180,16 +180,6 @@ public class FluxWrenchItem extends ItemCoFH implements IMultiModeFluxItem {
     }
 
     @Override
-    public InteractionResult useOn(UseOnContext context) {
-
-        Player player = context.getPlayer();
-        if (player == null) {
-            return InteractionResult.FAIL;
-        }
-        return player.mayUseItemAt(context.getClickedPos(), context.getClickedFace(), context.getItemInHand()) ? InteractionResult.SUCCESS : InteractionResult.FAIL;
-    }
-
-    @Override
     public InteractionResult onItemUseFirst(ItemStack stack, UseOnContext context) {
 
         Player player = context.getPlayer();

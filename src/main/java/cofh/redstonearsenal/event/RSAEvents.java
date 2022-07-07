@@ -158,7 +158,8 @@ public class RSAEvents {
         }
 
         // Flux Shielding
-        if (event.getAmount() > 500.0F || Utils.isCreativePlayer(target) || target.isInvulnerableTo(source) || (target.hasEffect(MobEffects.FIRE_RESISTANCE) && source.isFire())) {
+        if (event.getAmount() > 500.0F || Utils.isCreativePlayer(target) || target.isInvulnerableTo(source) ||
+                (target.hasEffect(MobEffects.FIRE_RESISTANCE) && source.isFire()) || (source.isBypassArmor() && source.isBypassMagic())) {
             return;
         }
         ItemStack shieldedItem = FluxShieldingHelper.findShieldedItem(target);
@@ -183,6 +184,10 @@ public class RSAEvents {
             return;
         }
         // Flux Shielding
+        DamageSource source = event.getSource();
+        if (source.isBypassArmor() && source.isBypassMagic()) {
+            return;
+        }
         LivingEntity target = event.getEntityLiving();
         float amount = event.getAmount();
         if (amount > 0.0F && FluxShieldingHelper.useFluxShieldCharge(target)) {
