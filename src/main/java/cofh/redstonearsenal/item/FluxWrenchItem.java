@@ -139,17 +139,17 @@ public class FluxWrenchItem extends ItemCoFH implements IMultiModeFluxItem {
         BlockState state = world.getBlockState(pos);
         Block block = state.getBlock();
 
-        if (player.isSecondaryUseActive() && block instanceof IDismantleable && ((IDismantleable) block).canDismantle(world, pos, state, player)) {
+        if (player.isSecondaryUseActive() && block instanceof IDismantleable dismantleable && dismantleable.canDismantle(world, pos, state, player)) {
             if (Utils.isServerWorld(world)) {
                 BlockHitResult target = new BlockHitResult(context.getClickLocation(), context.getClickedFace(), context.getClickedPos(), context.isInside());
-                ((IDismantleable) block).dismantleBlock(world, pos, state, target, player, false);
+                dismantleable.dismantleBlock(world, pos, state, target, player, false);
             }
             player.swing(context.getHand());
             return true;
         } else if (!player.isSecondaryUseActive()) {
-            if (block instanceof IWrenchable && ((IWrenchable) block).canWrench(world, pos, state, player)) {
+            if (block instanceof IWrenchable wrenchable && wrenchable.canWrench(world, pos, state, player)) {
                 BlockHitResult target = new BlockHitResult(context.getClickLocation(), context.getClickedFace(), context.getClickedPos(), context.isInside());
-                ((IWrenchable) block).wrenchBlock(world, pos, state, target, player);
+                wrenchable.wrenchBlock(world, pos, state, target, player);
                 return true;
             }
             return BlockHelper.attemptRotateBlock(state, world, pos);
@@ -168,8 +168,8 @@ public class FluxWrenchItem extends ItemCoFH implements IMultiModeFluxItem {
         }
         BlockState state = world.getBlockState(pos);
         Block block = state.getBlock();
-        if (block instanceof IWrenchable && ((IWrenchable) block).canWrench(world, pos, state, player)) {
-            ((IWrenchable) block).wrenchBlock(world, pos, state, result, player);
+        if (block instanceof IWrenchable wrenchable && wrenchable.canWrench(world, pos, state, player)) {
+            wrenchable.wrenchBlock(world, pos, state, result, player);
             useEnergy(stack, false, player.abilities.instabuild);
             return true;
         } else if (BlockHelper.attemptRotateBlock(state, world, pos)) {

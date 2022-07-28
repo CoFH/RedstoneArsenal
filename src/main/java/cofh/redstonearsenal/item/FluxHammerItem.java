@@ -34,12 +34,12 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Tier;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.context.UseOnContext;
-import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraftforge.common.ToolAction;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.ICapabilityProvider;
 import net.minecraftforge.common.util.LazyOptional;
@@ -49,7 +49,7 @@ import javax.annotation.Nullable;
 import java.util.List;
 
 import static cofh.lib.util.Utils.getItemEnchantmentLevel;
-import static cofh.lib.util.constants.Constants.UUID_TOOL_KNOCKBACK;
+import static cofh.lib.util.constants.Constants.UUID_WEAPON_KNOCKBACK;
 import static cofh.lib.util.helpers.StringHelper.getTextComponent;
 import static cofh.lib.util.references.EnsorcReferences.EXCAVATING;
 
@@ -91,12 +91,6 @@ public class FluxHammerItem extends HammerItem implements IMultiModeFluxItem {
     }
 
     @Override
-    public boolean canApplyAtEnchantingTable(ItemStack stack, Enchantment enchantment) {
-
-        return super.canApplyAtEnchantingTable(stack, enchantment);
-    }
-
-    @Override
     public boolean isEnchantable(ItemStack stack) {
 
         return getItemEnchantability(stack) > 0;
@@ -135,6 +129,12 @@ public class FluxHammerItem extends HammerItem implements IMultiModeFluxItem {
     }
 
     @Override
+    public boolean canPerformAction(ItemStack stack, ToolAction action) {
+
+        return hasEnergy(stack, false) && super.canPerformAction(stack, action);
+    }
+
+    @Override
     public boolean hurtEnemy(ItemStack stack, LivingEntity target, LivingEntity attacker) {
 
         if (useEnergy(stack, isEmpowered(stack), attacker) && isEmpowered(stack)) {
@@ -159,7 +159,13 @@ public class FluxHammerItem extends HammerItem implements IMultiModeFluxItem {
     @Override
     public boolean isCorrectToolForDrops(ItemStack stack, BlockState state) {
 
-        return hasEnergy(stack, getEnergyPerUse(isEmpowered(stack))) && super.isCorrectToolForDrops(stack, state);
+        return hasEnergy(stack, false) && super.isCorrectToolForDrops(stack, state);
+    }
+
+    @Override
+    public float getDestroySpeed(ItemStack stack, BlockState state) {
+
+        return isCorrectToolForDrops(stack, state) && !isEmpowered(stack) ? speed : 1.0F;
     }
 
     @Override
@@ -175,7 +181,7 @@ public class FluxHammerItem extends HammerItem implements IMultiModeFluxItem {
         if (slot == EquipmentSlot.MAINHAND) {
             multimap.put(Attributes.ATTACK_DAMAGE, new AttributeModifier(BASE_ATTACK_DAMAGE_UUID, "Tool modifier", getAttackDamage(stack), AttributeModifier.Operation.ADDITION));
             multimap.put(Attributes.ATTACK_SPEED, new AttributeModifier(BASE_ATTACK_SPEED_UUID, "Tool modifier", getAttackSpeed(stack), AttributeModifier.Operation.ADDITION));
-            multimap.put(Attributes.ATTACK_KNOCKBACK, new AttributeModifier(UUID_TOOL_KNOCKBACK, "Tool modifier", getKnockbackModifier(stack), AttributeModifier.Operation.ADDITION));
+            multimap.put(Attributes.ATTACK_KNOCKBACK, new AttributeModifier(UUID_WEAPON_KNOCKBACK, "Tool modifier", getKnockbackModifier(stack), AttributeModifier.Operation.ADDITION));
         }
         return multimap;
     }
@@ -248,7 +254,10 @@ public class FluxHammerItem extends HammerItem implements IMultiModeFluxItem {
         @Override
         public ImmutableList<BlockPos> getAreaEffectBlocks(BlockPos pos, Player player) {
 
-            return AreaEffectHelper.getBreakableBlocksRadius(container, pos, player, 1 + getItemEnchantmentLevel(EXCAVATING, container));
+            if (hasEnergy(container, false)) {
+                return AreaEffectHelper.getBreakableBlocksRadius(container, pos, player, 1 + getItemEnchantmentLevel(EXCAVATING, container));
+            }
+            return ImmutableList.of();
         }
 
         // region ICapabilityProvider

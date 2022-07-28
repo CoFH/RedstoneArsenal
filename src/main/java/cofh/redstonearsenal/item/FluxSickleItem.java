@@ -2,16 +2,19 @@ package cofh.redstonearsenal.item;
 
 import cofh.core.config.CoreClientConfig;
 import cofh.core.util.ProxyUtils;
+import cofh.lib.block.IHarvestable;
 import cofh.lib.capability.CapabilityAreaEffect;
 import cofh.lib.capability.IAreaEffect;
 import cofh.lib.energy.EnergyContainerItemWrapper;
 import cofh.lib.energy.IEnergyContainerItem;
-import cofh.lib.item.impl.AxeItemCoFH;
+import cofh.lib.item.ILeftClickHandlerItem;
+import cofh.lib.item.impl.SickleItem;
 import cofh.lib.util.Utils;
 import cofh.lib.util.helpers.AreaEffectHelper;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Multimap;
+import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.core.BlockPos;
@@ -19,20 +22,30 @@ import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.tags.BlockTags;
+import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
+import net.minecraft.world.entity.decoration.ArmorStand;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Tier;
 import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.item.enchantment.Enchantment;
+import net.minecraft.world.item.enchantment.EnchantmentHelper;
+import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.*;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.common.ToolAction;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.ICapabilityProvider;
 import net.minecraftforge.common.util.LazyOptional;
@@ -40,13 +53,13 @@ import net.minecraftforge.common.util.LazyOptional;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.List;
+import java.util.Set;
 
 import static cofh.lib.util.helpers.StringHelper.getTextComponent;
 
-public class FluxAxeItem extends AxeItemCoFH implements IMultiModeFluxItem {
+public class FluxSickleItem extends SickleItem implements IMultiModeFluxItem, ILeftClickHandlerItem {
 
-    protected float empoweredCritMod = 2.0F;
-    protected int verticalRange = 32;
+    protected static final Set<Enchantment> VALID_ENCHANTS = new ObjectOpenHashSet<>();
     protected final float damage;
     protected final float attackSpeed;
 
@@ -54,7 +67,7 @@ public class FluxAxeItem extends AxeItemCoFH implements IMultiModeFluxItem {
     protected final int extract;
     protected final int receive;
 
-    public FluxAxeItem(Tier tier, float attackDamageIn, float attackSpeedIn, Properties builder, int energy, int xfer) {
+    public FluxSickleItem(Tier tier, float attackDamageIn, float attackSpeedIn, Properties builder, int energy, int xfer) {
 
         super(tier, attackDamageIn, attackSpeedIn, builder);
 
@@ -80,6 +93,18 @@ public class FluxAxeItem extends AxeItemCoFH implements IMultiModeFluxItem {
         }
     }
 
+    public static void initEnchants() {
+
+        VALID_ENCHANTS.add(Enchantments.SWEEPING_EDGE);
+        VALID_ENCHANTS.add(Enchantments.MOB_LOOTING);
+    }
+
+    @Override
+    public boolean canApplyAtEnchantingTable(ItemStack stack, Enchantment enchantment) {
+
+        return super.canApplyAtEnchantingTable(stack, enchantment) || VALID_ENCHANTS.contains(enchantment);
+    }
+
     @Override
     public boolean isEnchantable(ItemStack stack) {
 
@@ -89,13 +114,19 @@ public class FluxAxeItem extends AxeItemCoFH implements IMultiModeFluxItem {
     @Override
     public ICapabilityProvider initCapabilities(ItemStack stack, @Nullable CompoundTag nbt) {
 
-        return new FluxAxeItemWrapper(stack, this);
+        return new FluxSickleItemWrapper(stack, this);
     }
 
     @Override
-    public boolean canPerformAction(ItemStack stack, ToolAction action) {
+    public AABB getSweepHitBox(ItemStack stack, Player player, Entity target) {
 
-        return hasEnergy(stack, false) && super.canPerformAction(stack, action);
+        return target.getBoundingBox().inflate(radius + 0.25, height + 0.25, radius + 0.25);
+    }
+
+    @Override
+    public boolean onLeftClickEntity(ItemStack stack, Player player, Entity entity) {
+
+        return isEmpowered(stack) && entity instanceof LivingEntity living && living.isBaby();
     }
 
     @Override
@@ -106,10 +137,10 @@ public class FluxAxeItem extends AxeItemCoFH implements IMultiModeFluxItem {
     }
 
     @Override
-    public boolean mineBlock(ItemStack stack, Level level, BlockState state, BlockPos pos, LivingEntity living) {
+    public boolean mineBlock(ItemStack stack, Level worldIn, BlockState state, BlockPos pos, LivingEntity entityLiving) {
 
-        if (Utils.isServerWorld(level) && state.getDestroySpeed(level, pos) != 0.0F) {
-            useEnergy(stack, false, living);
+        if (Utils.isServerWorld(worldIn) && state.getDestroySpeed(worldIn, pos) != 0.0F) {
+            useEnergy(stack, false, entityLiving);
         }
         return true;
     }
@@ -117,13 +148,44 @@ public class FluxAxeItem extends AxeItemCoFH implements IMultiModeFluxItem {
     @Override
     public boolean isCorrectToolForDrops(ItemStack stack, BlockState state) {
 
-        return hasEnergy(stack, false) && super.isCorrectToolForDrops(stack, state);
+        return hasEnergy(stack, false) && EFFECTIVE_MATERIALS.contains(state.getMaterial())
+                && (!isEmpowered(stack) || isMature(state));
+    }
+
+    protected boolean isMature(BlockState state) {
+
+        Block block = state.getBlock();
+        if (block instanceof IHarvestable harvestable) {
+            return harvestable.canHarvest(state);
+        } else if (block instanceof CropBlock crop) {
+            return crop.isMaxAge(state);
+        } else if (block instanceof NetherWartBlock) {
+            return state.getValue(NetherWartBlock.AGE) >= 3;
+        } else if (block instanceof CocoaBlock) {
+            return state.getValue(CocoaBlock.AGE) >= 2;
+        } else if (block instanceof ChorusFlowerBlock) {
+            return state.getValue(ChorusFlowerBlock.AGE) >= 5;
+        } else if (block instanceof LeavesBlock) {
+            return !state.getValue(LeavesBlock.PERSISTENT);
+        } else if (block instanceof SweetBerryBushBlock) {
+            return state.getValue(SweetBerryBushBlock.AGE) >= 3;
+        } else if (block instanceof DoublePlantBlock) {
+            return !state.is(Blocks.SMALL_DRIPLEAF);
+        } else {
+            return state.is(BlockTags.TALL_FLOWERS) || block instanceof GrowingPlantBodyBlock || block instanceof BambooBlock;
+        }
     }
 
     @Override
     public float getDestroySpeed(ItemStack stack, BlockState state) {
 
-        return isCorrectToolForDrops(stack, state) ? speed : 1.0F;
+        return isCorrectToolForDrops(stack, state) ? speed : 0.0F;
+    }
+
+    @Override
+    public boolean onBlockStartBreak(ItemStack stack, BlockPos pos, Player player) {
+
+        return player.isCreative() && !isCorrectToolForDrops(stack, player.level.getBlockState(pos));
     }
 
     @Override
@@ -145,11 +207,6 @@ public class FluxAxeItem extends AxeItemCoFH implements IMultiModeFluxItem {
     protected float getAttackSpeed(ItemStack stack) {
 
         return attackSpeed;
-    }
-
-    protected int getRange(ItemStack stack) {
-
-        return 36;
     }
 
     // region DURABILITY BAR
@@ -193,11 +250,11 @@ public class FluxAxeItem extends AxeItemCoFH implements IMultiModeFluxItem {
     // endregion
 
     // region CAPABILITY WRAPPER
-    protected class FluxAxeItemWrapper extends EnergyContainerItemWrapper implements IAreaEffect {
+    protected class FluxSickleItemWrapper extends EnergyContainerItemWrapper implements IAreaEffect {
 
         private final LazyOptional<IAreaEffect> holder = LazyOptional.of(() -> this);
 
-        FluxAxeItemWrapper(ItemStack containerIn, IEnergyContainerItem itemIn) {
+        FluxSickleItemWrapper(ItemStack containerIn, IEnergyContainerItem itemIn) {
 
             super(containerIn, itemIn, itemIn.getEnergyCapability());
         }
@@ -205,9 +262,8 @@ public class FluxAxeItem extends AxeItemCoFH implements IMultiModeFluxItem {
         @Override
         public ImmutableList<BlockPos> getAreaEffectBlocks(BlockPos pos, Player player) {
 
-            if (isEmpowered(container) && hasEnergy(container, false)) {
-                int range = Math.min(getRange(container), getEnergyStored() / getEnergyPerUse(false) - 1);
-                return AreaEffectHelper.getBreakableWoodenBlocksVertical(container, pos, player, range);
+            if (hasEnergy(container, false)) {
+                return AreaEffectHelper.getBlocksCentered(container, pos, player, radius, height);
             }
             return ImmutableList.of();
         }
@@ -225,4 +281,36 @@ public class FluxAxeItem extends AxeItemCoFH implements IMultiModeFluxItem {
         // endregion
     }
     // endregion
+
+    // region ILeftClickHandlerItem
+    @Override
+    public void onLeftClick(Player player, ItemStack stack) {
+
+        float strength = player.getAttackStrengthScale(0.5F);
+        if (strength < 0.9F || player.isSprinting() || player.isSecondaryUseActive() || !hasEnergy(stack, false)) {
+            return;
+        }
+        float damage = (float) player.getAttributeValue(Attributes.ATTACK_DAMAGE) * (0.2F + strength * strength * 0.8F);
+        float sweep = EnchantmentHelper.getSweepingDamageRatio(player);
+        boolean empowered = isEmpowered(stack);
+        boolean hit = false;
+        for(LivingEntity target : player.level.getEntitiesOfClass(LivingEntity.class, stack.getSweepHitBox(player, player))) {
+            if (target == player || player.isAlliedTo(target) || (empowered && target.isBaby()) ||
+                    (target instanceof ArmorStand stand && stand.isMarker()) || !player.canHit(target, 0)) {
+                continue;
+            }
+            hit = true;
+            Vec3 disp = player.position().subtract(target.position());
+            target.knockback(0.3F, disp.x, disp.z);
+            float bonus = EnchantmentHelper.getDamageBonus(stack, target.getMobType()) * strength;
+            target.hurt(DamageSource.playerAttack(player), 1.0F + (damage + bonus) * sweep);
+        }
+        if (hit) {
+            useEnergy(stack, false, player);
+        }
+        player.level.playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.PLAYER_ATTACK_SWEEP, player.getSoundSource(), 1.0F, 1.0F);
+        player.sweepAttack();
+    }
+    // endregion
+
 }

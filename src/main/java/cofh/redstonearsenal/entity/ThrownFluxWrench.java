@@ -34,6 +34,7 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
+import net.minecraftforge.event.ForgeEventFactory;
 import net.minecraftforge.network.NetworkHooks;
 
 import static cofh.redstonearsenal.init.RSAIDs.ID_FLUX_WRENCH;
@@ -43,7 +44,7 @@ public class ThrownFluxWrench extends Projectile {
 
     protected static final EntityDataAccessor<ItemStack> DATA_ITEM_STACK = SynchedEntityData.defineId(ThrownFluxWrench.class, EntityDataSerializers.ITEM_STACK);
 
-    public float speed = 1.3F;
+    public float speed = 1.5F;
     public float range = 16.0F;
     public boolean hitSomething = false;
 
@@ -168,7 +169,7 @@ public class ThrownFluxWrench extends Projectile {
             }
         }
         this.hitEntities(this.level, start, end);
-        if (blockCollision && !net.minecraftforge.event.ForgeEventFactory.onProjectileImpact(this, blockResult)) {
+        if (blockCollision && !ForgeEventFactory.onProjectileImpact(this, blockResult)) {
             this.onHitBlock(blockResult);
         }
     }
@@ -181,7 +182,7 @@ public class ThrownFluxWrench extends Projectile {
     public void hitEntities(Level world, Vec3 startPos, Vec3 endPos) {
 
         ArcheryHelper.findHitEntities(world, this, startPos, endPos, this::canHitEntity)
-                .filter(result -> !net.minecraftforge.event.ForgeEventFactory.onProjectileImpact(this, result))
+                .filter(result -> !ForgeEventFactory.onProjectileImpact(this, result))
                 .forEach(this::onHitEntity);
     }
 
@@ -228,7 +229,7 @@ public class ThrownFluxWrench extends Projectile {
         if (target.equals(owner)) {
             this.returnToInventory();
         } else {
-            if (result.getEntity().hurt(IFluxItem.fluxRangedDamage(this, owner), calculateDamage(target)) && target.getType() != EntityType.ENDERMAN) {
+            if (target.hurt(IFluxItem.fluxRangedDamage(this, owner), calculateDamage(target)) && target.getType() != EntityType.ENDERMAN) {
                 int fireAspect = Utils.getItemEnchantmentLevel(Enchantments.FIRE_ASPECT, this.getItem());
                 if (this.isOnFire() || fireAspect > 0) {
                     target.setSecondsOnFire(Math.max(this.isOnFire() ? 5 : 0, fireAspect * 4));

@@ -52,5 +52,15 @@
   "entity.redstone_arsenal.flux_arrow": "Flux Arrow",
   "entity.redstone_arsenal.flux_trident": "Flux-Infused Trident",
   "entity.redstone_arsenal.flux_wrench": "Flux-Infused Battle Wrench",
-  "entity.redstone_arsenal.flux_shockwave": "Shockwave"
+  "entity.redstone_arsenal.flux_shockwave": "Shockwave",
+
+  "subtitles.redstone_arsenal.break": "Flux Shielding cracks",
+  "subtitles.redstone_arsenal.recharge": "Flux Shielding recharges",
+
+  "_comment": "Keywords - These terms help things show up in JEI or other tooltip searches! :)",
+  "item.redstone_arsenal.flux_helmet.keyword": "armor",
+  "item.redstone_arsenal.flux_chestplate.keyword": "armor",
+  "item.redstone_arsenal.flux_leggings.keyword": "armor",
+  "item.redstone_arsenal.flux_boots.keyword": "armor",
+  "item.redstone_arsenal.flux_elytra.keyword": "armor chestplate"
 }

@@ -18,7 +18,6 @@ import net.minecraft.world.entity.projectile.AbstractArrow;
 import net.minecraft.world.item.CrossbowItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
-import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.api.distmarker.Dist;
@@ -78,12 +77,6 @@ public class FluxQuiverItem extends ItemCoFH implements IMultiModeFluxItem {
     public void tooltipDelegate(ItemStack stack, @Nullable Level worldIn, List<Component> tooltip, TooltipFlag flagIn) {
 
         IMultiModeFluxItem.super.tooltipDelegate(stack, worldIn, tooltip, flagIn);
-    }
-
-    @Override
-    public boolean canApplyAtEnchantingTable(ItemStack stack, Enchantment enchantment) {
-
-        return super.canApplyAtEnchantingTable(stack, enchantment);
     }
 
     @Override

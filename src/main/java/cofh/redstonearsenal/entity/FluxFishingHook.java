@@ -1,9 +1,7 @@
 package cofh.redstonearsenal.entity;
 
 import cofh.lib.item.impl.FishingRodItemCoFH;
-import cofh.lib.util.constants.NBTTags;
 import cofh.redstonearsenal.init.RSAReferences;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.util.Mth;

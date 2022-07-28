@@ -1,0 +1,14 @@
+{
+  "shielding.break": {
+    "sounds": [
+      "redstone_arsenal:shielding/break"
+    ],
+    "subtitle": "subtitles.redstone_arsenal.shielding.break"
+  },
+  "shielding.recharge": {
+    "sounds": [
+      "redstone_arsenal:shielding/recharge"
+    ],
+    "subtitle": "subtitles.redstone_arsenal.shielding.recharge"
+  }
+}

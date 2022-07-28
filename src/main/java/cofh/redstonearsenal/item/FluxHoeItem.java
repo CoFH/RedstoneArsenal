@@ -24,11 +24,11 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Tier;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.context.UseOnContext;
-import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraftforge.common.ToolAction;
 import net.minecraftforge.common.ToolActions;
 
 import javax.annotation.Nullable;
@@ -76,12 +76,6 @@ public class FluxHoeItem extends HoeItemCoFH implements IMultiModeFluxItem {
     }
 
     @Override
-    public boolean canApplyAtEnchantingTable(ItemStack stack, Enchantment enchantment) {
-
-        return super.canApplyAtEnchantingTable(stack, enchantment);
-    }
-
-    @Override
     public boolean isEnchantable(ItemStack stack) {
 
         return getItemEnchantability(stack) > 0;
@@ -120,6 +114,12 @@ public class FluxHoeItem extends HoeItemCoFH implements IMultiModeFluxItem {
     }
 
     @Override
+    public boolean canPerformAction(ItemStack stack, ToolAction action) {
+
+        return hasEnergy(stack, false) && super.canPerformAction(stack, action);
+    }
+
+    @Override
     public boolean hurtEnemy(ItemStack stack, LivingEntity target, LivingEntity attacker) {
 
         useEnergy(stack, false, attacker);
@@ -129,7 +129,13 @@ public class FluxHoeItem extends HoeItemCoFH implements IMultiModeFluxItem {
     @Override
     public boolean isCorrectToolForDrops(ItemStack stack, BlockState state) {
 
-        return hasEnergy(stack, getEnergyPerUse(isEmpowered(stack))) && super.isCorrectToolForDrops(stack, state);
+        return hasEnergy(stack, false) && super.isCorrectToolForDrops(stack, state);
+    }
+
+    @Override
+    public float getDestroySpeed(ItemStack stack, BlockState state) {
+
+        return isCorrectToolForDrops(stack, state) ? speed : 1.0F;
     }
 
     @Override

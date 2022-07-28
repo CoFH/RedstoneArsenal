@@ -27,11 +27,11 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Tier;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.context.UseOnContext;
-import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraftforge.common.ToolAction;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -78,15 +78,15 @@ public class FluxPickaxeItem extends PickaxeItemCoFH implements IMultiModeFluxIt
     }
 
     @Override
-    public boolean canApplyAtEnchantingTable(ItemStack stack, Enchantment enchantment) {
-
-        return super.canApplyAtEnchantingTable(stack, enchantment);
-    }
-
-    @Override
     public boolean isEnchantable(ItemStack stack) {
 
         return getItemEnchantability(stack) > 0;
+    }
+
+    @Override
+    public boolean canPerformAction(ItemStack stack, ToolAction action) {
+
+        return hasEnergy(stack, false) && super.canPerformAction(stack, action);
     }
 
     @Override
@@ -108,7 +108,13 @@ public class FluxPickaxeItem extends PickaxeItemCoFH implements IMultiModeFluxIt
     @Override
     public boolean isCorrectToolForDrops(ItemStack stack, BlockState state) {
 
-        return hasEnergy(stack, getEnergyPerUse(isEmpowered(stack))) && super.isCorrectToolForDrops(stack, state);
+        return hasEnergy(stack, false) && super.isCorrectToolForDrops(stack, state);
+    }
+
+    @Override
+    public float getDestroySpeed(ItemStack stack, BlockState state) {
+
+        return isCorrectToolForDrops(stack, state) ? speed : 1.0F;
     }
 
     @Override
@@ -135,7 +141,7 @@ public class FluxPickaxeItem extends PickaxeItemCoFH implements IMultiModeFluxIt
                     int r2 = r * r;
                     for (BlockPos pos : BlockPos.betweenClosed(context.getClickedPos().offset(-r, -r, -r), context.getClickedPos().offset(r, r, r))) {
                         if (pos.distSqr(context.getClickedPos()) < r2 && world.getBlockState(pos).getBlock().equals(FLUX_GLOW_AIR)) {
-                            extinguishAir(world, player, pos, 0.3F);
+                            removeAir(world, player, pos, 0.3F);
                         }
                     }
                     return InteractionResult.SUCCESS;
@@ -144,10 +150,10 @@ public class FluxPickaxeItem extends PickaxeItemCoFH implements IMultiModeFluxIt
                 BlockPos pos = context.getClickedPos().relative(context.getClickedFace());
                 BlockState state = world.getBlockState(pos);
                 if (state.getBlock().equals(FLUX_GLOW_AIR) && useEnergy(tool, false, player.abilities.instabuild)) {
-                    extinguishAir(world, player, pos, 0.5F);
+                    removeAir(world, player, pos, 0.5F);
                     return InteractionResult.SUCCESS;
                 } else if (state.isAir() && useEnergy(tool, true, player.abilities.instabuild)) {
-                    igniteAir(world, player, pos, 0.5F);
+                    placeAir(world, player, pos, 0.5F);
                     return InteractionResult.SUCCESS;
                 }
             }
@@ -163,12 +169,12 @@ public class FluxPickaxeItem extends PickaxeItemCoFH implements IMultiModeFluxIt
         if (!world.isClientSide() && isEmpowered(stack) && world.getGameTime() % 8 == 0) {
             BlockPos pos = entity.blockPosition();
             if (world.isEmptyBlock(pos) && world.getRawBrightness(pos, world.getSkyDarken()) <= LOW_LIGHT_THRESHOLD && useEnergy(stack, true, entity)) {
-                igniteAir(world, null, pos, 0.3F);
+                placeAir(world, null, pos, 0.3F);
             }
         }
     }
 
-    public void igniteAir(Level world, Player player, BlockPos pos, float volume) {
+    public void placeAir(Level world, Player player, BlockPos pos, float volume) {
 
         world.playSound(player, pos, SoundEvents.FLINTANDSTEEL_USE, SoundSource.PLAYERS, volume, 1.0F);
         if (!world.isClientSide()) {
@@ -177,7 +183,7 @@ public class FluxPickaxeItem extends PickaxeItemCoFH implements IMultiModeFluxIt
         world.setBlockAndUpdate(pos, FLUX_GLOW_AIR.defaultBlockState());
     }
 
-    public void extinguishAir(Level world, Player player, BlockPos pos, float volume) {
+    public void removeAir(Level world, Player player, BlockPos pos, float volume) {
 
         world.playSound(player, pos, SoundEvents.FIRE_EXTINGUISH, SoundSource.PLAYERS, 0.5F, 1.0F);
         if (!world.isClientSide()) {

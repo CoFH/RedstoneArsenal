@@ -30,7 +30,7 @@ public interface IMultiModeFluxItem extends IFluxItem, IMultiModeItem {
 
     default float getEmpoweredModelProperty(ItemStack stack, Level world, LivingEntity entity, int seed) {
 
-        return getEnergyStored(stack) > 0 && isEmpowered(stack) ? 1F : 0F;
+        return hasEnergy(stack, false) && isEmpowered(stack) ? 1F : 0F;
     }
 
     // region IMultiModeItem

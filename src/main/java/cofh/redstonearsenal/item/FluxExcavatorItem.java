@@ -22,6 +22,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.tags.BlockTags;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
@@ -32,12 +33,14 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.*;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.item.context.UseOnContext;
-import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraftforge.common.ToolAction;
+import net.minecraftforge.common.ToolActions;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.ICapabilityProvider;
 import net.minecraftforge.common.util.LazyOptional;
@@ -51,7 +54,9 @@ import java.util.Map;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
+import static cofh.lib.util.Utils.getItemEnchantmentLevel;
 import static cofh.lib.util.helpers.StringHelper.getTextComponent;
+import static cofh.lib.util.references.EnsorcReferences.EXCAVATING;
 
 public class FluxExcavatorItem extends ExcavatorItem implements IMultiModeFluxItem {
 
@@ -89,12 +94,6 @@ public class FluxExcavatorItem extends ExcavatorItem implements IMultiModeFluxIt
     }
 
     @Override
-    public boolean canApplyAtEnchantingTable(ItemStack stack, Enchantment enchantment) {
-
-        return super.canApplyAtEnchantingTable(stack, enchantment);
-    }
-
-    @Override
     public boolean isEnchantable(ItemStack stack) {
 
         return getItemEnchantability(stack) > 0;
@@ -121,7 +120,9 @@ public class FluxExcavatorItem extends ExcavatorItem implements IMultiModeFluxIt
         if (blocks.size() < 1) {
             return InteractionResult.FAIL;
         }
-        if (!world.isClientSide()) {
+        if (world.isClientSide) {
+            world.playLocalSound(clickPos.getX() + 0.5, clickPos.getY() + 0.5, clickPos.getZ() + 0.5, state.getSoundType().getPlaceSound(), SoundSource.BLOCKS, 1.0F, 1.0F, false);
+        } else {
             BlockPlaceContext blockContext = new BlockPlaceContext(context);
             BlockPos playerPos = player.blockPosition();
             BlockPos eyePos = new BlockPos(player.getEyePosition(1));
@@ -132,7 +133,7 @@ public class FluxExcavatorItem extends ExcavatorItem implements IMultiModeFluxIt
                         world.setBlock(fillPos, world.getBlockState(pos).getBlock().defaultBlockState(), 2);
                     }
                 }
-            } else {
+            } else if (hasEnergy(tool, false)) {
                 Map<Block, List<BlockPos>> sorted = new HashMap<>();
                 for (BlockPos pos : blocks) {
                     BlockPos fillPos = pos.relative(context.getClickedFace());
@@ -143,31 +144,41 @@ public class FluxExcavatorItem extends ExcavatorItem implements IMultiModeFluxIt
                     }
                 }
                 NonNullList<ItemStack> inventory = player.inventory.items;
+                int energyPer = getEnergyPerUse(false) / 2;
+                int energyStored = getEnergyStored(tool);
+                int energyUse = 0;
                 for (Block block : sorted.keySet()) {
-                    int slot = -1;
-                    if (!hasEnergy(context.getItemInHand(), false)) {
+                    if (energyUse >= energyStored) {
                         break;
                     }
-                    List<Item> validItems = Block.getDrops(block.defaultBlockState(), (ServerLevel) world, sorted.get(block).get(0), null).stream().map(ItemStack::getItem).filter(i -> i instanceof BlockItem).collect(Collectors.toList());
+                    List<BlockPos> posns = sorted.get(block);
+                    List<Item> validItems = Block.getDrops(block.defaultBlockState(), (ServerLevel) world, posns.get(0), null).stream().map(ItemStack::getItem).filter(i -> i instanceof BlockItem).collect(Collectors.toList());
                     Predicate<ItemStack> matches = stack -> stack.getItem() instanceof BlockItem && (stack.getItem().equals(block.asItem()) || validItems.contains(stack.getItem()));
-                    for (BlockPos pos : sorted.get(block)) {
-                        if (slot < 0 || inventory.get(slot).isEmpty()) {
-                            slot = findFirstInventory(inventory, matches, slot + 1);
-                            if (slot < 0) {
-                                break;
-                            }
-                        }
-                        if (!useEnergy(context.getItemInHand(), false, false)) {
+                    int slot = -1;
+                    int uses = posns.size() - 1;
+                    while (uses > 0) {
+                        slot = findFirstInventory(inventory, matches, slot + 1);
+                        if (slot < 0) {
                             break;
                         }
-                        if (world.setBlock(pos, ((BlockItem) inventory.get(slot).getItem()).getBlock().defaultBlockState(), 2)) {
-                            inventory.get(slot).shrink(1);
+                        ItemStack stack = inventory.get(slot);
+                        BlockState place = ((BlockItem) stack.getItem()).getBlock().defaultBlockState();
+                        int count = uses - stack.getCount();
+                        int consume = 0;
+                        for (; uses > count && uses >= 0; --uses) {
+                            if (world.setBlock(posns.get(uses), place, 2)) {
+                                ++consume;
+                                energyUse += energyPer;
+                                if (energyUse > energyStored) {
+                                    break;
+                                }
+                            }
                         }
+                        stack.shrink(consume);
                     }
                 }
+                useEnergy(tool, Math.min(energyUse, energyStored), false);
             }
-        } else {
-            world.playLocalSound(clickPos.getX() + 0.5, clickPos.getY() + 0.5, clickPos.getZ() + 0.5, state.getSoundType().getPlaceSound(), SoundSource.BLOCKS, 1.0F, 1.0F, false);
         }
         return InteractionResult.sidedSuccess(world.isClientSide());
     }
@@ -181,6 +192,12 @@ public class FluxExcavatorItem extends ExcavatorItem implements IMultiModeFluxIt
             }
         }
         return -1;
+    }
+
+    @Override
+    public boolean canPerformAction(ItemStack stack, ToolAction action) {
+
+        return hasEnergy(stack, false) && super.canPerformAction(stack, action) && action != ToolActions.SHOVEL_FLATTEN;
     }
 
     @Override
@@ -202,7 +219,13 @@ public class FluxExcavatorItem extends ExcavatorItem implements IMultiModeFluxIt
     @Override
     public boolean isCorrectToolForDrops(ItemStack stack, BlockState state) {
 
-        return hasEnergy(stack, getEnergyPerUse(isEmpowered(stack))) && super.isCorrectToolForDrops(stack, state);
+        return hasEnergy(stack, false) && (super.isCorrectToolForDrops(stack, state) || state.getBlock().equals(Blocks.POWDER_SNOW) || state.is(BlockTags.FIRE));
+    }
+
+    @Override
+    public float getDestroySpeed(ItemStack stack, BlockState state) {
+
+        return isCorrectToolForDrops(stack, state) ? speed : 1.0F;
     }
 
     @Override
@@ -279,7 +302,10 @@ public class FluxExcavatorItem extends ExcavatorItem implements IMultiModeFluxIt
         @Override
         public ImmutableList<BlockPos> getAreaEffectBlocks(BlockPos pos, Player player) {
 
-            return AreaEffectHelper.getBreakableBlocksRadius(container, pos, player, 1 + getMode(container));
+            if (hasEnergy(container, false)) {
+                return AreaEffectHelper.getBreakableBlocksRadius(container, pos, player, 1 + getMode(container) + getItemEnchantmentLevel(EXCAVATING, container));
+            }
+            return ImmutableList.of();
         }
 
         // region ICapabilityProvider

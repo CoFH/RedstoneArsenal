@@ -3,12 +3,14 @@ package cofh.redstonearsenal.event;
 import cofh.core.network.packet.server.ItemLeftClickPacket;
 import cofh.core.util.ProxyUtils;
 import cofh.redstonearsenal.item.FluxCrossbowItem;
+import cofh.redstonearsenal.item.FluxSickleItem;
 import cofh.redstonearsenal.item.FluxSwordItem;
 import cofh.redstonearsenal.item.FluxTridentItem;
 import cofh.redstonearsenal.util.FluxShieldingHelper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.HitResult;
 import net.minecraftforge.api.distmarker.Dist;
@@ -37,13 +39,13 @@ public class RSAClientEvents {
         if (stack.isEmpty()) {
             return;
         }
-        // Flux Sword
-        if (stack.getItem() instanceof FluxSwordItem) {
+        Item item = stack.getItem();
+        // Flux Sword and Sickle
+        if (item instanceof FluxSwordItem || item instanceof FluxSickleItem) {
             ItemLeftClickPacket.createAndSend();
         }
         // Flux Trident
-        if (stack.getItem() instanceof FluxTridentItem) {
-            FluxTridentItem trident = (FluxTridentItem) stack.getItem();
+        if (item instanceof FluxTridentItem trident) {
             if (trident.isEmpowered(stack) && trident.hasEnergy(stack, true) && trident.startPlunge(player)) {
                 event.setCanceled(true);
                 event.setSwingHand(false);
@@ -51,7 +53,7 @@ public class RSAClientEvents {
             }
         }
         // Flux Crossbow
-        if (stack.getItem() instanceof FluxCrossbowItem && ((FluxCrossbowItem) stack.getItem()).getLoadedAmmoCount(stack) > 0) {
+        if (item instanceof FluxCrossbowItem crossbow && crossbow.getLoadedAmmoCount(stack) > 0) {
             HitResult result = Minecraft.getInstance().hitResult;
             if (result == null || !result.getType().equals(HitResult.Type.BLOCK)) {
                 ItemLeftClickPacket.createAndSend();

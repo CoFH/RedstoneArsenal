@@ -1,11 +1,13 @@
 package cofh.redstonearsenal;
 
+import cofh.core.init.CoreEnchantments;
 import cofh.lib.network.PacketHandler;
 import cofh.lib.util.DeferredRegisterCoFH;
 import cofh.redstonearsenal.capability.CapabilityFluxShielding;
 import cofh.redstonearsenal.client.renderer.FluxShieldingOverlay;
 import cofh.redstonearsenal.init.*;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
@@ -37,6 +39,7 @@ public class RedstoneArsenal {
     public static final DeferredRegisterCoFH<Block> BLOCKS = DeferredRegisterCoFH.create(ForgeRegistries.BLOCKS, ID_REDSTONE_ARSENAL);
     public static final DeferredRegisterCoFH<Item> ITEMS = DeferredRegisterCoFH.create(ForgeRegistries.ITEMS, ID_REDSTONE_ARSENAL);
     public static final DeferredRegisterCoFH<EntityType<?>> ENTITIES = DeferredRegisterCoFH.create(ForgeRegistries.ENTITIES, ID_REDSTONE_ARSENAL);
+    public static final DeferredRegisterCoFH<SoundEvent> SOUND_EVENTS = DeferredRegisterCoFH.create(ForgeRegistries.SOUND_EVENTS, ID_REDSTONE_ARSENAL);
 
     public RedstoneArsenal() {
 
@@ -49,11 +52,15 @@ public class RedstoneArsenal {
         BLOCKS.register(modEventBus);
         ITEMS.register(modEventBus);
         ENTITIES.register(modEventBus);
+        SOUND_EVENTS.register(modEventBus);
 
         RSABlocks.register();
         RSAItems.register();
         RSAEntities.register();
         RSAPackets.register();
+        RSASounds.register();
+
+        CoreEnchantments.registerHoldingEnchantment();
     }
 
     // region INITIALIZATION

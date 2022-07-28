@@ -1,14 +1,17 @@
 package cofh.redstonearsenal.util;
 
 import cofh.core.compat.curios.CuriosProxy;
+import cofh.lib.util.helpers.MathHelper;
 import cofh.redstonearsenal.capability.IFluxShieldedItem;
 import cofh.redstonearsenal.client.renderer.FluxShieldingOverlay;
+import cofh.redstonearsenal.init.RSASounds;
 import cofh.redstonearsenal.network.client.FluxShieldingPacket;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.core.particles.DustParticleOptions;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.AABB;
@@ -114,10 +117,10 @@ public class FluxShieldingHelper {
 
     protected static void onUseFluxShieldCharge(LivingEntity entity) {
 
-        entity.level.playSound(null, entity.getX(), entity.getY(), entity.getZ(), SoundEvents.ITEM_BREAK, entity.getSoundSource(), 1.0F, 1.0F); //TODO: sound event
+        entity.level.playSound(null, entity.getX(), entity.getY(), entity.getZ(), RSASounds.SOUND_SHIELDING_BREAK, entity.getSoundSource(), 1.5F, 0.65F + MathHelper.RANDOM.nextFloat(0.2F));
         AABB bounds = entity.getBoundingBox();
         Vec3 pos = bounds.getCenter();
-        if (!entity.level.isClientSide()) {
+        if (!entity.level.isClientSide) {
             ((ServerLevel) entity.level).sendParticles(DustParticleOptions.REDSTONE, pos.x(), pos.y(), pos.z(), 20, bounds.getXsize() * 0.5 + 0.2, bounds.getYsize() * 0.5 + 0.2, bounds.getZsize() * 0.5 + 0.2, 0);
         }
     }
@@ -125,6 +128,12 @@ public class FluxShieldingHelper {
     @OnlyIn (Dist.CLIENT)
     public static void updateHUD(int currCharges, int maxCharges) {
 
+        if (maxCharges - currCharges < FluxShieldingOverlay.maxCharges - FluxShieldingOverlay.currCharges) {
+            Minecraft mc = Minecraft.getInstance();
+            if (mc.level != null && mc.player != null) {
+                mc.level.playSound(mc.player, mc.player, RSASounds.SOUND_SHIELDING_RECHARGE, SoundSource.PLAYERS, 0.75F, 0.3F * currCharges / maxCharges + 0.7F);
+            }
+        }
         FluxShieldingOverlay.currCharges = currCharges;
         FluxShieldingOverlay.maxCharges = maxCharges;
     }

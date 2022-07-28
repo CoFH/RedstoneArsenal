@@ -1,0 +1,7 @@
+{
+  "replace": false,
+  "values": [
+    "redstone_arsenal:flux_metal_block",
+    "redstone_arsenal:flux_gem_block"
+  ]
+}

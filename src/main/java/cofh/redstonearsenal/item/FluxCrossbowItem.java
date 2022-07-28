@@ -132,25 +132,6 @@ public class FluxCrossbowItem extends CrossbowItemCoFH implements IMultiModeFlux
     }
 
     @Override
-    public void onLeftClick(Player player, ItemStack stack) {
-
-        if (isCharged(stack)) {
-            if (isEmpowered(stack)) {
-                float xRot = player.xRot;
-                int count = getLoadedAmmoCount(stack);
-                for (int i = (1 - count) / 2; i <= count / 2; ++i) {
-                    player.xRot = xRot - 10 * i;
-                    shootLoadedAmmo(player.level, player, InteractionHand.MAIN_HAND, stack);
-                }
-                player.xRot = xRot;
-                setCharged(stack, false);
-            } else if (shootLoadedAmmo(player.level, player, InteractionHand.MAIN_HAND, stack) && getLoadedAmmoCount(stack) <= 0) {
-                setCharged(stack, false);
-            }
-        }
-    }
-
-    @Override
     public boolean onBlockStartBreak(ItemStack stack, BlockPos pos, Player player) {
 
         return player.isCreative();
@@ -257,12 +238,21 @@ public class FluxCrossbowItem extends CrossbowItemCoFH implements IMultiModeFlux
     // endregion
 
     @Override
-    public void onModeChange(Player player, ItemStack stack) {
+    public void onLeftClick(Player player, ItemStack stack) {
 
-        if (isEmpowered(stack)) {
-            player.level.playSound(null, player.blockPosition(), SoundEvents.LIGHTNING_BOLT_THUNDER, SoundSource.PLAYERS, 0.4F, 1.0F);
-        } else {
-            player.level.playSound(null, player.blockPosition(), SoundEvents.EXPERIENCE_ORB_PICKUP, SoundSource.PLAYERS, 0.2F, 0.6F);
+        if (isCharged(stack)) {
+            if (isEmpowered(stack)) {
+                float xRot = player.xRot;
+                int count = getLoadedAmmoCount(stack);
+                for (int i = (1 - count) / 2; i <= count / 2; ++i) {
+                    player.xRot = xRot - 10 * i;
+                    shootLoadedAmmo(player.level, player, InteractionHand.MAIN_HAND, stack);
+                }
+                player.xRot = xRot;
+                setCharged(stack, false);
+            } else if (shootLoadedAmmo(player.level, player, InteractionHand.MAIN_HAND, stack) && getLoadedAmmoCount(stack) <= 0) {
+                setCharged(stack, false);
+            }
         }
     }
 

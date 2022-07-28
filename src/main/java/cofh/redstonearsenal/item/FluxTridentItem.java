@@ -34,7 +34,6 @@ import net.minecraft.world.entity.projectile.AbstractArrow;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Tier;
 import net.minecraft.world.item.TooltipFlag;
-import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.level.ClipContext;
@@ -46,11 +45,13 @@ import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.client.IItemRenderProperties;
+import net.minecraftforge.common.ForgeMod;
 
 import javax.annotation.Nullable;
 import java.util.List;
 import java.util.function.Consumer;
 
+import static cofh.lib.util.constants.Constants.UUID_WEAPON_RANGE;
 import static cofh.lib.util.helpers.StringHelper.getTextComponent;
 import static cofh.lib.util.references.CoreReferences.LIGHTNING_RESISTANCE;
 
@@ -61,19 +62,19 @@ public class FluxTridentItem extends TridentItemCoFH implements IMultiModeFluxIt
 
     protected final float damage;
     protected final float attackSpeed;
-    protected final float addedReach;
+    protected final float addedRange;
 
     protected final int maxEnergy;
     protected final int extract;
     protected final int receive;
 
-    public FluxTridentItem(Tier tier, int attackDamageIn, float attackSpeedIn, float reachIn, Properties builder, int energy, int xfer) {
+    public FluxTridentItem(Tier tier, int attackDamageIn, float attackSpeedIn, float rangeIn, Properties builder, int energy, int xfer) {
 
         super(tier, builder);
 
         this.damage = attackDamageIn + tier.getAttackDamageBonus();
         this.attackSpeed = attackSpeedIn;
-        this.addedReach = reachIn;
+        this.addedRange = rangeIn;
 
         this.maxEnergy = energy;
         this.extract = xfer;
@@ -100,12 +101,6 @@ public class FluxTridentItem extends TridentItemCoFH implements IMultiModeFluxIt
         } else if (CoreClientConfig.holdShiftForDetails) {
             tooltip.add(getTextComponent("info.cofh.hold_shift_for_details").withStyle(ChatFormatting.GRAY));
         }
-    }
-
-    @Override
-    public boolean canApplyAtEnchantingTable(ItemStack stack, Enchantment enchantment) {
-
-        return super.canApplyAtEnchantingTable(stack, enchantment);
     }
 
     @Override
@@ -303,8 +298,7 @@ public class FluxTridentItem extends TridentItemCoFH implements IMultiModeFluxIt
         if (slot == EquipmentSlot.MAINHAND) {
             multimap.put(Attributes.ATTACK_DAMAGE, new AttributeModifier(BASE_ATTACK_DAMAGE_UUID, "Weapon modifier", getAttackDamage(stack), AttributeModifier.Operation.ADDITION));
             multimap.put(Attributes.ATTACK_SPEED, new AttributeModifier(BASE_ATTACK_SPEED_UUID, "Weapon modifier", getAttackSpeed(stack), AttributeModifier.Operation.ADDITION));
-            // Add this back when Forge fixes attack reach distance.
-            // multimap.put(ForgeMod.REACH_DISTANCE.get(), new AttributeModifier(UUID_TOOL_REACH, "Weapon modifier", getAddedReach(stack), AttributeModifier.Operation.ADDITION));
+            multimap.put(ForgeMod.ATTACK_RANGE.get(), new AttributeModifier(UUID_WEAPON_RANGE, "Weapon modifier", getAddedAttackRange(stack), AttributeModifier.Operation.ADDITION));
         }
         return multimap;
     }
@@ -334,9 +328,9 @@ public class FluxTridentItem extends TridentItemCoFH implements IMultiModeFluxIt
         return attackSpeed;
     }
 
-    protected float getAddedReach(ItemStack stack) {
+    protected float getAddedAttackRange(ItemStack stack) {
 
-        return addedReach;
+        return addedRange;
     }
 
     // region DURABILITY BAR

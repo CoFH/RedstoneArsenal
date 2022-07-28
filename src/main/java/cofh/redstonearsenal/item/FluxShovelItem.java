@@ -14,6 +14,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.tags.BlockTags;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
@@ -25,12 +26,13 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Tier;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.context.UseOnContext;
-import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.CampfireBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraftforge.common.ToolAction;
 import net.minecraftforge.common.ToolActions;
 
 import javax.annotation.Nullable;
@@ -75,12 +77,6 @@ public class FluxShovelItem extends ShovelItemCoFH implements IMultiModeFluxItem
     }
 
     @Override
-    public boolean canApplyAtEnchantingTable(ItemStack stack, Enchantment enchantment) {
-
-        return super.canApplyAtEnchantingTable(stack, enchantment);
-    }
-
-    @Override
     public boolean isEnchantable(ItemStack stack) {
 
         return getItemEnchantability(stack) > 0;
@@ -90,39 +86,40 @@ public class FluxShovelItem extends ShovelItemCoFH implements IMultiModeFluxItem
     public InteractionResult useOn(UseOnContext context) {
 
         Level level = context.getLevel();
-        BlockPos blockpos = context.getClickedPos();
-        BlockState blockstate = level.getBlockState(blockpos);
+        BlockPos pos = context.getClickedPos();
+        BlockState original = level.getBlockState(pos);
         if (context.getClickedFace() == Direction.DOWN) {
             return InteractionResult.PASS;
         } else {
             ItemStack stack = context.getItemInHand();
             Player player = context.getPlayer();
-            BlockState blockstate1 = blockstate.getToolModifiedState(context, ToolActions.SHOVEL_FLATTEN, false);
-            BlockState blockstate2 = null;
-            if (blockstate1 != null && level.isEmptyBlock(blockpos.above()) && useEnergy(stack, blockstate1.is(FLUX_PATH), player.abilities.instabuild)) {
-                level.playSound(player, blockpos, SoundEvents.SHOVEL_FLATTEN, SoundSource.BLOCKS, 1.0F, 1.0F);
-                blockstate2 = blockstate1;
-            } else if (blockstate.getBlock() instanceof CampfireBlock && blockstate.getValue(CampfireBlock.LIT)) {
+            BlockState modified = original.getToolModifiedState(context, ToolActions.SHOVEL_FLATTEN, false);
+            BlockState result = null;
+            if (modified != null && level.isEmptyBlock(pos.above()) && useEnergy(stack, modified.is(FLUX_PATH), player.abilities.instabuild)) {
+                level.playSound(player, pos, SoundEvents.SHOVEL_FLATTEN, SoundSource.BLOCKS, 1.0F, 1.0F);
+                result = modified;
+            } else if (original.getBlock() instanceof CampfireBlock && original.getValue(CampfireBlock.LIT)) {
                 if (!level.isClientSide()) {
-                    level.levelEvent(null, 1009, blockpos, 0);
+                    level.levelEvent(null, 1009, pos, 0);
                 }
-                CampfireBlock.dowse(context.getPlayer(), level, blockpos, blockstate);
-                blockstate2 = blockstate.setValue(CampfireBlock.LIT, Boolean.FALSE);
+                CampfireBlock.dowse(context.getPlayer(), level, pos, original);
+                result = original.setValue(CampfireBlock.LIT, Boolean.FALSE);
             }
-            if (blockstate2 != null) {
+            if (result != null) {
                 if (!level.isClientSide) {
-                    level.setBlock(blockpos, blockstate2, 11);
-                    if (player != null) {
-                        context.getItemInHand().hurtAndBreak(1, player, (p_43122_) -> {
-                            p_43122_.broadcastBreakEvent(context.getHand());
-                        });
-                    }
+                    level.setBlock(pos, result, 11);
                 }
                 return InteractionResult.sidedSuccess(level.isClientSide);
             } else {
                 return InteractionResult.PASS;
             }
         }
+    }
+
+    @Override
+    public boolean canPerformAction(ItemStack stack, ToolAction action) {
+
+        return hasEnergy(stack, false) && super.canPerformAction(stack, action);
     }
 
     @Override
@@ -144,7 +141,13 @@ public class FluxShovelItem extends ShovelItemCoFH implements IMultiModeFluxItem
     @Override
     public boolean isCorrectToolForDrops(ItemStack stack, BlockState state) {
 
-        return hasEnergy(stack, getEnergyPerUse(isEmpowered(stack))) && super.isCorrectToolForDrops(stack, state);
+        return hasEnergy(stack, false) && (super.isCorrectToolForDrops(stack, state) || state.getBlock().equals(Blocks.POWDER_SNOW) || state.is(BlockTags.FIRE));
+    }
+
+    @Override
+    public float getDestroySpeed(ItemStack stack, BlockState state) {
+
+        return isCorrectToolForDrops(stack, state) ? speed : 1.0F;
     }
 
     @Override

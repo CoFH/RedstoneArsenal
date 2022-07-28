@@ -28,7 +28,6 @@ import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.ToolAction;
-import net.minecraftforge.common.ToolActions;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.ICapabilityProvider;
 import net.minecraftforge.common.util.LazyOptional;
@@ -135,7 +134,7 @@ public class FluxShieldItem extends ShieldItemCoFH implements IMultiModeFluxItem
     @Override
     public boolean canPerformAction(ItemStack stack, ToolAction action) {
 
-        return ToolActions.DEFAULT_SHIELD_ACTIONS.contains(action) && hasEnergy(stack, true);
+        return hasEnergy(stack, false) && super.canPerformAction(stack, action);
     }
 
     @Override

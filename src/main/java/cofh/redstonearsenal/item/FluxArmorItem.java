@@ -72,7 +72,7 @@ public class FluxArmorItem extends ArmorItemCoFH implements IFluxItem {
     @Override
     public boolean isDamageable(ItemStack stack) {
 
-        return hasEnergy(stack, false);
+        return false;
     }
 
     @Override
@@ -98,6 +98,12 @@ public class FluxArmorItem extends ArmorItemCoFH implements IFluxItem {
 
         useEnergy(stack, Math.min(getEnergyStored(stack), amount * getEnergyPerUse(false)), entity);
         return 0;
+    }
+
+    @Override
+    public boolean makesPiglinsNeutral(ItemStack stack, LivingEntity wearer) {
+
+        return true;
     }
 
     // region DURABILITY BAR

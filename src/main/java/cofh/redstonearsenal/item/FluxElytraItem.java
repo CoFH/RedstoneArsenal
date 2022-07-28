@@ -92,7 +92,7 @@ public class FluxElytraItem extends FluxArmorItem implements IMultiModeFluxItem 
     @Override
     public void inventoryTick(ItemStack stack, Level world, Entity entity, int slot, boolean selected) {
 
-        if (!world.isClientSide() && entity instanceof LivingEntity && !((LivingEntity) entity).isFallFlying()) {
+        if (entity instanceof LivingEntity && !((LivingEntity) entity).isFallFlying()) {
             propelTime = 0;
         }
     }
