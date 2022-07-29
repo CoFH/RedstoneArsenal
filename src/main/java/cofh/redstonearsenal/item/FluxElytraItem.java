@@ -4,6 +4,7 @@ import cofh.core.config.CoreClientConfig;
 import cofh.core.util.ProxyUtils;
 import cofh.lib.energy.EnergyContainerItemWrapper;
 import cofh.lib.util.Utils;
+import cofh.lib.util.constants.NBTTags;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.core.particles.DustParticleOptions;
@@ -34,8 +35,6 @@ public class FluxElytraItem extends FluxArmorItem implements IMultiModeFluxItem 
     public float brakeRate = 0.95F;
     public int boostTime = 32;
     public int energyUseInterval = 8;
-
-    protected int propelTime = 0;
 
     public FluxElytraItem(ArmorMaterial material, EquipmentSlot slot, Properties builder, int maxEnergy, int maxTransfer) {
 
@@ -71,19 +70,23 @@ public class FluxElytraItem extends FluxArmorItem implements IMultiModeFluxItem 
     public boolean elytraFlightTick(ItemStack stack, LivingEntity entity, int flightTicks) {
 
         boolean isCreative = Utils.isCreativePlayer(entity);
-        boolean shouldExtract = !isCreative && flightTicks % energyUseInterval == 0;
-        if (!useEnergy(stack, false, !shouldExtract)) {
+        boolean simulate = isCreative || flightTicks % energyUseInterval != 0;
+        if (!useEnergy(stack, false, simulate)) {
             return false;
         }
 
-        if (entity.isShiftKeyDown() && useEnergy(stack, true, !shouldExtract)) {
-            propelTime = 0;
+        if (entity.isShiftKeyDown() && useEnergy(stack, true, simulate)) {
+            stack.getOrCreateTag().remove(NBTTags.TAG_TIME);
             brake(entity);
-        } else if (propelTime > 0) {
-            propel(entity);
-            --propelTime;
-        } else if (isEmpowered(stack) && useEnergy(stack, true, !shouldExtract)) {
-            propel(entity);
+        } else {
+            CompoundTag tag = stack.getOrCreateTag();
+            long time = entity.level.getGameTime();
+            if (time - tag.getLong(NBTTags.TAG_TIME) <= boostTime) {
+                propel(entity);
+            } else if (isEmpowered(stack) && useEnergy(stack, true, isCreative)) {
+                tag.putLong(NBTTags.TAG_TIME, time);
+                propel(entity);
+            }
         }
 
         return true;
@@ -93,7 +96,7 @@ public class FluxElytraItem extends FluxArmorItem implements IMultiModeFluxItem 
     public void inventoryTick(ItemStack stack, Level world, Entity entity, int slot, boolean selected) {
 
         if (entity instanceof LivingEntity && !((LivingEntity) entity).isFallFlying()) {
-            propelTime = 0;
+            stack.getOrCreateTag().remove(NBTTags.TAG_TIME);
         }
     }
 
@@ -112,7 +115,7 @@ public class FluxElytraItem extends FluxArmorItem implements IMultiModeFluxItem 
             ((Player) entity).startFallFlying();
         }
         propel(entity, propelSpeed);
-        propelTime = time;
+        stack.getOrCreateTag().putLong(NBTTags.TAG_TIME, entity.level.getGameTime());
 
         return true;
     }
