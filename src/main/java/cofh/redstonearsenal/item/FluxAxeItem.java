@@ -13,12 +13,17 @@ import com.google.common.collect.HashMultimap;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Multimap;
 import net.minecraft.ChatFormatting;
+import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.Attribute;
@@ -28,11 +33,13 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Tier;
 import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.ToolAction;
+import net.minecraftforge.common.ToolActions;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.ICapabilityProvider;
 import net.minecraftforge.common.util.LazyOptional;
@@ -40,13 +47,12 @@ import net.minecraftforge.common.util.LazyOptional;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.List;
+import java.util.Optional;
 
 import static cofh.lib.util.helpers.StringHelper.getTextComponent;
 
 public class FluxAxeItem extends AxeItemCoFH implements IMultiModeFluxItem {
 
-    protected float empoweredCritMod = 2.0F;
-    protected int verticalRange = 32;
     protected final float damage;
     protected final float attackSpeed;
 
@@ -84,6 +90,37 @@ public class FluxAxeItem extends AxeItemCoFH implements IMultiModeFluxItem {
     public boolean isEnchantable(ItemStack stack) {
 
         return getItemEnchantability(stack) > 0;
+    }
+
+    public InteractionResult useOn(UseOnContext context) {
+
+        Level level = context.getLevel();
+        BlockPos pos = context.getClickedPos();
+        Player player = context.getPlayer();
+        BlockState state = level.getBlockState(pos);
+        Optional<BlockState> result = Optional.ofNullable(state.getToolModifiedState(context, ToolActions.AXE_STRIP, false)).map(s -> {
+            level.playSound(player, pos, SoundEvents.AXE_STRIP, SoundSource.BLOCKS, 1.0F, 1.0F);
+            return s;
+        }).or(() -> Optional.ofNullable(state.getToolModifiedState(context, ToolActions.AXE_SCRAPE, false)).map(s -> {
+            level.playSound(player, pos, SoundEvents.AXE_SCRAPE, SoundSource.BLOCKS, 1.0F, 1.0F);
+            level.levelEvent(player, 3005, pos, 0);
+            return s;
+        })).or(() -> Optional.ofNullable(state.getToolModifiedState(context, ToolActions.AXE_WAX_OFF, false)).map(s -> {
+            level.playSound(player, pos, SoundEvents.AXE_WAX_OFF, SoundSource.BLOCKS, 1.0F, 1.0F);
+            level.levelEvent(player, 3004, pos, 0);
+            return s;
+        }));
+
+        ItemStack stack = context.getItemInHand();
+        if (result.isPresent() && useEnergy(stack, false, player)) {
+            if (player instanceof ServerPlayer) {
+                CriteriaTriggers.ITEM_USED_ON_BLOCK.trigger((ServerPlayer) player, pos, stack);
+            }
+            level.setBlock(pos, result.get(), 11);
+            return InteractionResult.sidedSuccess(level.isClientSide);
+        } else {
+            return InteractionResult.PASS;
+        }
     }
 
     @Override

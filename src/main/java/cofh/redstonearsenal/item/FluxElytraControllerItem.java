@@ -3,10 +3,10 @@ package cofh.redstonearsenal.item;
 import cofh.core.util.ProxyUtils;
 import cofh.lib.item.ICoFHItem;
 import cofh.lib.item.IMultiModeItem;
+import cofh.redstonearsenal.init.RSASounds;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
@@ -67,12 +67,12 @@ public class FluxElytraControllerItem extends Item implements ICoFHItem, IMultiM
     public void onModeChange(Player player, ItemStack stack) {
 
         ItemStack chest = player.getItemBySlot(EquipmentSlot.CHEST);
-        if (chest.getItem() instanceof FluxElytraItem) {
-            ((FluxElytraItem) chest.getItem()).setMode(chest, getMode(stack));
+        if (chest.getItem() instanceof FluxElytraItem elytra) {
+            elytra.setMode(chest, getMode(stack));
             if (isEmpowered(stack)) {
-                player.level.playSound(null, player.blockPosition(), SoundEvents.LIGHTNING_BOLT_THUNDER, SoundSource.PLAYERS, 0.4F, 1.0F);
+                player.level.playSound(null, player.blockPosition(), RSASounds.SOUND_EMPOWER, SoundSource.PLAYERS, 0.4F, 1.0F);
             } else {
-                player.level.playSound(null, player.blockPosition(), SoundEvents.EXPERIENCE_ORB_PICKUP, SoundSource.PLAYERS, 0.2F, 0.6F);
+                player.level.playSound(null, player.blockPosition(), RSASounds.SOUND_QUELL, SoundSource.PLAYERS, 0.2F, 0.6F);
             }
         } else {
             setMode(stack, isEmpowered(stack) ? 0 : 1);

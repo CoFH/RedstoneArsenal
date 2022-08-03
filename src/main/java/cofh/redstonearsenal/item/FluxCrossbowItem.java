@@ -150,6 +150,12 @@ public class FluxCrossbowItem extends CrossbowItemCoFH implements IMultiModeFlux
         }
     }
 
+    @Override
+    public boolean shouldCauseReequipAnimation(ItemStack oldStack, ItemStack newStack, boolean slotChanged) {
+
+        return !oldStack.equals(newStack) && (slotChanged || getEnergyStored(oldStack) > 0 != getEnergyStored(newStack) > 0 || getLoadedAmmoCount(oldStack) != getLoadedAmmoCount(newStack));
+    }
+
     // region LOADING
     public ListTag getLoadedAmmoNBT(ItemStack crossbow) {
 
@@ -237,6 +243,7 @@ public class FluxCrossbowItem extends CrossbowItemCoFH implements IMultiModeFlux
     }
     // endregion
 
+    // region ILeftClickHandlerItem
     @Override
     public void onLeftClick(Player player, ItemStack stack) {
 
@@ -255,5 +262,6 @@ public class FluxCrossbowItem extends CrossbowItemCoFH implements IMultiModeFlux
             }
         }
     }
+    // endregion
 
 }

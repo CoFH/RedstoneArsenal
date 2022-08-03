@@ -12,7 +12,6 @@ import net.minecraft.world.damagesource.EntityDamageSource;
 import net.minecraft.world.damagesource.IndirectEntityDamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
@@ -75,12 +74,7 @@ public interface IFluxItem extends ICoFHItem, IEnergyContainerItem {
         return useEnergy(stack, getEnergyPerUse(empowered), simulate);
     }
 
-    default boolean useEnergy(ItemStack stack, boolean empowered, Player player) {
-
-        return useEnergy(stack, getEnergyPerUse(empowered), player.abilities.instabuild);
-    }
-
-    default boolean useEnergy(ItemStack stack, boolean empowered, Entity entity) {
+    default boolean useEnergy(ItemStack stack, boolean empowered, @Nullable Entity entity) {
 
         return useEnergy(stack, getEnergyPerUse(empowered), Utils.isCreativePlayer(entity));
     }

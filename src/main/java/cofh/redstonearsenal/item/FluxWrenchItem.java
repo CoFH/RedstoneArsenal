@@ -89,7 +89,7 @@ public class FluxWrenchItem extends ItemCoFH implements IMultiModeFluxItem {
 
     @Override
     public void tooltipDelegate(ItemStack stack, @Nullable Level worldIn, List<Component> tooltip, TooltipFlag flagIn) {
-        //TODO: wrench stuff
+
         IMultiModeFluxItem.super.tooltipDelegate(stack, worldIn, tooltip, flagIn);
     }
 

@@ -2,10 +2,8 @@ package cofh.redstonearsenal.event;
 
 import cofh.core.event.ShieldEvents;
 import cofh.lib.util.Utils;
-import cofh.redstonearsenal.item.FluxArmorItem;
-import cofh.redstonearsenal.item.FluxShieldItem;
-import cofh.redstonearsenal.item.FluxShovelItem;
-import cofh.redstonearsenal.item.FluxTridentItem;
+import cofh.lib.util.helpers.AreaEffectHelper;
+import cofh.redstonearsenal.item.*;
 import cofh.redstonearsenal.util.FluxShieldingHelper;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.damagesource.DamageSource;
@@ -13,6 +11,7 @@ import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
@@ -23,6 +22,7 @@ import net.minecraftforge.event.entity.living.LivingEquipmentChangeEvent;
 import net.minecraftforge.event.entity.living.LivingFallEvent;
 import net.minecraftforge.event.entity.living.LivingHurtEvent;
 import net.minecraftforge.event.entity.player.AttackEntityEvent;
+import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.event.entity.player.PlayerFlyableFallEvent;
 import net.minecraftforge.event.world.BlockEvent;
 import net.minecraftforge.eventbus.api.EventPriority;
@@ -98,17 +98,18 @@ public class RSAEvents {
     }
 
     @SubscribeEvent (priority = EventPriority.HIGHEST)
-    public static void handleUnchargedBlockToolModificationEvent(BlockEvent.BlockToolModificationEvent event) {
+    public static void handleBreakSpeedEvent(PlayerEvent.BreakSpeed event) {
 
-        // TODO: Event missing Cancelable annotation in 1.18. Revisit in 1.19.
-        //if (event.isCanceled()) {
-        //    return;
-        //}
-        // Cancel modification if no energy
-        //ItemStack stack = event.getHeldItemStack();
-        //if (stack.getItem() instanceof IFluxItem tool) {
-        //    event.setCanceled(!(Utils.isCreativePlayer(event.getPlayer()) || tool.hasEnergy(stack, false)));
-        //}
+        if (event.isCanceled()) {
+            return;
+        }
+        Player player = event.getPlayer();
+        ItemStack stack = player.getMainHandItem();
+        // Flux Sickle
+        if (stack.getItem() instanceof FluxSickleItem sickle && event.getNewSpeed() > 0.0F &&
+                sickle.isEmpowered(stack) && !AreaEffectHelper.isMature(player.level, event.getPos(), event.getState())) {
+            event.setNewSpeed(0.0F);
+        }
     }
 
     @SubscribeEvent (priority = EventPriority.LOWEST)
@@ -118,19 +119,19 @@ public class RSAEvents {
             return;
         }
         // Flux Shovel
-        ToolAction action = event.getToolAction();
-        if (!action.equals(ToolActions.SHOVEL_FLATTEN)) {
-            return;
-        }
         ItemStack stack = event.getHeldItemStack();
-        if (stack.getItem() instanceof FluxShovelItem shovel) {
-            BlockState state = event.getState();
-            if (state.is(Blocks.DIRT_PATH) || state.is(FLUX_PATH) || state.is(Blocks.FARMLAND)) {
-                event.setFinalState(Blocks.DIRT.defaultBlockState());
-            } else if (shovel.isEmpowered(stack)) {
-                BlockState modified = state.getBlock().getToolModifiedState(state, event.getContext(), action, event.isSimulated());
-                if (modified != null && modified.is(Blocks.DIRT_PATH)){ //event.getFinalState().is(Blocks.DIRT_PATH) ||
-                    event.setFinalState(FLUX_PATH.defaultBlockState());
+        Item item = stack.getItem();
+        ToolAction action = event.getToolAction();
+        if (action.equals(ToolActions.SHOVEL_FLATTEN)) {
+            if (item instanceof FluxShovelItem shovel) {
+                BlockState state = event.getState();
+                if (state.is(Blocks.DIRT_PATH) || state.is(FLUX_PATH) || state.is(Blocks.FARMLAND)) {
+                    event.setFinalState(Blocks.DIRT.defaultBlockState());
+                } else if (shovel.isEmpowered(stack)) {
+                    BlockState modified = state.getBlock().getToolModifiedState(state, event.getContext(), action, event.isSimulated());
+                    if (modified != null && modified.is(Blocks.DIRT_PATH)){
+                        event.setFinalState(FLUX_PATH.defaultBlockState());
+                    }
                 }
             }
         }

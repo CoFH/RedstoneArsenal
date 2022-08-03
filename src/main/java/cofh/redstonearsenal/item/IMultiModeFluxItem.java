@@ -3,11 +3,11 @@ package cofh.redstonearsenal.item;
 import cofh.core.util.helpers.ChatHelper;
 import cofh.lib.energy.EnergyContainerItemWrapper;
 import cofh.lib.item.IMultiModeItem;
+import cofh.redstonearsenal.init.RSASounds;
 import net.minecraft.ChatFormatting;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TranslatableComponent;
-import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
@@ -38,9 +38,9 @@ public interface IMultiModeFluxItem extends IFluxItem, IMultiModeItem {
     default void onModeChange(Player player, ItemStack stack) {
 
         if (isEmpowered(stack)) {
-            player.level.playSound(null, player.blockPosition(), SoundEvents.LIGHTNING_BOLT_THUNDER, SoundSource.PLAYERS, 0.4F, 1.0F);
+            player.level.playSound(null, player.blockPosition(), RSASounds.SOUND_EMPOWER, SoundSource.PLAYERS, 0.4F, 1.0F);
         } else {
-            player.level.playSound(null, player.blockPosition(), SoundEvents.EXPERIENCE_ORB_PICKUP, SoundSource.PLAYERS, 0.2F, 0.6F);
+            player.level.playSound(null, player.blockPosition(), RSASounds.SOUND_QUELL, SoundSource.PLAYERS, 0.2F, 0.6F);
         }
         ChatHelper.sendIndexedChatMessageToPlayer(player, new TranslatableComponent("info.redstone_arsenal.mode." + getMode(stack)));
     }

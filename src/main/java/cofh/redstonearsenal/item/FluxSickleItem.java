@@ -2,7 +2,6 @@ package cofh.redstonearsenal.item;
 
 import cofh.core.config.CoreClientConfig;
 import cofh.core.util.ProxyUtils;
-import cofh.lib.block.IHarvestable;
 import cofh.lib.capability.CapabilityAreaEffect;
 import cofh.lib.capability.IAreaEffect;
 import cofh.lib.energy.EnergyContainerItemWrapper;
@@ -40,7 +39,7 @@ import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.*;
+import net.minecraft.world.level.block.HugeMushroomBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
@@ -139,7 +138,7 @@ public class FluxSickleItem extends SickleItem implements IMultiModeFluxItem, IL
     @Override
     public boolean mineBlock(ItemStack stack, Level worldIn, BlockState state, BlockPos pos, LivingEntity entityLiving) {
 
-        if (Utils.isServerWorld(worldIn) && state.getDestroySpeed(worldIn, pos) != 0.0F) {
+        if (Utils.isServerWorld(worldIn) && !state.is(BlockTags.FIRE)) {
             useEnergy(stack, false, entityLiving);
         }
         return true;
@@ -148,44 +147,19 @@ public class FluxSickleItem extends SickleItem implements IMultiModeFluxItem, IL
     @Override
     public boolean isCorrectToolForDrops(ItemStack stack, BlockState state) {
 
-        return hasEnergy(stack, false) && EFFECTIVE_MATERIALS.contains(state.getMaterial())
-                && (!isEmpowered(stack) || isMature(state));
-    }
-
-    protected boolean isMature(BlockState state) {
-
-        Block block = state.getBlock();
-        if (block instanceof IHarvestable harvestable) {
-            return harvestable.canHarvest(state);
-        } else if (block instanceof CropBlock crop) {
-            return crop.isMaxAge(state);
-        } else if (block instanceof NetherWartBlock) {
-            return state.getValue(NetherWartBlock.AGE) >= 3;
-        } else if (block instanceof CocoaBlock) {
-            return state.getValue(CocoaBlock.AGE) >= 2;
-        } else if (block instanceof ChorusFlowerBlock) {
-            return state.getValue(ChorusFlowerBlock.AGE) >= 5;
-        } else if (block instanceof LeavesBlock) {
-            return !state.getValue(LeavesBlock.PERSISTENT);
-        } else if (block instanceof SweetBerryBushBlock) {
-            return state.getValue(SweetBerryBushBlock.AGE) >= 3;
-        } else if (block instanceof DoublePlantBlock) {
-            return !state.is(Blocks.SMALL_DRIPLEAF);
-        } else {
-            return state.is(BlockTags.TALL_FLOWERS) || block instanceof GrowingPlantBodyBlock || block instanceof BambooBlock;
-        }
+        return hasEnergy(stack, false) && (EFFECTIVE_MATERIALS.contains(state.getMaterial()) || state.getBlock() instanceof HugeMushroomBlock);
     }
 
     @Override
     public float getDestroySpeed(ItemStack stack, BlockState state) {
 
-        return isCorrectToolForDrops(stack, state) ? speed : 0.0F;
+        return isCorrectToolForDrops(stack, state) ? getEfficiency(stack) : 0.0F;
     }
 
     @Override
     public boolean onBlockStartBreak(ItemStack stack, BlockPos pos, Player player) {
 
-        return player.isCreative() && !isCorrectToolForDrops(stack, player.level.getBlockState(pos));
+        return player.isCreative() && (!isCorrectToolForDrops(stack, player.level.getBlockState(pos)) || (isEmpowered(stack) && !AreaEffectHelper.isMature(player.level, pos)));
     }
 
     @Override
@@ -207,6 +181,11 @@ public class FluxSickleItem extends SickleItem implements IMultiModeFluxItem, IL
     protected float getAttackSpeed(ItemStack stack) {
 
         return attackSpeed;
+    }
+
+    public float getEfficiency(ItemStack stack) {
+
+        return speed;
     }
 
     // region DURABILITY BAR
@@ -263,6 +242,9 @@ public class FluxSickleItem extends SickleItem implements IMultiModeFluxItem, IL
         public ImmutableList<BlockPos> getAreaEffectBlocks(BlockPos pos, Player player) {
 
             if (hasEnergy(container, false)) {
+                if (isEmpowered(container)) {
+                    return AreaEffectHelper.getMatureBlocksCentered(container, pos, player, radius, height);
+                }
                 return AreaEffectHelper.getBlocksCentered(container, pos, player, radius, height);
             }
             return ImmutableList.of();

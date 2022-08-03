@@ -2,13 +2,10 @@ package cofh.redstonearsenal.entity;
 
 import cofh.lib.util.Utils;
 import cofh.lib.util.helpers.ArcheryHelper;
-import cofh.lib.util.helpers.MathHelper;
-import cofh.lib.util.references.CoreReferences;
 import cofh.redstonearsenal.RedstoneArsenal;
 import cofh.redstonearsenal.item.FluxWrenchItem;
 import cofh.redstonearsenal.item.IFluxItem;
 import net.minecraft.Util;
-import net.minecraft.client.particle.DustParticle;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.DustParticleOptions;
 import net.minecraft.core.particles.ParticleTypes;
@@ -131,7 +128,8 @@ public class ThrownFluxWrench extends Projectile implements IEntityAdditionalSpa
             Vec3 relPos = owner.getEyePosition(0).subtract(this.position());
             double distance = relPos.length();
             if (distance > range) {
-                if (isEmpowered()) {
+                ItemStack stack = getItem();
+                if (isEmpowered() && stack.getItem() instanceof FluxWrenchItem wrench && wrench.useEnergy(stack, true, owner)) {
                     teleportEffects(owner);
                     returnToInventory(owner);
                     return;
@@ -204,7 +202,8 @@ public class ThrownFluxWrench extends Projectile implements IEntityAdditionalSpa
             Entity owner = this.getOwner();
             if (owner != null) {
                 Vec3 pos = position();
-                if (isEmpowered()) {
+                ItemStack stack = getItem();
+                if (isEmpowered() && stack.getItem() instanceof FluxWrenchItem wrench && wrench.useEnergy(stack, true, owner)) {
                     teleportEffects(owner);
                     returnToInventory(owner);
                 } else {

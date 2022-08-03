@@ -95,7 +95,7 @@ public class FluxShovelItem extends ShovelItemCoFH implements IMultiModeFluxItem
             Player player = context.getPlayer();
             BlockState modified = original.getToolModifiedState(context, ToolActions.SHOVEL_FLATTEN, false);
             BlockState result = null;
-            if (modified != null && level.isEmptyBlock(pos.above()) && useEnergy(stack, modified.is(FLUX_PATH), player.abilities.instabuild)) {
+            if (modified != null && level.isEmptyBlock(pos.above())) {
                 level.playSound(player, pos, SoundEvents.SHOVEL_FLATTEN, SoundSource.BLOCKS, 1.0F, 1.0F);
                 result = modified;
             } else if (original.getBlock() instanceof CampfireBlock && original.getValue(CampfireBlock.LIT)) {
@@ -105,7 +105,7 @@ public class FluxShovelItem extends ShovelItemCoFH implements IMultiModeFluxItem
                 CampfireBlock.dowse(context.getPlayer(), level, pos, original);
                 result = original.setValue(CampfireBlock.LIT, Boolean.FALSE);
             }
-            if (result != null) {
+            if (result != null && useEnergy(stack, result.is(FLUX_PATH), player.abilities.instabuild)) {
                 if (!level.isClientSide) {
                     level.setBlock(pos, result, 11);
                 }

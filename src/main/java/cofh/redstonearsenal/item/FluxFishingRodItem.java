@@ -124,15 +124,16 @@ public class FluxFishingRodItem extends FishingRodItemCoFH implements IMultiMode
 
         Entity owner = bobber.getOwner();
         if (!bobber.level.isClientSide && owner != null) {
-            if (bobber.getHookedIn() != null) {
-                Vec3 relPos = owner.position().add(owner.getLookAngle()).subtract(bobber.position()).normalize().scale(reelSpeed);
-                bobber.getHookedIn().push(relPos.x(), relPos.y(), relPos.z());
-                if (relPos.y() > 0) {
-                    bobber.getHookedIn().fallDistance = 0;
-                }
+            Entity target = bobber.getHookedIn();
+            if (target == null) {
+                bobber.discard();
                 return;
             }
-            bobber.discard();
+            Vec3 relPos = owner.position().add(owner.getLookAngle()).subtract(bobber.position()).normalize().scale(reelSpeed);
+            target.setDeltaMovement(target.getDeltaMovement().add(relPos));
+            if (relPos.y() > 0) {
+                bobber.getHookedIn().fallDistance = 0;
+            }
         }
     }
 

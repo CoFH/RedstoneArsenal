@@ -10,5 +10,17 @@
       "redstone_arsenal:shielding/recharge"
     ],
     "subtitle": "subtitles.redstone_arsenal.shielding.recharge"
+  },
+  "empower.on": {
+    "sounds": [
+      "redstone_arsenal:empower/on"
+    ],
+    "subtitle": "subtitles.redstone_arsenal.empower.on"
+  },
+  "empower.off": {
+    "sounds": [
+      "redstone_arsenal:empower/off"
+    ],
+    "subtitle": "subtitles.redstone_arsenal.empower.off"
   }
 }

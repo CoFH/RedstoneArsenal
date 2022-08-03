@@ -57,7 +57,7 @@ import static cofh.lib.util.references.CoreReferences.LIGHTNING_RESISTANCE;
 
 public class FluxTridentItem extends TridentItemCoFH implements IMultiModeFluxItem, ILeftClickHandlerItem {
 
-    public static final double PLUNGE_RANGE = 3.5;
+    public static final double PLUNGE_RANGE = 2.0;
     public static final double PLUNGE_SPEED = 3;
 
     protected final float damage;
@@ -223,7 +223,7 @@ public class FluxTridentItem extends TridentItemCoFH implements IMultiModeFluxIt
         if (attacker.fallDistance <= attacker.getMaxFallDistance() || !isEmpowered(stack) || !useEnergy(stack, true, attacker)) {
             return false;
         }
-        double range = getPlungeRange();
+        double range = getPlungeRange(attacker.fallDistance);
         if (world.isClientSide) {
             world.addParticle(CoreReferences.BLAST_WAVE_PARTICLE, attacker.getX(), attacker.getY(), attacker.getZ(), 0.75D, range * 2.0F, 1.5F);
             return true;
@@ -263,7 +263,7 @@ public class FluxTridentItem extends TridentItemCoFH implements IMultiModeFluxIt
         double x = lookVector.x();
         double y = lookVector.y();
         double z = lookVector.z();
-        double compSqr = lookVector.lengthSqr() * 0.5;
+        double compSqr = lookVector.lengthSqr() * 0.75;
         if (x < 0.0001F && z < 0.0001F) {
             return new Vec3(0, -magnitude, 0);
         }
@@ -272,7 +272,7 @@ public class FluxTridentItem extends TridentItemCoFH implements IMultiModeFluxIt
             double horzSum = Math.abs(x) + Math.abs(z);
             return new Vec3((x / horzSum) * comp, -comp, (z / horzSum) * comp).scale(magnitude);
         }
-        return new Vec3(x, y, z).scale(magnitude);
+        return lookVector.scale(magnitude);
     }
 
     @Override
@@ -313,9 +313,9 @@ public class FluxTridentItem extends TridentItemCoFH implements IMultiModeFluxIt
         return hasEnergy(stack, true) && living.fallDistance > living.getMaxFallDistance() ? 2.5F * MathHelper.sqrt(living.fallDistance) : 0.0F;
     }
 
-    public double getPlungeRange() {
+    public double getPlungeRange(float height) {
 
-        return PLUNGE_RANGE;
+        return -20.0 / (7.0 + height) + 4.5;
     }
 
     public double getPlungeSpeed() {

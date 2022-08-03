@@ -54,8 +54,10 @@
   "entity.redstone_arsenal.flux_wrench": "Flux-Infused Battle Wrench",
   "entity.redstone_arsenal.flux_shockwave": "Shockwave",
 
-  "subtitles.redstone_arsenal.break": "Flux Shielding cracks",
-  "subtitles.redstone_arsenal.recharge": "Flux Shielding recharges",
+  "subtitles.redstone_arsenal.empower.on": "Flux Tool powers up",
+  "subtitles.redstone_arsenal.empower.off": "Flux Tool powers down",
+  "subtitles.redstone_arsenal.shielding.break": "Flux Shielding cracks",
+  "subtitles.redstone_arsenal.shielding.recharge": "Flux Shielding recharges",
 
   "_comment": "Keywords - These terms help things show up in JEI or other tooltip searches! :)",
   "item.redstone_arsenal.flux_helmet.keyword": "armor",
