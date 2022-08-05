@@ -4,6 +4,7 @@ import cofh.core.config.CoreClientConfig;
 import cofh.core.util.ProxyUtils;
 import cofh.lib.item.impl.FishingRodItemCoFH;
 import cofh.lib.util.Utils;
+import cofh.lib.util.helpers.MathHelper;
 import cofh.redstonearsenal.entity.FluxFishingHook;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.screens.Screen;
@@ -17,6 +18,7 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.boss.wither.WitherBoss;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.FishingHook;
 import net.minecraft.world.item.ItemStack;
@@ -84,6 +86,7 @@ public class FluxFishingRodItem extends FishingRodItemCoFH implements IMultiMode
                     player.fishing.discard();
                 } else {
                     player.startUsingItem(hand);
+                    return InteractionResultHolder.consume(stack);
                 }
             } else {
                 player.fishing.retrieve(stack);
@@ -101,7 +104,7 @@ public class FluxFishingRodItem extends FishingRodItemCoFH implements IMultiMode
         } else {
             return InteractionResultHolder.fail(stack);
         }
-        return InteractionResultHolder.sidedSuccess(stack, world.isClientSide());
+        return InteractionResultHolder.sidedSuccess(stack, world.isClientSide);
     }
 
     @Override
@@ -129,9 +132,17 @@ public class FluxFishingRodItem extends FishingRodItemCoFH implements IMultiMode
                 bobber.discard();
                 return;
             }
-            Vec3 relPos = owner.position().add(owner.getLookAngle()).subtract(bobber.position()).normalize().scale(reelSpeed);
-            target.setDeltaMovement(target.getDeltaMovement().add(relPos));
-            if (relPos.y() > 0) {
+            if (target instanceof LivingEntity living && !living.isPushable()) {
+                return;
+            }
+            Vec3 vel = target.getDeltaMovement();
+            Vec3 disp = owner.position().add(owner.getLookAngle()).subtract(bobber.position());
+            double dist = disp.length();
+            Vec3 dir = disp.scale(1.0F / dist);
+            //target.push(disp.x, disp.y, disp.z);
+            target.setDeltaMovement(vel.add(dir.scale(MathHelper.clamp(dist - vel.dot(dir), -reelSpeed, reelSpeed))));
+            target.hasImpulse = true;
+            if (disp.y() > 0) {
                 bobber.getHookedIn().fallDistance = 0;
             }
         }
