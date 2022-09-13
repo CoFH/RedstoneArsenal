@@ -129,7 +129,7 @@ public class RSAEvents {
                     event.setFinalState(Blocks.DIRT.defaultBlockState());
                 } else if (shovel.isEmpowered(stack)) {
                     BlockState modified = state.getBlock().getToolModifiedState(state, event.getContext(), action, event.isSimulated());
-                    if (modified != null && modified.is(Blocks.DIRT_PATH)){
+                    if (modified != null && modified.is(Blocks.DIRT_PATH)) {
                         event.setFinalState(FLUX_PATH.defaultBlockState());
                     }
                 }

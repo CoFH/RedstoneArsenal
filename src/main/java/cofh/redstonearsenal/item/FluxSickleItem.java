@@ -276,7 +276,7 @@ public class FluxSickleItem extends SickleItem implements IMultiModeFluxItem, IL
         float sweep = EnchantmentHelper.getSweepingDamageRatio(player);
         boolean empowered = isEmpowered(stack);
         boolean hit = false;
-        for(LivingEntity target : player.level.getEntitiesOfClass(LivingEntity.class, stack.getSweepHitBox(player, player))) {
+        for (LivingEntity target : player.level.getEntitiesOfClass(LivingEntity.class, stack.getSweepHitBox(player, player))) {
             if (target == player || player.isAlliedTo(target) || (empowered && target.isBaby()) ||
                     (target instanceof ArmorStand stand && stand.isMarker()) || !player.canHit(target, 0)) {
                 continue;

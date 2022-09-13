@@ -34,13 +34,13 @@ public class RSASounds {
     // endregion
 
     // region REFERENCES
-    @ObjectHolder(ID_SOUND_SHIELDING_BREAK)
+    @ObjectHolder (ID_SOUND_SHIELDING_BREAK)
     public static final SoundEvent SOUND_SHIELDING_BREAK = null;
-    @ObjectHolder(ID_SOUND_SHIELDING_RECHARGE)
+    @ObjectHolder (ID_SOUND_SHIELDING_RECHARGE)
     public static final SoundEvent SOUND_SHIELDING_RECHARGE = null;
-    @ObjectHolder(ID_SOUND_EMPOWER)
+    @ObjectHolder (ID_SOUND_EMPOWER)
     public static final SoundEvent SOUND_EMPOWER = null;
-    @ObjectHolder(ID_SOUND_QUELL)
+    @ObjectHolder (ID_SOUND_QUELL)
     public static final SoundEvent SOUND_QUELL = null;
     // endregion{
 }
