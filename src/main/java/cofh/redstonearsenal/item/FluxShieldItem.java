@@ -2,10 +2,10 @@ package cofh.redstonearsenal.item;
 
 import cofh.core.config.CoreClientConfig;
 import cofh.core.util.ProxyUtils;
-import cofh.lib.capability.IShieldItem;
+import cofh.lib.api.capability.IShieldItem;
+import cofh.lib.api.item.IEnergyContainerItem;
 import cofh.lib.energy.EnergyContainerItemWrapper;
-import cofh.lib.energy.IEnergyContainerItem;
-import cofh.lib.item.impl.ShieldItemCoFH;
+import cofh.lib.item.ShieldItemCoFH;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.core.Direction;
@@ -36,7 +36,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.List;
 
-import static cofh.lib.capability.CapabilityShieldItem.SHIELD_ITEM_CAPABILITY;
+import static cofh.core.capability.CapabilityShieldItem.SHIELD_ITEM_CAPABILITY;
 import static cofh.lib.util.helpers.StringHelper.getTextComponent;
 
 public class FluxShieldItem extends ShieldItemCoFH implements IMultiModeFluxItem {

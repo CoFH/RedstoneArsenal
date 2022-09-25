@@ -2,7 +2,7 @@ package cofh.redstonearsenal.item;
 
 import cofh.core.config.CoreClientConfig;
 import cofh.core.util.ProxyUtils;
-import cofh.lib.item.impl.FishingRodItemCoFH;
+import cofh.lib.item.FishingRodItemCoFH;
 import cofh.lib.util.Utils;
 import cofh.lib.util.helpers.MathHelper;
 import cofh.redstonearsenal.entity.FluxFishingHook;

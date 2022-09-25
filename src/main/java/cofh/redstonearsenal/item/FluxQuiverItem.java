@@ -3,9 +3,9 @@ package cofh.redstonearsenal.item;
 import cofh.core.config.CoreClientConfig;
 import cofh.core.item.ItemCoFH;
 import cofh.core.util.ProxyUtils;
-import cofh.lib.capability.IArcheryAmmoItem;
+import cofh.lib.api.capability.IArcheryAmmoItem;
+import cofh.lib.api.item.IEnergyContainerItem;
 import cofh.lib.energy.EnergyContainerItemWrapper;
-import cofh.lib.energy.IEnergyContainerItem;
 import cofh.redstonearsenal.entity.FluxArrow;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.screens.Screen;
@@ -30,7 +30,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.List;
 
-import static cofh.lib.capability.CapabilityArchery.AMMO_ITEM_CAPABILITY;
+import static cofh.core.capability.CapabilityArchery.AMMO_ITEM_CAPABILITY;
 import static cofh.lib.util.Utils.getItemEnchantmentLevel;
 import static cofh.lib.util.helpers.StringHelper.getTextComponent;
 

@@ -27,7 +27,7 @@ import net.minecraftforge.registries.ForgeRegistries;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import static cofh.lib.util.constants.Constants.ID_REDSTONE_ARSENAL;
+import static cofh.lib.util.constants.ModIds.ID_REDSTONE_ARSENAL;
 import static cofh.redstonearsenal.init.RSAIDs.ID_FLUX_SWORD;
 
 @Mod (ID_REDSTONE_ARSENAL)

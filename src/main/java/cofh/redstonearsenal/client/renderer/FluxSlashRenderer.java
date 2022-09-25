@@ -17,7 +17,7 @@ import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 
-import static cofh.lib.util.constants.Constants.ID_REDSTONE_ARSENAL;
+import static cofh.lib.util.constants.ModIds.ID_REDSTONE_ARSENAL;
 import static net.minecraft.client.renderer.RenderStateShard.*;
 
 public class FluxSlashRenderer extends EntityRenderer<FluxSlash> {

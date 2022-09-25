@@ -1,11 +1,11 @@
 package cofh.redstonearsenal.item;
 
 import cofh.core.config.CoreClientConfig;
+import cofh.core.item.CrossbowItemCoFH;
+import cofh.core.item.ILeftClickHandlerItem;
 import cofh.core.util.ProxyUtils;
+import cofh.core.util.helpers.ArcheryHelper;
 import cofh.lib.energy.EnergyContainerItemWrapper;
-import cofh.lib.item.ILeftClickHandlerItem;
-import cofh.lib.item.impl.CrossbowItemCoFH;
-import cofh.lib.util.helpers.ArcheryHelper;
 import net.minecraft.ChatFormatting;
 import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.client.gui.screens.Screen;

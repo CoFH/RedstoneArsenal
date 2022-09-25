@@ -1,8 +1,8 @@
 package cofh.redstonearsenal.item;
 
+import cofh.core.item.IMultiModeItem;
 import cofh.core.util.helpers.ChatHelper;
 import cofh.lib.energy.EnergyContainerItemWrapper;
-import cofh.lib.item.IMultiModeItem;
 import cofh.redstonearsenal.init.RSASounds;
 import net.minecraft.ChatFormatting;
 import net.minecraft.nbt.CompoundTag;

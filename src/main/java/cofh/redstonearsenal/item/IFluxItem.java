@@ -1,8 +1,8 @@
 package cofh.redstonearsenal.item;
 
+import cofh.lib.api.item.ICoFHItem;
+import cofh.lib.api.item.IEnergyContainerItem;
 import cofh.lib.energy.EnergyContainerItemWrapper;
-import cofh.lib.energy.IEnergyContainerItem;
-import cofh.lib.item.ICoFHItem;
 import cofh.lib.util.Utils;
 import cofh.redstonearsenal.util.RSAEnergyHelper;
 import net.minecraft.nbt.CompoundTag;
@@ -23,8 +23,8 @@ import net.minecraftforge.energy.IEnergyStorage;
 import javax.annotation.Nullable;
 import java.util.List;
 
-import static cofh.lib.item.ContainerType.ENERGY;
-import static cofh.lib.util.constants.Constants.RGB_DURABILITY_FLUX;
+import static cofh.lib.api.ContainerType.ENERGY;
+import static cofh.lib.util.Constants.RGB_DURABILITY_FLUX;
 import static cofh.lib.util.helpers.StringHelper.*;
 
 public interface IFluxItem extends ICoFHItem, IEnergyContainerItem {

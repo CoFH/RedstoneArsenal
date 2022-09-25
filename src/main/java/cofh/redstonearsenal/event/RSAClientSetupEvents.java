@@ -16,7 +16,7 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import org.apache.logging.log4j.Level;
 
-import static cofh.lib.util.constants.Constants.ID_REDSTONE_ARSENAL;
+import static cofh.lib.util.constants.ModIds.ID_REDSTONE_ARSENAL;
 import static cofh.redstonearsenal.init.RSAReferences.*;
 
 @Mod.EventBusSubscriber (value = Dist.CLIENT, modid = ID_REDSTONE_ARSENAL, bus = Mod.EventBusSubscriber.Bus.MOD)

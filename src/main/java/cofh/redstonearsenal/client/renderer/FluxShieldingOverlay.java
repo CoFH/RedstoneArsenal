@@ -8,7 +8,7 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.client.gui.ForgeIngameGui;
 
-import static cofh.lib.util.constants.Constants.ID_REDSTONE_ARSENAL;
+import static cofh.lib.util.constants.ModIds.ID_REDSTONE_ARSENAL;
 
 @OnlyIn (Dist.CLIENT)
 public class FluxShieldingOverlay {

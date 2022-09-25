@@ -1,14 +1,14 @@
 package cofh.redstonearsenal.item;
 
+import cofh.core.capability.CapabilityAreaEffect;
 import cofh.core.config.CoreClientConfig;
+import cofh.core.item.HammerItem;
 import cofh.core.util.ProxyUtils;
-import cofh.lib.capability.CapabilityAreaEffect;
-import cofh.lib.capability.IAreaEffect;
+import cofh.core.util.helpers.AreaEffectHelper;
+import cofh.lib.api.capability.IAreaEffectItem;
+import cofh.lib.api.item.IEnergyContainerItem;
 import cofh.lib.energy.EnergyContainerItemWrapper;
-import cofh.lib.energy.IEnergyContainerItem;
-import cofh.lib.item.impl.HammerItem;
 import cofh.lib.util.Utils;
-import cofh.lib.util.helpers.AreaEffectHelper;
 import cofh.redstonearsenal.entity.Shockwave;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.ImmutableList;
@@ -48,8 +48,8 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.List;
 
+import static cofh.lib.util.Constants.UUID_WEAPON_KNOCKBACK;
 import static cofh.lib.util.Utils.getItemEnchantmentLevel;
-import static cofh.lib.util.constants.Constants.UUID_WEAPON_KNOCKBACK;
 import static cofh.lib.util.helpers.StringHelper.getTextComponent;
 import static cofh.lib.util.references.EnsorcReferences.EXCAVATING;
 
@@ -242,9 +242,9 @@ public class FluxHammerItem extends HammerItem implements IMultiModeFluxItem {
     // endregion
 
     // region CAPABILITY WRAPPER
-    protected class FluxHammerItemWrapper extends EnergyContainerItemWrapper implements IAreaEffect {
+    protected class FluxHammerItemWrapper extends EnergyContainerItemWrapper implements IAreaEffectItem {
 
-        private final LazyOptional<IAreaEffect> holder = LazyOptional.of(() -> this);
+        private final LazyOptional<IAreaEffectItem> holder = LazyOptional.of(() -> this);
 
         FluxHammerItemWrapper(ItemStack containerIn, IEnergyContainerItem itemIn) {
 

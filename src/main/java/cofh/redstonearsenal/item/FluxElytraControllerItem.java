@@ -1,8 +1,8 @@
 package cofh.redstonearsenal.item;
 
+import cofh.core.item.IMultiModeItem;
 import cofh.core.util.ProxyUtils;
-import cofh.lib.item.ICoFHItem;
-import cofh.lib.item.IMultiModeItem;
+import cofh.lib.api.item.ICoFHItem;
 import cofh.redstonearsenal.init.RSASounds;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;

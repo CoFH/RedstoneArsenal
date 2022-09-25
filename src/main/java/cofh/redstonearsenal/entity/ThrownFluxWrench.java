@@ -1,7 +1,7 @@
 package cofh.redstonearsenal.entity;
 
+import cofh.core.util.helpers.ArcheryHelper;
 import cofh.lib.util.Utils;
-import cofh.lib.util.helpers.ArcheryHelper;
 import cofh.redstonearsenal.RedstoneArsenal;
 import cofh.redstonearsenal.item.FluxWrenchItem;
 import cofh.redstonearsenal.item.IFluxItem;

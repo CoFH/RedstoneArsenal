@@ -2,7 +2,7 @@ package cofh.redstonearsenal.item;
 
 import cofh.core.config.CoreClientConfig;
 import cofh.core.util.ProxyUtils;
-import cofh.lib.item.impl.PickaxeItemCoFH;
+import cofh.lib.item.PickaxeItemCoFH;
 import cofh.lib.util.Utils;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;

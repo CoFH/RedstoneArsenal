@@ -1,6 +1,6 @@
 package cofh.redstonearsenal.entity;
 
-import cofh.lib.item.impl.FishingRodItemCoFH;
+import cofh.lib.item.FishingRodItemCoFH;
 import cofh.redstonearsenal.init.RSAReferences;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.protocol.Packet;

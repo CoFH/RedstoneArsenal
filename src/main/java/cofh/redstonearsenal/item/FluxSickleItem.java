@@ -1,15 +1,15 @@
 package cofh.redstonearsenal.item;
 
+import cofh.core.capability.CapabilityAreaEffect;
 import cofh.core.config.CoreClientConfig;
+import cofh.core.item.ILeftClickHandlerItem;
+import cofh.core.item.SickleItem;
 import cofh.core.util.ProxyUtils;
-import cofh.lib.capability.CapabilityAreaEffect;
-import cofh.lib.capability.IAreaEffect;
+import cofh.core.util.helpers.AreaEffectHelper;
+import cofh.lib.api.capability.IAreaEffectItem;
+import cofh.lib.api.item.IEnergyContainerItem;
 import cofh.lib.energy.EnergyContainerItemWrapper;
-import cofh.lib.energy.IEnergyContainerItem;
-import cofh.lib.item.ILeftClickHandlerItem;
-import cofh.lib.item.impl.SickleItem;
 import cofh.lib.util.Utils;
-import cofh.lib.util.helpers.AreaEffectHelper;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Multimap;
@@ -229,9 +229,9 @@ public class FluxSickleItem extends SickleItem implements IMultiModeFluxItem, IL
     // endregion
 
     // region CAPABILITY WRAPPER
-    protected class FluxSickleItemWrapper extends EnergyContainerItemWrapper implements IAreaEffect {
+    protected class FluxSickleItemWrapper extends EnergyContainerItemWrapper implements IAreaEffectItem {
 
-        private final LazyOptional<IAreaEffect> holder = LazyOptional.of(() -> this);
+        private final LazyOptional<IAreaEffectItem> holder = LazyOptional.of(() -> this);
 
         FluxSickleItemWrapper(ItemStack containerIn, IEnergyContainerItem itemIn) {
 

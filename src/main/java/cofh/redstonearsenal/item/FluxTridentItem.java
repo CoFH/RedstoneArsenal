@@ -1,9 +1,9 @@
 package cofh.redstonearsenal.item;
 
 import cofh.core.config.CoreClientConfig;
+import cofh.core.item.ILeftClickHandlerItem;
 import cofh.core.util.ProxyUtils;
-import cofh.lib.item.ILeftClickHandlerItem;
-import cofh.lib.item.impl.TridentItemCoFH;
+import cofh.lib.item.TridentItemCoFH;
 import cofh.lib.util.Utils;
 import cofh.lib.util.helpers.MathHelper;
 import cofh.lib.util.references.CoreReferences;
@@ -51,7 +51,7 @@ import javax.annotation.Nullable;
 import java.util.List;
 import java.util.function.Consumer;
 
-import static cofh.lib.util.constants.Constants.UUID_WEAPON_RANGE;
+import static cofh.lib.util.Constants.UUID_WEAPON_RANGE;
 import static cofh.lib.util.helpers.StringHelper.getTextComponent;
 import static cofh.lib.util.references.CoreReferences.LIGHTNING_RESISTANCE;
 

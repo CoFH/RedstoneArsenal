@@ -2,7 +2,7 @@ package cofh.redstonearsenal.item;
 
 import cofh.core.config.CoreClientConfig;
 import cofh.core.util.ProxyUtils;
-import cofh.lib.item.impl.ShovelItemCoFH;
+import cofh.lib.item.ShovelItemCoFH;
 import cofh.lib.util.Utils;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;

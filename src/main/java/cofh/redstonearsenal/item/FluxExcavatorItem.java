@@ -1,14 +1,14 @@
 package cofh.redstonearsenal.item;
 
+import cofh.core.capability.CapabilityAreaEffect;
 import cofh.core.config.CoreClientConfig;
+import cofh.core.item.ExcavatorItem;
 import cofh.core.util.ProxyUtils;
-import cofh.lib.capability.CapabilityAreaEffect;
-import cofh.lib.capability.IAreaEffect;
+import cofh.core.util.helpers.AreaEffectHelper;
+import cofh.lib.api.capability.IAreaEffectItem;
+import cofh.lib.api.item.IEnergyContainerItem;
 import cofh.lib.energy.EnergyContainerItemWrapper;
-import cofh.lib.energy.IEnergyContainerItem;
-import cofh.lib.item.impl.ExcavatorItem;
 import cofh.lib.util.Utils;
-import cofh.lib.util.helpers.AreaEffectHelper;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Multimap;
@@ -290,9 +290,9 @@ public class FluxExcavatorItem extends ExcavatorItem implements IMultiModeFluxIt
     // endregion
 
     // region CAPABILITY WRAPPER
-    protected class FluxExcavatorItemWrapper extends EnergyContainerItemWrapper implements IAreaEffect {
+    protected class FluxExcavatorItemWrapper extends EnergyContainerItemWrapper implements IAreaEffectItem {
 
-        private final LazyOptional<IAreaEffect> holder = LazyOptional.of(() -> this);
+        private final LazyOptional<IAreaEffectItem> holder = LazyOptional.of(() -> this);
 
         FluxExcavatorItemWrapper(ItemStack containerIn, IEnergyContainerItem itemIn) {
 

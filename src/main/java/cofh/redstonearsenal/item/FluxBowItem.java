@@ -1,15 +1,15 @@
 package cofh.redstonearsenal.item;
 
+import cofh.core.capability.templates.ArcheryAmmoItemWrapper;
+import cofh.core.capability.templates.ArcheryBowItemWrapper;
 import cofh.core.config.CoreClientConfig;
+import cofh.core.item.BowItemCoFH;
 import cofh.core.util.ProxyUtils;
-import cofh.lib.capability.IArcheryAmmoItem;
-import cofh.lib.capability.IArcheryBowItem;
-import cofh.lib.capability.templates.ArcheryAmmoItemWrapper;
-import cofh.lib.capability.templates.ArcheryBowItemWrapper;
+import cofh.core.util.helpers.ArcheryHelper;
+import cofh.lib.api.capability.IArcheryAmmoItem;
+import cofh.lib.api.capability.IArcheryBowItem;
 import cofh.lib.energy.EnergyContainerItemWrapper;
-import cofh.lib.item.impl.BowItemCoFH;
 import cofh.lib.util.Utils;
-import cofh.lib.util.helpers.ArcheryHelper;
 import cofh.lib.util.helpers.MathHelper;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.screens.Screen;
@@ -40,8 +40,8 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.List;
 
-import static cofh.lib.capability.CapabilityArchery.AMMO_ITEM_CAPABILITY;
-import static cofh.lib.capability.CapabilityArchery.BOW_ITEM_CAPABILITY;
+import static cofh.core.capability.CapabilityArchery.AMMO_ITEM_CAPABILITY;
+import static cofh.core.capability.CapabilityArchery.BOW_ITEM_CAPABILITY;
 import static cofh.lib.util.Utils.getItemEnchantmentLevel;
 import static cofh.lib.util.helpers.StringHelper.getTextComponent;
 import static cofh.lib.util.references.EnsorcReferences.TRUESHOT;

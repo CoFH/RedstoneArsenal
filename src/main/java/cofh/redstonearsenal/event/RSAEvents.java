@@ -1,8 +1,8 @@
 package cofh.redstonearsenal.event;
 
 import cofh.core.event.ShieldEvents;
+import cofh.core.util.helpers.AreaEffectHelper;
 import cofh.lib.util.Utils;
-import cofh.lib.util.helpers.AreaEffectHelper;
 import cofh.redstonearsenal.item.*;
 import cofh.redstonearsenal.util.FluxShieldingHelper;
 import net.minecraft.server.level.ServerPlayer;
@@ -29,8 +29,8 @@ import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
-import static cofh.lib.capability.CapabilityShieldItem.SHIELD_ITEM_CAPABILITY;
-import static cofh.lib.util.constants.Constants.ID_REDSTONE_ARSENAL;
+import static cofh.core.capability.CapabilityShieldItem.SHIELD_ITEM_CAPABILITY;
+import static cofh.lib.util.constants.ModIds.ID_REDSTONE_ARSENAL;
 import static cofh.redstonearsenal.init.RSAReferences.FLUX_PATH;
 import static net.minecraft.world.entity.EquipmentSlot.MAINHAND;
 

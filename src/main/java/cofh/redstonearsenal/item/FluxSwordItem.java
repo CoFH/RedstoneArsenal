@@ -1,9 +1,9 @@
 package cofh.redstonearsenal.item;
 
 import cofh.core.config.CoreClientConfig;
+import cofh.core.item.ILeftClickHandlerItem;
 import cofh.core.util.ProxyUtils;
-import cofh.lib.item.ILeftClickHandlerItem;
-import cofh.lib.item.impl.SwordItemCoFH;
+import cofh.lib.item.SwordItemCoFH;
 import cofh.lib.util.Utils;
 import cofh.redstonearsenal.entity.FluxSlash;
 import com.google.common.collect.HashMultimap;

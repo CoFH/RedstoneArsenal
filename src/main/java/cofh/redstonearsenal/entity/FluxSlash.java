@@ -1,6 +1,6 @@
 package cofh.redstonearsenal.entity;
 
-import cofh.lib.util.helpers.ArcheryHelper;
+import cofh.core.util.helpers.ArcheryHelper;
 import cofh.redstonearsenal.item.IFluxItem;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.world.entity.EntityType;
