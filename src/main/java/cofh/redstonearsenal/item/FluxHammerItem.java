@@ -48,10 +48,10 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.List;
 
+import static cofh.core.util.references.EnsorcReferences.EXCAVATING;
 import static cofh.lib.util.Constants.UUID_WEAPON_KNOCKBACK;
 import static cofh.lib.util.Utils.getItemEnchantmentLevel;
 import static cofh.lib.util.helpers.StringHelper.getTextComponent;
-import static cofh.lib.util.references.EnsorcReferences.EXCAVATING;
 
 public class FluxHammerItem extends HammerItem implements IMultiModeFluxItem {
 

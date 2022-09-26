@@ -54,9 +54,9 @@ import java.util.Map;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
+import static cofh.core.util.references.EnsorcReferences.EXCAVATING;
 import static cofh.lib.util.Utils.getItemEnchantmentLevel;
 import static cofh.lib.util.helpers.StringHelper.getTextComponent;
-import static cofh.lib.util.references.EnsorcReferences.EXCAVATING;
 
 public class FluxExcavatorItem extends ExcavatorItem implements IMultiModeFluxItem {
 

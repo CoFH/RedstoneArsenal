@@ -3,10 +3,10 @@ package cofh.redstonearsenal.item;
 import cofh.core.config.CoreClientConfig;
 import cofh.core.item.ILeftClickHandlerItem;
 import cofh.core.util.ProxyUtils;
+import cofh.core.util.references.CoreReferences;
 import cofh.lib.item.TridentItemCoFH;
 import cofh.lib.util.Utils;
 import cofh.lib.util.helpers.MathHelper;
-import cofh.lib.util.references.CoreReferences;
 import cofh.redstonearsenal.client.renderer.FluxTridentBEWLR;
 import cofh.redstonearsenal.entity.ThrownFluxTrident;
 import com.google.common.collect.HashMultimap;
@@ -51,9 +51,9 @@ import javax.annotation.Nullable;
 import java.util.List;
 import java.util.function.Consumer;
 
+import static cofh.core.util.references.CoreReferences.LIGHTNING_RESISTANCE;
 import static cofh.lib.util.Constants.UUID_WEAPON_RANGE;
 import static cofh.lib.util.helpers.StringHelper.getTextComponent;
-import static cofh.lib.util.references.CoreReferences.LIGHTNING_RESISTANCE;
 
 public class FluxTridentItem extends TridentItemCoFH implements IMultiModeFluxItem, ILeftClickHandlerItem {
 

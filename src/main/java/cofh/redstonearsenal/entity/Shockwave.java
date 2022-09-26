@@ -1,8 +1,8 @@
 package cofh.redstonearsenal.entity;
 
+import cofh.core.util.references.CoreReferences;
 import cofh.lib.entity.AbstractAoESpell;
 import cofh.lib.util.helpers.MathHelper;
-import cofh.lib.util.references.CoreReferences;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.effect.MobEffectInstance;
@@ -14,7 +14,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 
-import static cofh.lib.util.references.CoreReferences.SUNDERED;
+import static cofh.core.util.references.CoreReferences.SUNDERED;
 import static cofh.redstonearsenal.init.RSAReferences.SHOCKWAVE_ENTITY;
 
 public class Shockwave extends AbstractAoESpell {
