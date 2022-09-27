@@ -1,9 +1,9 @@
 package cofh.redstonearsenal.entity;
 
-import cofh.core.util.references.CoreReferences;
 import cofh.lib.entity.AbstractAoESpell;
 import cofh.lib.util.helpers.MathHelper;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.particles.SimpleParticleType;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
@@ -14,7 +14,8 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 
-import static cofh.core.util.references.CoreReferences.SUNDERED;
+import static cofh.core.init.CoreMobEffects.SUNDERED;
+import static cofh.core.init.CoreParticles.SHOCKWAVE;
 import static cofh.redstonearsenal.init.RSAReferences.SHOCKWAVE_ENTITY;
 
 public class Shockwave extends AbstractAoESpell {
@@ -50,7 +51,7 @@ public class Shockwave extends AbstractAoESpell {
 
         if (level.isClientSide) {
             BlockPos pos = this.blockPosition();
-            level.addParticle(CoreReferences.SHOCKWAVE_PARTICLE, pos.getX(), pos.getY(), pos.getZ(), speed, radius, 0.6D);
+            level.addParticle((SimpleParticleType) SHOCKWAVE.get(), pos.getX(), pos.getY(), pos.getZ(), speed, radius, 0.6D);
         }
     }
 
@@ -83,7 +84,7 @@ public class Shockwave extends AbstractAoESpell {
                     }
                     if (entity.hurt(source, damage * falloff)) {
                         hitSomething = true;
-                        entity.addEffect(new MobEffectInstance(SUNDERED, debuffDuration, 0, false, false));
+                        entity.addEffect(new MobEffectInstance(SUNDERED.get(), debuffDuration, 0, false, false));
                         entity.knockback(0.8F, -relPos.x(), -relPos.z());
                         //Vector3d knockback = relPos.scale(0.8 / MathHelper.sqrt(distSqr)).add(0, 0.3, 0).scale(1.0D - entity.getAttributeValue(Attributes.KNOCKBACK_RESISTANCE));
                         //entity.setDeltaMovement(knockback);

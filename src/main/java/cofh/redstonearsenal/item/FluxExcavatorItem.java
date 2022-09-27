@@ -54,8 +54,10 @@ import java.util.Map;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
-import static cofh.core.util.references.EnsorcReferences.EXCAVATING;
+import static cofh.core.util.references.EnsorcIDs.ID_EXCAVATING;
+import static cofh.lib.util.Utils.getEnchantment;
 import static cofh.lib.util.Utils.getItemEnchantmentLevel;
+import static cofh.lib.util.constants.ModIds.ID_ENSORCELLATION;
 import static cofh.lib.util.helpers.StringHelper.getTextComponent;
 
 public class FluxExcavatorItem extends ExcavatorItem implements IMultiModeFluxItem {
@@ -303,7 +305,7 @@ public class FluxExcavatorItem extends ExcavatorItem implements IMultiModeFluxIt
         public ImmutableList<BlockPos> getAreaEffectBlocks(BlockPos pos, Player player) {
 
             if (hasEnergy(container, false)) {
-                return AreaEffectHelper.getBreakableBlocksRadius(container, pos, player, 1 + getMode(container) + getItemEnchantmentLevel(EXCAVATING, container));
+                return AreaEffectHelper.getBreakableBlocksRadius(container, pos, player, 1 + getMode(container) + getItemEnchantmentLevel(getEnchantment(ID_ENSORCELLATION, ID_EXCAVATING), container));
             }
             return ImmutableList.of();
         }

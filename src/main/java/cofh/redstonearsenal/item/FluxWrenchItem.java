@@ -45,7 +45,7 @@ import javax.annotation.Nullable;
 import java.util.List;
 import java.util.Set;
 
-import static cofh.core.util.references.CoreReferences.WRENCHED;
+import static cofh.core.init.CoreMobEffects.WRENCHED;
 import static cofh.lib.util.helpers.StringHelper.getTextComponent;
 
 public class FluxWrenchItem extends ItemCoFH implements IMultiModeFluxItem {
@@ -192,7 +192,7 @@ public class FluxWrenchItem extends ItemCoFH implements IMultiModeFluxItem {
     @Override
     public boolean hurtEnemy(ItemStack stack, LivingEntity target, LivingEntity attacker) {
 
-        target.addEffect(new MobEffectInstance(WRENCHED, 60, 0, false, false));
+        target.addEffect(new MobEffectInstance(WRENCHED.get(), 60, 0, false, false));
         useEnergy(stack, false, attacker);
         return true;
     }

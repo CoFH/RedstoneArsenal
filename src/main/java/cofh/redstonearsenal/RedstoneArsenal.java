@@ -1,6 +1,5 @@
 package cofh.redstonearsenal;
 
-import cofh.core.init.CoreEnchantments;
 import cofh.lib.network.PacketHandler;
 import cofh.lib.util.DeferredRegisterCoFH;
 import cofh.redstonearsenal.capability.CapabilityFluxShielding;
@@ -59,8 +58,6 @@ public class RedstoneArsenal {
         RSAEntities.register();
         RSAPackets.register();
         RSASounds.register();
-
-        CoreEnchantments.registerHoldingEnchantment();
     }
 
     // region INITIALIZATION

@@ -48,9 +48,11 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.List;
 
-import static cofh.core.util.references.EnsorcReferences.EXCAVATING;
+import static cofh.core.util.references.EnsorcIDs.ID_EXCAVATING;
 import static cofh.lib.util.Constants.UUID_WEAPON_KNOCKBACK;
+import static cofh.lib.util.Utils.getEnchantment;
 import static cofh.lib.util.Utils.getItemEnchantmentLevel;
+import static cofh.lib.util.constants.ModIds.ID_ENSORCELLATION;
 import static cofh.lib.util.helpers.StringHelper.getTextComponent;
 
 public class FluxHammerItem extends HammerItem implements IMultiModeFluxItem {
@@ -255,7 +257,7 @@ public class FluxHammerItem extends HammerItem implements IMultiModeFluxItem {
         public ImmutableList<BlockPos> getAreaEffectBlocks(BlockPos pos, Player player) {
 
             if (hasEnergy(container, false)) {
-                return AreaEffectHelper.getBreakableBlocksRadius(container, pos, player, 1 + getItemEnchantmentLevel(EXCAVATING, container));
+                return AreaEffectHelper.getBreakableBlocksRadius(container, pos, player, 1 + getItemEnchantmentLevel(getEnchantment(ID_ENSORCELLATION, ID_EXCAVATING), container));
             }
             return ImmutableList.of();
         }

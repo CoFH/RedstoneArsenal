@@ -3,7 +3,6 @@ package cofh.redstonearsenal.item;
 import cofh.core.config.CoreClientConfig;
 import cofh.core.item.ILeftClickHandlerItem;
 import cofh.core.util.ProxyUtils;
-import cofh.core.util.references.CoreReferences;
 import cofh.lib.item.TridentItemCoFH;
 import cofh.lib.util.Utils;
 import cofh.lib.util.helpers.MathHelper;
@@ -15,6 +14,7 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.particles.SimpleParticleType;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
@@ -51,7 +51,8 @@ import javax.annotation.Nullable;
 import java.util.List;
 import java.util.function.Consumer;
 
-import static cofh.core.util.references.CoreReferences.LIGHTNING_RESISTANCE;
+import static cofh.core.init.CoreMobEffects.LIGHTNING_RESISTANCE;
+import static cofh.core.init.CoreParticles.BLAST_WAVE;
 import static cofh.lib.util.Constants.UUID_WEAPON_RANGE;
 import static cofh.lib.util.helpers.StringHelper.getTextComponent;
 
@@ -225,12 +226,12 @@ public class FluxTridentItem extends TridentItemCoFH implements IMultiModeFluxIt
         }
         double range = getPlungeRange(attacker.fallDistance);
         if (world.isClientSide) {
-            world.addParticle(CoreReferences.BLAST_WAVE_PARTICLE, attacker.getX(), attacker.getY(), attacker.getZ(), 0.75D, range * 2.0F, 1.5F);
+            world.addParticle((SimpleParticleType) BLAST_WAVE.get(), attacker.getX(), attacker.getY(), attacker.getZ(), 0.75D, range * 2.0F, 1.5F);
             return true;
         }
         if (Utils.getItemEnchantmentLevel(Enchantments.CHANNELING, stack) > 0) {
             if (world.canSeeSky(attacker.blockPosition()) && world instanceof ServerLevel && world.isThundering()) {
-                attacker.addEffect(new MobEffectInstance(LIGHTNING_RESISTANCE, 40, 0, false, false));
+                attacker.addEffect(new MobEffectInstance(LIGHTNING_RESISTANCE.get(), 40, 0, false, false));
                 Utils.spawnLightningBolt(world, attacker.blockPosition(), attacker);
             }
         }
