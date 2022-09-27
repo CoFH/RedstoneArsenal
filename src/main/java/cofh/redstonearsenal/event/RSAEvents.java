@@ -31,7 +31,7 @@ import net.minecraftforge.fml.common.Mod;
 
 import static cofh.core.capability.CapabilityShieldItem.SHIELD_ITEM_CAPABILITY;
 import static cofh.lib.util.constants.ModIds.ID_REDSTONE_ARSENAL;
-import static cofh.redstonearsenal.init.RSAReferences.FLUX_PATH;
+import static cofh.redstonearsenal.init.RSABlocks.FLUX_PATH;
 import static net.minecraft.world.entity.EquipmentSlot.MAINHAND;
 
 @Mod.EventBusSubscriber (modid = ID_REDSTONE_ARSENAL)
@@ -125,12 +125,12 @@ public class RSAEvents {
         if (action.equals(ToolActions.SHOVEL_FLATTEN)) {
             if (item instanceof FluxShovelItem shovel) {
                 BlockState state = event.getState();
-                if (state.is(Blocks.DIRT_PATH) || state.is(FLUX_PATH) || state.is(Blocks.FARMLAND)) {
+                if (state.is(Blocks.DIRT_PATH) || state.is(FLUX_PATH.get()) || state.is(Blocks.FARMLAND)) {
                     event.setFinalState(Blocks.DIRT.defaultBlockState());
                 } else if (shovel.isEmpowered(stack)) {
                     BlockState modified = state.getBlock().getToolModifiedState(state, event.getContext(), action, event.isSimulated());
                     if (modified != null && modified.is(Blocks.DIRT_PATH)) {
-                        event.setFinalState(FLUX_PATH.defaultBlockState());
+                        event.setFinalState(FLUX_PATH.get().defaultBlockState());
                     }
                 }
             }

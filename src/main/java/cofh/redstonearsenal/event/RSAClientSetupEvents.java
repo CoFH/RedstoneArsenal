@@ -17,7 +17,7 @@ import net.minecraftforge.fml.common.Mod;
 import org.apache.logging.log4j.Level;
 
 import static cofh.lib.util.constants.ModIds.ID_REDSTONE_ARSENAL;
-import static cofh.redstonearsenal.init.RSAReferences.*;
+import static cofh.redstonearsenal.init.RSAEntities.*;
 
 @Mod.EventBusSubscriber (value = Dist.CLIENT, modid = ID_REDSTONE_ARSENAL, bus = Mod.EventBusSubscriber.Bus.MOD)
 public class RSAClientSetupEvents {
@@ -58,12 +58,12 @@ public class RSAClientSetupEvents {
     @SubscribeEvent
     public static void entityRendererSetup(final EntityRenderersEvent.RegisterRenderers event) {
 
-        event.registerEntityRenderer(FLUX_SLASH_ENTITY, FluxSlashRenderer::new);
-        event.registerEntityRenderer(FLUX_ARROW_ENTITY, FluxArrowRenderer::new);
-        event.registerEntityRenderer(FLUX_TRIDENT_ENTITY, ThrownFluxTridentRenderer::new);
-        event.registerEntityRenderer(FLUX_WRENCH_ENTITY, FluxWrenchRenderer::new);
-        event.registerEntityRenderer(SHOCKWAVE_ENTITY, NothingRenderer::new);
-        event.registerEntityRenderer(FISH_HOOK_ENTITY, FluxFishingHookRenderer::new);
+        event.registerEntityRenderer(FLUX_SLASH.get(), FluxSlashRenderer::new);
+        event.registerEntityRenderer(FLUX_ARROW.get(), FluxArrowRenderer::new);
+        event.registerEntityRenderer(FLUX_TRIDENT.get(), ThrownFluxTridentRenderer::new);
+        event.registerEntityRenderer(FLUX_WRENCH.get(), FluxWrenchRenderer::new);
+        event.registerEntityRenderer(SHOCKWAVE_ENTITY.get(), NothingRenderer::new);
+        event.registerEntityRenderer(FISH_HOOK.get(), FluxFishingHookRenderer::new);
     }
 
     // region RELOAD

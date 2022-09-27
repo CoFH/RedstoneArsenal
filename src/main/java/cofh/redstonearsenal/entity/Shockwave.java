@@ -16,7 +16,7 @@ import net.minecraft.world.phys.Vec3;
 
 import static cofh.core.init.CoreMobEffects.SUNDERED;
 import static cofh.core.init.CoreParticles.SHOCKWAVE;
-import static cofh.redstonearsenal.init.RSAReferences.SHOCKWAVE_ENTITY;
+import static cofh.redstonearsenal.init.RSAEntities.SHOCKWAVE_ENTITY;
 
 public class Shockwave extends AbstractAoESpell {
 
@@ -34,7 +34,7 @@ public class Shockwave extends AbstractAoESpell {
 
     public Shockwave(Level world, LivingEntity attacker, Vec3 pos, float yRot) {
 
-        this(SHOCKWAVE_ENTITY, world);
+        this(SHOCKWAVE_ENTITY.get(), world);
         this.owner = attacker;
         setPos(pos.x(), pos.y(), pos.z());
         setRot(yRot, 0);

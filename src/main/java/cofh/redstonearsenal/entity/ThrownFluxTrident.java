@@ -31,8 +31,8 @@ import net.minecraftforge.network.NetworkHooks;
 import javax.annotation.Nullable;
 
 import static cofh.redstonearsenal.RedstoneArsenal.ITEMS;
+import static cofh.redstonearsenal.init.RSAEntities.FLUX_TRIDENT;
 import static cofh.redstonearsenal.init.RSAIDs.ID_FLUX_TRIDENT;
-import static cofh.redstonearsenal.init.RSAReferences.FLUX_TRIDENT_ENTITY;
 
 public class ThrownFluxTrident extends AbstractArrow {
 
@@ -50,7 +50,7 @@ public class ThrownFluxTrident extends AbstractArrow {
 
     public ThrownFluxTrident(Level world, LivingEntity owner, ItemStack stack) {
 
-        super(FLUX_TRIDENT_ENTITY, owner, world);
+        super(FLUX_TRIDENT.get(), owner, world);
         this.tridentItem = stack.copy();
         this.entityData.set(ID_LOYALTY, (byte) EnchantmentHelper.getLoyalty(stack));
         this.entityData.set(ID_FOIL, stack.hasFoil());
@@ -58,7 +58,7 @@ public class ThrownFluxTrident extends AbstractArrow {
 
     public ThrownFluxTrident(Level world, double x, double y, double z) {
 
-        super(FLUX_TRIDENT_ENTITY, x, y, z, world);
+        super(FLUX_TRIDENT.get(), x, y, z, world);
     }
 
     @Override

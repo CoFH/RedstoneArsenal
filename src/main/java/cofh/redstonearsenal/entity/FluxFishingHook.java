@@ -1,7 +1,6 @@
 package cofh.redstonearsenal.entity;
 
 import cofh.lib.item.FishingRodItemCoFH;
-import cofh.redstonearsenal.init.RSAReferences;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.util.Mth;
@@ -13,6 +12,8 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.entity.IEntityAdditionalSpawnData;
 import net.minecraftforge.network.NetworkHooks;
+
+import static cofh.redstonearsenal.init.RSAEntities.FISH_HOOK;
 
 public class FluxFishingHook extends FishingHook implements IEntityAdditionalSpawnData {
 
@@ -47,7 +48,7 @@ public class FluxFishingHook extends FishingHook implements IEntityAdditionalSpa
 
     public FluxFishingHook(Player player, Level level, int luck, int lure) {
 
-        this(RSAReferences.FISH_HOOK_ENTITY, player, level, luck, lure);
+        this(FISH_HOOK.get(), player, level, luck, lure);
     }
 
     @Override

@@ -39,7 +39,7 @@ import javax.annotation.Nullable;
 import java.util.List;
 
 import static cofh.lib.util.helpers.StringHelper.getTextComponent;
-import static cofh.redstonearsenal.init.RSAReferences.FLUX_PATH;
+import static cofh.redstonearsenal.init.RSABlocks.FLUX_PATH;
 
 public class FluxShovelItem extends ShovelItemCoFH implements IMultiModeFluxItem {
 
@@ -105,7 +105,7 @@ public class FluxShovelItem extends ShovelItemCoFH implements IMultiModeFluxItem
                 CampfireBlock.dowse(context.getPlayer(), level, pos, original);
                 result = original.setValue(CampfireBlock.LIT, Boolean.FALSE);
             }
-            if (result != null && useEnergy(stack, result.is(FLUX_PATH), player.abilities.instabuild)) {
+            if (result != null && useEnergy(stack, result.is(FLUX_PATH.get()), player.abilities.instabuild)) {
                 if (!level.isClientSide) {
                     level.setBlock(pos, result, 11);
                 }

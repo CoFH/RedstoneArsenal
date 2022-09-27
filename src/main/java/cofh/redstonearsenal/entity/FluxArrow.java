@@ -32,7 +32,7 @@ import net.minecraftforge.network.NetworkHooks;
 import javax.annotation.Nullable;
 import java.util.Arrays;
 
-import static cofh.redstonearsenal.init.RSAReferences.FLUX_ARROW_ENTITY;
+import static cofh.redstonearsenal.init.RSAEntities.FLUX_ARROW;
 
 public class FluxArrow extends AbstractArrow {
 
@@ -48,12 +48,12 @@ public class FluxArrow extends AbstractArrow {
 
     public FluxArrow(Level worldIn, LivingEntity shooter) {
 
-        super(FLUX_ARROW_ENTITY, shooter, worldIn);
+        super(FLUX_ARROW.get(), shooter, worldIn);
     }
 
     public FluxArrow(Level worldIn, double x, double y, double z) {
 
-        super(FLUX_ARROW_ENTITY, x, y, z, worldIn);
+        super(FLUX_ARROW.get(), x, y, z, worldIn);
     }
 
     @Override

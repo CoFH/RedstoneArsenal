@@ -4,7 +4,6 @@ import cofh.core.compat.curios.CuriosProxy;
 import cofh.lib.util.helpers.MathHelper;
 import cofh.redstonearsenal.capability.IFluxShieldedItem;
 import cofh.redstonearsenal.client.renderer.FluxShieldingOverlay;
-import cofh.redstonearsenal.init.RSASounds;
 import cofh.redstonearsenal.network.client.FluxShieldingPacket;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
@@ -24,6 +23,8 @@ import java.util.function.Consumer;
 import java.util.function.Predicate;
 
 import static cofh.redstonearsenal.capability.CapabilityFluxShielding.FLUX_SHIELDED_ITEM_CAPABILITY;
+import static cofh.redstonearsenal.init.RSASounds.SOUND_SHIELDING_BREAK;
+import static cofh.redstonearsenal.init.RSASounds.SOUND_SHIELDING_RECHARGE;
 
 public class FluxShieldingHelper {
 
@@ -117,7 +118,7 @@ public class FluxShieldingHelper {
 
     protected static void onUseFluxShieldCharge(LivingEntity entity) {
 
-        entity.level.playSound(null, entity.getX(), entity.getY(), entity.getZ(), RSASounds.SOUND_SHIELDING_BREAK, entity.getSoundSource(), 1.5F, 0.65F + MathHelper.RANDOM.nextFloat(0.2F));
+        entity.level.playSound(null, entity.getX(), entity.getY(), entity.getZ(), SOUND_SHIELDING_BREAK.get(), entity.getSoundSource(), 1.5F, 0.65F + MathHelper.RANDOM.nextFloat(0.2F));
         AABB bounds = entity.getBoundingBox();
         Vec3 pos = bounds.getCenter();
         if (!entity.level.isClientSide) {
@@ -131,7 +132,7 @@ public class FluxShieldingHelper {
         if (maxCharges - currCharges < FluxShieldingOverlay.maxCharges - FluxShieldingOverlay.currCharges) {
             Minecraft mc = Minecraft.getInstance();
             if (mc.level != null && mc.player != null) {
-                mc.level.playSound(mc.player, mc.player, RSASounds.SOUND_SHIELDING_RECHARGE, SoundSource.PLAYERS, 0.75F, 0.3F * currCharges / maxCharges + 0.7F);
+                mc.level.playSound(mc.player, mc.player, SOUND_SHIELDING_RECHARGE.get(), SoundSource.PLAYERS, 0.75F, 0.3F * currCharges / maxCharges + 0.7F);
             }
         }
         FluxShieldingOverlay.currCharges = currCharges;

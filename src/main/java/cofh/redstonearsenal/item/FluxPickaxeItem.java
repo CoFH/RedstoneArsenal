@@ -37,7 +37,7 @@ import javax.annotation.Nullable;
 import java.util.List;
 
 import static cofh.lib.util.helpers.StringHelper.getTextComponent;
-import static cofh.redstonearsenal.init.RSAReferences.FLUX_GLOW_AIR;
+import static cofh.redstonearsenal.init.RSABlocks.FLUX_GLOW_AIR;
 import static net.minecraft.world.level.block.Blocks.AIR;
 
 public class FluxPickaxeItem extends PickaxeItemCoFH implements IMultiModeFluxItem {
@@ -140,7 +140,7 @@ public class FluxPickaxeItem extends PickaxeItemCoFH implements IMultiModeFluxIt
                     int r = REMOVE_RADIUS;
                     int r2 = r * r;
                     for (BlockPos pos : BlockPos.betweenClosed(context.getClickedPos().offset(-r, -r, -r), context.getClickedPos().offset(r, r, r))) {
-                        if (pos.distSqr(context.getClickedPos()) < r2 && world.getBlockState(pos).getBlock().equals(FLUX_GLOW_AIR)) {
+                        if (pos.distSqr(context.getClickedPos()) < r2 && world.getBlockState(pos).getBlock().equals(FLUX_GLOW_AIR.get())) {
                             removeAir(world, player, pos, 0.3F);
                         }
                     }
@@ -149,7 +149,7 @@ public class FluxPickaxeItem extends PickaxeItemCoFH implements IMultiModeFluxIt
             } else {
                 BlockPos pos = context.getClickedPos().relative(context.getClickedFace());
                 BlockState state = world.getBlockState(pos);
-                if (state.getBlock().equals(FLUX_GLOW_AIR) && useEnergy(tool, false, player.abilities.instabuild)) {
+                if (state.getBlock().equals(FLUX_GLOW_AIR.get()) && useEnergy(tool, false, player.abilities.instabuild)) {
                     removeAir(world, player, pos, 0.5F);
                     return InteractionResult.SUCCESS;
                 } else if (state.isAir() && useEnergy(tool, true, player.abilities.instabuild)) {
@@ -180,7 +180,7 @@ public class FluxPickaxeItem extends PickaxeItemCoFH implements IMultiModeFluxIt
         if (!world.isClientSide()) {
             ((ServerLevel) world).sendParticles(DustParticleOptions.REDSTONE, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, 4, 0.25, 0.25, 0.25, 0);
         }
-        world.setBlockAndUpdate(pos, FLUX_GLOW_AIR.defaultBlockState());
+        world.setBlockAndUpdate(pos, FLUX_GLOW_AIR.get().defaultBlockState());
     }
 
     public void removeAir(Level world, Player player, BlockPos pos, float volume) {

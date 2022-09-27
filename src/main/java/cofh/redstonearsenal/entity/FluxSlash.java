@@ -17,7 +17,7 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.event.ForgeEventFactory;
 import net.minecraftforge.network.NetworkHooks;
 
-import static cofh.redstonearsenal.init.RSAReferences.FLUX_SLASH_ENTITY;
+import static cofh.redstonearsenal.init.RSAEntities.FLUX_SLASH;
 
 public class FluxSlash extends Projectile {
 
@@ -36,7 +36,7 @@ public class FluxSlash extends Projectile {
 
     public FluxSlash(Level worldIn, double x, double y, double z) {
 
-        this(FLUX_SLASH_ENTITY, worldIn);
+        this(FLUX_SLASH.get(), worldIn);
         this.setPos(x, y, z);
     }
 

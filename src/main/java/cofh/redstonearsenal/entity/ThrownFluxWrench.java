@@ -40,8 +40,8 @@ import net.minecraftforge.entity.IEntityAdditionalSpawnData;
 import net.minecraftforge.event.ForgeEventFactory;
 import net.minecraftforge.network.NetworkHooks;
 
+import static cofh.redstonearsenal.init.RSAEntities.FLUX_WRENCH;
 import static cofh.redstonearsenal.init.RSAIDs.ID_FLUX_WRENCH;
-import static cofh.redstonearsenal.init.RSAReferences.FLUX_WRENCH_ENTITY;
 
 public class ThrownFluxWrench extends Projectile implements IEntityAdditionalSpawnData {
 
@@ -58,7 +58,7 @@ public class ThrownFluxWrench extends Projectile implements IEntityAdditionalSpa
 
     public ThrownFluxWrench(Level worldIn, double x, double y, double z) {
 
-        this(FLUX_WRENCH_ENTITY, worldIn);
+        this(FLUX_WRENCH.get(), worldIn);
         this.setPos(x, y, z);
     }
 
