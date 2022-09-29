@@ -97,9 +97,9 @@ public class FluxTridentItem extends TridentItemCoFH implements IMultiModeFluxIt
     @OnlyIn (Dist.CLIENT)
     public void appendHoverText(ItemStack stack, @Nullable Level worldIn, List<Component> tooltip, TooltipFlag flagIn) {
 
-        if (Screen.hasShiftDown() || CoreClientConfig.alwaysShowDetails) {
+        if (Screen.hasShiftDown() || CoreClientConfig.alwaysShowDetails.get()) {
             tooltipDelegate(stack, worldIn, tooltip, flagIn);
-        } else if (CoreClientConfig.holdShiftForDetails) {
+        } else if (CoreClientConfig.holdShiftForDetails.get()) {
             tooltip.add(getTextComponent("info.cofh.hold_shift_for_details").withStyle(ChatFormatting.GRAY));
         }
     }
