@@ -12,6 +12,8 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.EntityRenderersEvent;
 import net.minecraftforge.client.event.RegisterClientReloadListenersEvent;
+import net.minecraftforge.client.event.RegisterGuiOverlaysEvent;
+import net.minecraftforge.client.gui.overlay.VanillaGuiOverlay;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import org.apache.logging.log4j.Level;
@@ -64,6 +66,12 @@ public class RSAClientSetupEvents {
         event.registerEntityRenderer(FLUX_WRENCH.get(), FluxWrenchRenderer::new);
         event.registerEntityRenderer(SHOCKWAVE_ENTITY.get(), NothingRenderer::new);
         event.registerEntityRenderer(FISH_HOOK.get(), FluxFishingHookRenderer::new);
+    }
+
+    @SubscribeEvent
+    public static void overlaySetup(final RegisterGuiOverlaysEvent event) {
+
+        event.registerAbove(VanillaGuiOverlay.FOOD_LEVEL.id(), "flux_shielding", FluxShieldingOverlay::render);
     }
 
     // region RELOAD

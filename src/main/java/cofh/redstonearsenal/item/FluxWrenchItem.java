@@ -108,7 +108,7 @@ public class FluxWrenchItem extends ItemCoFH implements IMultiModeFluxItem {
     @Override
     public boolean isEnchantable(ItemStack stack) {
 
-        return getItemEnchantability(stack) > 0;
+        return getEnchantmentValue(stack) > 0;
     }
 
     @Override

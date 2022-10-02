@@ -89,7 +89,7 @@ public class FluxAxeItem extends AxeItemCoFH implements IMultiModeFluxItem {
     @Override
     public boolean isEnchantable(ItemStack stack) {
 
-        return getItemEnchantability(stack) > 0;
+        return getEnchantmentValue(stack) > 0;
     }
 
     public InteractionResult useOn(UseOnContext context) {

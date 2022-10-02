@@ -11,27 +11,27 @@ updateJSONURL = "https://raw.github.com/cofh/version/master/redstone_arsenal/upd
 displayURL = "https://teamcofh.com/"
 logoFile = "logo.png"
 credits = "Team CoFH"
-authors = "King Lemming"
+authors = "King Lemming, Hekera"
 description = '''
-Redstone Arsenal!
+Tools powered by Redstone Flux!
 '''
 [[dependencies.redstone_arsenal]]
 modId = "minecraft"
 mandatory = true
-versionRange = "[1.16.5,)"
+versionRange = "[1.19,)"
 ordering = "AFTER"
 side = "BOTH"
 
 [[dependencies.redstone_arsenal]]
 modId = "forge"
 mandatory = true
-versionRange = "[36.2.20,)"
+versionRange = "[41.0.43,)"
 ordering = "AFTER"
 side = "BOTH"
 
 [[dependencies.redstone_arsenal]]
 modId = "cofh_core"
 mandatory = true
-versionRange = "[1.6,1.7]"
+versionRange = "[10.0,11.0)"
 ordering = "AFTER"
 side = "BOTH"

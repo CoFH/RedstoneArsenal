@@ -6,7 +6,6 @@ import cofh.lib.energy.EnergyContainerItemWrapper;
 import net.minecraft.ChatFormatting;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
@@ -43,7 +42,7 @@ public interface IMultiModeFluxItem extends IFluxItem, IMultiModeItem {
         } else {
             player.level.playSound(null, player.blockPosition(), SOUND_QUELL.get(), SoundSource.PLAYERS, 0.2F, 0.6F);
         }
-        ChatHelper.sendIndexedChatMessageToPlayer(player, new TranslatableComponent("info.redstone_arsenal.mode." + getMode(stack)));
+        ChatHelper.sendIndexedChatMessageToPlayer(player, Component.translatable("info.redstone_arsenal.mode." + getMode(stack)));
     }
     // endregion
 

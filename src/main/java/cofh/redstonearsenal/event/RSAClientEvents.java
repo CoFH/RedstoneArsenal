@@ -14,7 +14,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.HitResult;
 import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.client.event.InputEvent.ClickInputEvent;
+import net.minecraftforge.client.event.InputEvent.InteractionKeyMappingTriggered;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -26,7 +26,7 @@ import static cofh.lib.util.constants.ModIds.ID_REDSTONE_ARSENAL;
 public class RSAClientEvents {
 
     @SubscribeEvent (priority = EventPriority.LOWEST)
-    public static void handleClickInputEvent(ClickInputEvent event) {
+    public static void handleClickInputEvent(InteractionKeyMappingTriggered event) {
 
         if (event.isCanceled() || !event.isAttack()) {
             return;

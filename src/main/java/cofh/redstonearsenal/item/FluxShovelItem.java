@@ -79,7 +79,7 @@ public class FluxShovelItem extends ShovelItemCoFH implements IMultiModeFluxItem
     @Override
     public boolean isEnchantable(ItemStack stack) {
 
-        return getItemEnchantability(stack) > 0;
+        return getEnchantmentValue(stack) > 0;
     }
 
     @Override

@@ -1,9 +1,9 @@
 package cofh.redstonearsenal;
 
+import cofh.core.config.ConfigManager;
 import cofh.lib.network.PacketHandler;
 import cofh.lib.util.DeferredRegisterCoFH;
 import cofh.redstonearsenal.capability.CapabilityFluxShielding;
-import cofh.redstonearsenal.client.renderer.FluxShieldingOverlay;
 import cofh.redstonearsenal.init.*;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;
@@ -14,8 +14,6 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Block;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.client.gui.ForgeIngameGui;
-import net.minecraftforge.client.gui.OverlayRegistry;
 import net.minecraftforge.common.capabilities.RegisterCapabilitiesEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.common.Mod;
@@ -33,16 +31,19 @@ import static cofh.redstonearsenal.init.RSAIDs.ID_FLUX_SWORD;
 public class RedstoneArsenal {
 
     public static final Logger LOG = LogManager.getLogger(ID_REDSTONE_ARSENAL);
+    public static final ConfigManager CONFIG_MANAGER = new ConfigManager();
 
-    public static final PacketHandler PACKET_HANDLER = new PacketHandler(new ResourceLocation(ID_REDSTONE_ARSENAL, "flux_shielding"));
+    public static final PacketHandler PACKET_HANDLER = new PacketHandler(new ResourceLocation(ID_REDSTONE_ARSENAL, "flux_shielding"), LOG);
     public static final DeferredRegisterCoFH<Block> BLOCKS = DeferredRegisterCoFH.create(ForgeRegistries.BLOCKS, ID_REDSTONE_ARSENAL);
     public static final DeferredRegisterCoFH<Item> ITEMS = DeferredRegisterCoFH.create(ForgeRegistries.ITEMS, ID_REDSTONE_ARSENAL);
-    public static final DeferredRegisterCoFH<EntityType<?>> ENTITIES = DeferredRegisterCoFH.create(ForgeRegistries.ENTITIES, ID_REDSTONE_ARSENAL);
+    public static final DeferredRegisterCoFH<EntityType<?>> ENTITIES = DeferredRegisterCoFH.create(ForgeRegistries.ENTITY_TYPES, ID_REDSTONE_ARSENAL);
     public static final DeferredRegisterCoFH<SoundEvent> SOUND_EVENTS = DeferredRegisterCoFH.create(ForgeRegistries.SOUND_EVENTS, ID_REDSTONE_ARSENAL);
 
     public RedstoneArsenal() {
 
         final IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
+
+        CONFIG_MANAGER.register(modEventBus).addServerConfig(new RSAServerConfig());
 
         modEventBus.addListener(this::capSetup);
         modEventBus.addListener(this::commonSetup);
@@ -68,8 +69,6 @@ public class RedstoneArsenal {
 
     private void commonSetup(final FMLCommonSetupEvent event) {
 
-        RSAConfig.register();
-
         event.enqueueWork(RSAItems::setup);
     }
 
@@ -86,8 +85,6 @@ public class RedstoneArsenal {
         //                }
         //            };
         //        }
-
-        OverlayRegistry.registerOverlayAbove(ForgeIngameGui.FOOD_LEVEL_ELEMENT, "Flux Shielding", FluxShieldingOverlay::render);
     }
     // endregion
 

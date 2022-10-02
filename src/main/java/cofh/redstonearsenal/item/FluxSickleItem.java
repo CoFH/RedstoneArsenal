@@ -107,7 +107,7 @@ public class FluxSickleItem extends SickleItem implements IMultiModeFluxItem, IL
     @Override
     public boolean isEnchantable(ItemStack stack) {
 
-        return getItemEnchantability(stack) > 0;
+        return getEnchantmentValue(stack) > 0;
     }
 
     @Override

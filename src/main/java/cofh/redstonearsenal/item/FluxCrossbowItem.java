@@ -1,11 +1,11 @@
 package cofh.redstonearsenal.item;
 
 import cofh.core.config.CoreClientConfig;
-import cofh.core.item.CrossbowItemCoFH;
 import cofh.core.item.ILeftClickHandlerItem;
 import cofh.core.util.ProxyUtils;
 import cofh.core.util.helpers.ArcheryHelper;
 import cofh.lib.energy.EnergyContainerItemWrapper;
+import cofh.lib.item.CrossbowItemCoFH;
 import net.minecraft.ChatFormatting;
 import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.client.gui.screens.Screen;
@@ -13,8 +13,6 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
@@ -65,9 +63,9 @@ public class FluxCrossbowItem extends CrossbowItemCoFH implements IMultiModeFlux
     public void appendHoverText(ItemStack stack, @Nullable Level worldIn, List<Component> tooltip, TooltipFlag flagIn) {
 
         if (getLoadedAmmoCount(stack) > 0) {
-            tooltip.add(new TranslatableComponent("info.cofh.crossbow_loaded"));
+            tooltip.add(Component.translatable("info.cofh.crossbow_loaded"));
             for (ItemStack ammo : getAllLoadedAmmo(stack)) {
-                tooltip.add((new TextComponent("- ")).append(ammo.getHoverName()));
+                tooltip.add((Component.literal("- ")).append(ammo.getHoverName()));
             }
         }
         if (Screen.hasShiftDown() || CoreClientConfig.alwaysShowDetails.get()) {
@@ -80,7 +78,7 @@ public class FluxCrossbowItem extends CrossbowItemCoFH implements IMultiModeFlux
     @Override
     public boolean isEnchantable(ItemStack stack) {
 
-        return getItemEnchantability(stack) > 0;
+        return getEnchantmentValue(stack) > 0;
     }
 
     @Override

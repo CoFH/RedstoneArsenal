@@ -13,6 +13,7 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.Attribute;
@@ -72,7 +73,7 @@ public class FluxSwordItem extends SwordItemCoFH implements IMultiModeFluxItem, 
     @Override
     public boolean isEnchantable(ItemStack stack) {
 
-        return getItemEnchantability(stack) > 0;
+        return getEnchantmentValue(stack) > 0;
     }
 
     @Override
@@ -186,6 +187,7 @@ public class FluxSwordItem extends SwordItemCoFH implements IMultiModeFluxItem, 
     public void onLeftClick(Player player, ItemStack stack) {
 
         if (canSweepAttack(player) && isEmpowered(stack)) {
+            player.level.playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.PLAYER_ATTACK_SWEEP, player.getSoundSource(), 1.0F, 1.0F);
             shootFluxSlash(stack, player);
         }
     }

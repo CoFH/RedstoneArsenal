@@ -6,7 +6,7 @@ import net.minecraft.client.gui.GuiComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.client.gui.ForgeIngameGui;
+import net.minecraftforge.client.gui.overlay.ForgeGui;
 
 import static cofh.lib.util.constants.ModIds.ID_REDSTONE_ARSENAL;
 
@@ -17,7 +17,7 @@ public class FluxShieldingOverlay {
     public static int currCharges = 0;
     public static int maxCharges = 0;
 
-    public static void render(ForgeIngameGui gui, PoseStack stack, float partialTick, int width, int height) {
+    public static void render(ForgeGui gui, PoseStack stack, float partialTick, int width, int height) {
 
         if (maxCharges <= 0) {
             return;
@@ -29,8 +29,8 @@ public class FluxShieldingOverlay {
 
         gui.setupOverlayRenderState(true, false, ICONS);
         int x = minecraft.getWindow().getGuiScaledWidth() / 2 + 10;
-        int y = minecraft.getWindow().getGuiScaledHeight() - gui.right_height;
-        gui.right_height += 10;
+        int y = minecraft.getWindow().getGuiScaledHeight() - gui.rightHeight;
+        gui.rightHeight += 10;
 
         for (int i = currCharges; i > 0; --i) {
             GuiComponent.blit(stack, x, y, 0, 0, 9, 9, 27, 27);

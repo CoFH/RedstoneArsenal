@@ -24,7 +24,7 @@ import net.minecraftforge.event.entity.living.LivingHurtEvent;
 import net.minecraftforge.event.entity.player.AttackEntityEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.event.entity.player.PlayerFlyableFallEvent;
-import net.minecraftforge.event.world.BlockEvent;
+import net.minecraftforge.event.level.BlockEvent;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -43,7 +43,7 @@ public class RSAEvents {
         if (event.isCanceled()) {
             return;
         }
-        Player player = event.getPlayer();
+        Player player = event.getEntity();
         ItemStack stack = player.getMainHandItem();
         // Flux Trident
         if (stack.getItem() instanceof FluxTridentItem trident && player.isAutoSpinAttack()) {
@@ -56,9 +56,9 @@ public class RSAEvents {
     @SubscribeEvent (priority = EventPriority.HIGH)
     public static void handleLivingFallEvent(LivingFallEvent event) {
 
-        if (event.getEntityLiving() instanceof Player) {
+        if (event.getEntity() instanceof Player) {
             // Flux Trident
-            LivingEntity living = event.getEntityLiving();
+            LivingEntity living = event.getEntity();
             ItemStack stack = living.getMainHandItem();
             if (stack.getItem() instanceof FluxTridentItem trident && living.isAutoSpinAttack()) {
                 if (trident.plungeAttack(living.level, living, stack)) {
@@ -75,7 +75,7 @@ public class RSAEvents {
     public static void handlePlayerFlyableFallEvent(PlayerFlyableFallEvent event) {
 
         // Flux Trident
-        Player player = event.getPlayer();
+        Player player = event.getEntity();
         ItemStack stack = player.getMainHandItem();
         if (stack.getItem() instanceof FluxTridentItem trident && player.isAutoSpinAttack()) {
             if (trident.plungeAttack(player.level, player, stack)) {
@@ -89,7 +89,7 @@ public class RSAEvents {
 
         ItemStack from = event.getFrom();
         ItemStack to = event.getTo();
-        LivingEntity entity = event.getEntityLiving();
+        LivingEntity entity = event.getEntity();
         //Flux Trident
         if (event.getSlot().equals(MAINHAND) && entity.isAutoSpinAttack()
                 && from.getItem() instanceof FluxTridentItem && !(to.getItem() instanceof FluxTridentItem)) {
@@ -103,13 +103,15 @@ public class RSAEvents {
         if (event.isCanceled()) {
             return;
         }
-        Player player = event.getPlayer();
+        Player player = event.getEntity();
         ItemStack stack = player.getMainHandItem();
         // Flux Sickle
-        if (stack.getItem() instanceof FluxSickleItem sickle && event.getNewSpeed() > 0.0F &&
-                sickle.isEmpowered(stack) && !AreaEffectHelper.isMature(player.level, event.getPos(), event.getState())) {
-            event.setNewSpeed(0.0F);
-        }
+        event.getPosition().ifPresent(pos -> {
+            if (stack.getItem() instanceof FluxSickleItem sickle && event.getNewSpeed() > 0.0F &&
+                    sickle.isEmpowered(stack) && !AreaEffectHelper.isMature(player.level, pos, event.getState())) {
+                event.setNewSpeed(0.0F);
+            }
+        });
     }
 
     @SubscribeEvent (priority = EventPriority.LOWEST)
@@ -143,7 +145,7 @@ public class RSAEvents {
         if (event.isCanceled()) {
             return;
         }
-        LivingEntity target = event.getEntityLiving();
+        LivingEntity target = event.getEntity();
         DamageSource source = event.getSource();
         if (ShieldEvents.canBlockDamageSource(target, source) || target.isInvulnerableTo(source) ||
                 (target.hasEffect(MobEffects.FIRE_RESISTANCE) && source.isFire())) {
@@ -203,7 +205,7 @@ public class RSAEvents {
         if (amount <= 0.0F) {
             return;
         }
-        LivingEntity target = event.getEntityLiving();
+        LivingEntity target = event.getEntity();
         if (FluxShieldingHelper.useFluxShieldCharge(target)) {
             event.setAmount(Math.max(amount - 500.0F, 0));
             if (target instanceof ServerPlayer) {

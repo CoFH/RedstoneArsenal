@@ -118,7 +118,7 @@ public class FluxShieldingHelper {
 
     protected static void onUseFluxShieldCharge(LivingEntity entity) {
 
-        entity.level.playSound(null, entity.getX(), entity.getY(), entity.getZ(), SOUND_SHIELDING_BREAK.get(), entity.getSoundSource(), 1.5F, 0.65F + MathHelper.RANDOM.nextFloat(0.2F));
+        entity.level.playSound(null, entity.getX(), entity.getY(), entity.getZ(), SOUND_SHIELDING_BREAK.get(), entity.getSoundSource(), 1.5F, 0.65F + MathHelper.RANDOM.nextFloat() * 0.2F);
         AABB bounds = entity.getBoundingBox();
         Vec3 pos = bounds.getCenter();
         if (!entity.level.isClientSide) {
