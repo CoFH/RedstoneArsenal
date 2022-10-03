@@ -1,6 +1,8 @@
 package cofh.redstonearsenal.item;
 
+import cofh.core.client.particle.options.CylindricalParticleOptions;
 import cofh.core.config.CoreClientConfig;
+import cofh.core.init.CoreParticles;
 import cofh.core.item.ILeftClickHandlerItem;
 import cofh.core.util.ProxyUtils;
 import cofh.lib.item.TridentItemCoFH;
@@ -224,9 +226,10 @@ public class FluxTridentItem extends TridentItemCoFH implements IMultiModeFluxIt
         if (attacker.fallDistance <= attacker.getMaxFallDistance() || !isEmpowered(stack) || !useEnergy(stack, true, attacker)) {
             return false;
         }
-        double range = getPlungeRange(attacker.fallDistance);
+        float range = getPlungeRange(attacker.fallDistance);
         if (world.isClientSide) {
-            world.addParticle((SimpleParticleType) BLAST_WAVE.get(), attacker.getX(), attacker.getY(), attacker.getZ(), 0.75D, range * 2.0F, 1.5F);
+            //TODO circle particle
+            world.addParticle(new CylindricalParticleOptions(CoreParticles.BLAST_WAVE.get(), range * 2.0F, range * 3.0F, 1.5F), attacker.getX(), attacker.getY(), attacker.getZ(), 0, 0, 0);
             return true;
         }
         if (Utils.getItemEnchantmentLevel(Enchantments.CHANNELING, stack) > 0) {
@@ -314,9 +317,9 @@ public class FluxTridentItem extends TridentItemCoFH implements IMultiModeFluxIt
         return hasEnergy(stack, true) && living.fallDistance > living.getMaxFallDistance() ? 2.5F * MathHelper.sqrt(living.fallDistance) : 0.0F;
     }
 
-    public double getPlungeRange(float height) {
+    public float getPlungeRange(float height) {
 
-        return -20.0 / (7.0 + height) + 4.5;
+        return -20.0F / (7.0F + height) + 4.5F;
     }
 
     public double getPlungeSpeed() {

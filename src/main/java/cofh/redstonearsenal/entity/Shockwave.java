@@ -1,5 +1,6 @@
 package cofh.redstonearsenal.entity;
 
+import cofh.core.client.particle.options.CylindricalParticleOptions;
 import cofh.lib.entity.AbstractAoESpell;
 import cofh.lib.util.helpers.MathHelper;
 import net.minecraft.core.BlockPos;
@@ -51,7 +52,7 @@ public class Shockwave extends AbstractAoESpell {
 
         if (level.isClientSide) {
             BlockPos pos = this.blockPosition();
-            level.addParticle((SimpleParticleType) SHOCKWAVE.get(), pos.getX(), pos.getY(), pos.getZ(), speed, radius, 0.6D);
+            level.addParticle(new CylindricalParticleOptions(SHOCKWAVE.get(), radius * 2, duration + 5, 0.6F), pos.getX(), pos.getY(), pos.getZ(), 0, 0, 0);
         }
     }
 
