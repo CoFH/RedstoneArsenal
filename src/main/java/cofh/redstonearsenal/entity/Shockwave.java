@@ -4,7 +4,6 @@ import cofh.core.client.particle.options.CylindricalParticleOptions;
 import cofh.lib.entity.AbstractAoESpell;
 import cofh.lib.util.helpers.MathHelper;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.particles.SimpleParticleType;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;

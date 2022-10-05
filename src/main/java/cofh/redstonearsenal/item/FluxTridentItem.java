@@ -16,7 +16,6 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.particles.SimpleParticleType;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
@@ -54,7 +53,6 @@ import java.util.List;
 import java.util.function.Consumer;
 
 import static cofh.core.init.CoreMobEffects.LIGHTNING_RESISTANCE;
-import static cofh.core.init.CoreParticles.BLAST_WAVE;
 import static cofh.lib.util.Constants.UUID_WEAPON_RANGE;
 import static cofh.lib.util.helpers.StringHelper.getTextComponent;
 
