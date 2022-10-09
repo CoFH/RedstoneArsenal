@@ -25,13 +25,13 @@ side = "BOTH"
 [[dependencies.redstone_arsenal]]
 modId = "forge"
 mandatory = true
-versionRange = "[36.2.20,)"
+versionRange = "[40.1.76,)"
 ordering = "AFTER"
 side = "BOTH"
 
 [[dependencies.redstone_arsenal]]
 modId = "cofh_core"
 mandatory = true
-versionRange = "[1.6,1.7]"
+versionRange = "[9.0,10.0]"
 ordering = "AFTER"
 side = "BOTH"
