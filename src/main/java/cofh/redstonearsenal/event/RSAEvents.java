@@ -163,7 +163,7 @@ public class RSAEvents {
 
         // Flux Shielding
         float amount = event.getAmount();
-        if (amount <= 500.0F && !Utils.isCreativePlayer(target) && !(source.isBypassArmor() && source.isBypassMagic())) {
+        if (amount <= 500.0F && !(target instanceof Player player && (player.isCreative() || player.isSpectator())) && !(source.isBypassArmor() && source.isBypassMagic())) {
             ItemStack shieldedItem = FluxShieldingHelper.findShieldedItem(target);
             if (!shieldedItem.isEmpty()) {
                 if (target.invulnerableTime > 0) {
