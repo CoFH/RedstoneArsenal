@@ -1,5 +1,4 @@
 {
-  "itemGroup.redstone_arsenal": "Redstone Arsenal",
   "info.redstone_arsenal.mode.0": "Подавлен",
   "info.redstone_arsenal.mode.1": "Усилен",
   "death.attack.flux": "%2$s убит силой потока %1$s!",
@@ -44,5 +43,14 @@
   "entity.redstone_arsenal.flux_arrow": "Потоковая стрела",
   "entity.redstone_arsenal.flux_trident": "Наполненный потоком трезубец",
   "entity.redstone_arsenal.flux_wrench": "Наполненный потоком боевой ключ",
-  "entity.redstone_arsenal.flux_shockwave": "Ударная волна"
+  "entity.redstone_arsenal.flux_shockwave": "Ударная волна",
+  "subtitles.redstone_arsenal.empower.on": "Потоковый инструмент включен",
+  "subtitles.redstone_arsenal.empower.off": "Потоковый инструмент выключен",
+  "subtitles.redstone_arsenal.shielding.break": "Экранирующий поток потрескивает",
+  "subtitles.redstone_arsenal.shielding.recharge": "Перезарядка экранирующего потока",
+  "item.redstone_arsenal.flux_helmet.keyword": "броня",
+  "item.redstone_arsenal.flux_chestplate.keyword": "броня нагрудник куртка",
+  "item.redstone_arsenal.flux_leggings.keyword": "броня штаны",
+  "item.redstone_arsenal.flux_boots.keyword": "броня",
+  "item.redstone_arsenal.flux_elytra.keyword": "броня нагрудник крылья"
 }
