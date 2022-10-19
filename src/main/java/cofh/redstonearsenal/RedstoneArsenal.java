@@ -4,6 +4,7 @@ import cofh.core.config.ConfigManager;
 import cofh.lib.network.PacketHandler;
 import cofh.lib.util.DeferredRegisterCoFH;
 import cofh.redstonearsenal.capability.CapabilityFluxShielding;
+import cofh.redstonearsenal.config.RSAConfig;
 import cofh.redstonearsenal.init.*;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;
@@ -43,7 +44,9 @@ public class RedstoneArsenal {
 
         final IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
 
-        CONFIG_MANAGER.register(modEventBus).addServerConfig(new RSAServerConfig());
+        CONFIG_MANAGER.register(modEventBus)
+                .addServerConfig(new RSAConfig());
+        CONFIG_MANAGER.setupServer();
 
         modEventBus.addListener(this::capSetup);
         modEventBus.addListener(this::commonSetup);
