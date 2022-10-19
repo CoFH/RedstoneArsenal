@@ -1,9 +1,11 @@
 package cofh.redstonearsenal;
 
+import cofh.core.config.ConfigManager;
 import cofh.lib.network.PacketHandler;
 import cofh.lib.util.DeferredRegisterCoFH;
 import cofh.redstonearsenal.capability.CapabilityFluxShielding;
 import cofh.redstonearsenal.client.renderer.FluxShieldingOverlay;
+import cofh.redstonearsenal.config.RSAConfig;
 import cofh.redstonearsenal.init.*;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;
@@ -33,6 +35,7 @@ import static cofh.redstonearsenal.init.RSAIDs.ID_FLUX_SWORD;
 public class RedstoneArsenal {
 
     public static final Logger LOG = LogManager.getLogger(ID_REDSTONE_ARSENAL);
+    public static final ConfigManager CONFIG_MANAGER = new ConfigManager();
 
     public static final PacketHandler PACKET_HANDLER = new PacketHandler(new ResourceLocation(ID_REDSTONE_ARSENAL, "flux_shielding"));
     public static final DeferredRegisterCoFH<Block> BLOCKS = DeferredRegisterCoFH.create(ForgeRegistries.BLOCKS, ID_REDSTONE_ARSENAL);
@@ -43,6 +46,10 @@ public class RedstoneArsenal {
     public RedstoneArsenal() {
 
         final IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
+
+        CONFIG_MANAGER.register(modEventBus)
+                .addServerConfig(new RSAConfig());
+        CONFIG_MANAGER.setupServer();
 
         modEventBus.addListener(this::capSetup);
         modEventBus.addListener(this::commonSetup);
@@ -67,8 +74,6 @@ public class RedstoneArsenal {
     }
 
     private void commonSetup(final FMLCommonSetupEvent event) {
-
-        RSAConfig.register();
 
         event.enqueueWork(RSAItems::setup);
     }
