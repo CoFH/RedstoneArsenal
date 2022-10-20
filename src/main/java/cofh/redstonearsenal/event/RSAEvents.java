@@ -2,7 +2,6 @@ package cofh.redstonearsenal.event;
 
 import cofh.core.event.ShieldEvents;
 import cofh.core.util.helpers.AreaEffectHelper;
-import cofh.lib.util.Utils;
 import cofh.redstonearsenal.item.*;
 import cofh.redstonearsenal.util.FluxShieldingHelper;
 import net.minecraft.server.level.ServerPlayer;
