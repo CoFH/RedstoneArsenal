@@ -32,6 +32,6 @@ side = "BOTH"
 [[dependencies.redstone_arsenal]]
 modId = "cofh_core"
 mandatory = true
-versionRange = "[9.0,9.1]"
+versionRange = "[9.1,9.2]"
 ordering = "AFTER"
 side = "BOTH"
