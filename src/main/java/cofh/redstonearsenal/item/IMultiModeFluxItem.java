@@ -1,7 +1,7 @@
 package cofh.redstonearsenal.item;
 
 import cofh.core.item.IMultiModeItem;
-import cofh.core.util.helpers.ChatHelper;
+import cofh.core.util.ProxyUtils;
 import cofh.lib.energy.EnergyContainerItemWrapper;
 import net.minecraft.ChatFormatting;
 import net.minecraft.nbt.CompoundTag;
@@ -42,7 +42,7 @@ public interface IMultiModeFluxItem extends IFluxItem, IMultiModeItem {
         } else {
             player.level.playSound(null, player.blockPosition(), SOUND_QUELL.get(), SoundSource.PLAYERS, 0.2F, 0.6F);
         }
-        ChatHelper.sendIndexedChatMessageToPlayer(player, Component.translatable("info.redstone_arsenal.mode." + getMode(stack)));
+        ProxyUtils.setOverlayMessage(player, Component.translatable("info.redstone_arsenal.mode." + getMode(stack)));
     }
     // endregion
 
