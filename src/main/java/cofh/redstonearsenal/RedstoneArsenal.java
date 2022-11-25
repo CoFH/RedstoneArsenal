@@ -40,6 +40,16 @@ public class RedstoneArsenal {
     public static final DeferredRegisterCoFH<EntityType<?>> ENTITIES = DeferredRegisterCoFH.create(ForgeRegistries.ENTITY_TYPES, ID_REDSTONE_ARSENAL);
     public static final DeferredRegisterCoFH<SoundEvent> SOUND_EVENTS = DeferredRegisterCoFH.create(ForgeRegistries.SOUND_EVENTS, ID_REDSTONE_ARSENAL);
 
+    public static final CreativeModeTab RSA_GROUP = new CreativeModeTab(-1, ID_REDSTONE_ARSENAL) {
+
+        @Override
+        @OnlyIn (Dist.CLIENT)
+        public ItemStack makeIcon() {
+
+            return new ItemStack(ITEMS.get(ID_FLUX_SWORD));
+        }
+    };
+
     public RedstoneArsenal() {
 
         final IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
@@ -77,28 +87,6 @@ public class RedstoneArsenal {
 
     private void clientSetup(final FMLClientSetupEvent event) {
 
-        //        if (RSAConfig.enableCreativeTab.get()) {
-        //            itemGroup = new ItemGroup(-1, ID_REDSTONE_ARSENAL) {
-        //
-        //                @Override
-        //                @OnlyIn (Dist.CLIENT)
-        //                public ItemStack makeIcon() {
-        //
-        //                    return new ItemStack(ITEMS.get("flux_sword"));
-        //                }
-        //            };
-        //        }
     }
     // endregion
-
-    public static final CreativeModeTab RSA_GROUP = new CreativeModeTab(-1, ID_REDSTONE_ARSENAL) {
-
-        @Override
-        @OnlyIn (Dist.CLIENT)
-        public ItemStack makeIcon() {
-
-            return new ItemStack(ITEMS.get(ID_FLUX_SWORD));
-        }
-    };
-
 }
