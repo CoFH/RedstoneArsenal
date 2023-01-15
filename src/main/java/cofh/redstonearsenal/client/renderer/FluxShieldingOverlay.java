@@ -28,8 +28,8 @@ public class FluxShieldingOverlay {
         }
 
         gui.setupOverlayRenderState(true, false, ICONS);
-        int x = minecraft.getWindow().getGuiScaledWidth() / 2 + 10;
-        int y = minecraft.getWindow().getGuiScaledHeight() - gui.rightHeight;
+        int x = width / 2 + 10;
+        int y = height - gui.rightHeight;
         gui.rightHeight += 10;
 
         for (int i = currCharges; i > 0; --i) {

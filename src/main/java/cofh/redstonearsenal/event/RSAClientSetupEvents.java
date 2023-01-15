@@ -71,7 +71,7 @@ public class RSAClientSetupEvents {
     @SubscribeEvent
     public static void overlaySetup(final RegisterGuiOverlaysEvent event) {
 
-        event.registerAbove(VanillaGuiOverlay.FOOD_LEVEL.id(), "flux_shielding", FluxShieldingOverlay::render);
+        event.registerAbove(VanillaGuiOverlay.AIR_LEVEL.id(), "flux_shielding", FluxShieldingOverlay::render);
     }
 
     // region RELOAD
