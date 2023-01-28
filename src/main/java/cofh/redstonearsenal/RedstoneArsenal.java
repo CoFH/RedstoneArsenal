@@ -1,6 +1,7 @@
 package cofh.redstonearsenal;
 
 import cofh.core.config.ConfigManager;
+import cofh.core.event.CoreClientEvents;
 import cofh.lib.network.PacketHandler;
 import cofh.lib.util.DeferredRegisterCoFH;
 import cofh.redstonearsenal.capability.CapabilityFluxShielding;
@@ -87,6 +88,7 @@ public class RedstoneArsenal {
 
     private void clientSetup(final FMLClientSetupEvent event) {
 
+        event.enqueueWork(() -> CoreClientEvents.addNamespace(ID_REDSTONE_ARSENAL));
     }
     // endregion
 }
