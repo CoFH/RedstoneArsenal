@@ -1,0 +1,68 @@
+{
+  "itemGroup.redstone_arsenal": "Arsenal Redstone",
+
+  "info.redstone_arsenal.mode.0": "Atténué",
+  "info.redstone_arsenal.mode.1": "Énergisé",
+
+  "death.attack.flux": "%2$s s'est fait Énergisé(e) par %1$s!",
+  "death.attack.flux.item": "%2$s a utilisé(e) %3$s pour Énergiser %1$s avec de l'Énergie",
+
+  "item.redstone_arsenal.flux_coin": "Pièce en Électrum Fluxé",
+  "item.redstone_arsenal.flux_dust": "Poudre d'Électrum Fluxé",
+  "item.redstone_arsenal.flux_gear": "Engrenage en Électrum Fluxé",
+  "item.redstone_arsenal.flux_gem": "Cristal de Flux",
+  "item.redstone_arsenal.flux_ingot": "Lingot d'Électrum Fluxé",
+  "item.redstone_arsenal.flux_nugget": "Pépite d'Électrum Fluxé",
+  "item.redstone_arsenal.flux_plate": "Plaque d'Électrum Fluxé",
+  "item.redstone_arsenal.flux_plating": "Flux-Infused Plating",
+  "item.redstone_arsenal.obsidian_rod": "Bâton d'Obsidienne",
+  "item.redstone_arsenal.flux_obsidian_rod": "Bâton d'Obsidienne Fluxé",
+  "block.redstone_arsenal.flux_metal_block": "Bloc d'Électrum Fluxé",
+  "block.redstone_arsenal.flux_gem_block": "Bloc de Cristal de Flux",
+
+  "item.redstone_arsenal.flux_sword": "Épée en Électrum Fluxé",
+  "item.redstone_arsenal.flux_shield": "Bouclier en Électrum Fluxé",
+  "item.redstone_arsenal.flux_trident": "Trident en Électrum Fluxé",
+  "item.redstone_arsenal.flux_bow": "Arc en Électrum Fluxé",
+  "item.redstone_arsenal.flux_crossbow": "Arbalette en Électrum Fluxé",
+  "item.redstone_arsenal.flux_crossbow.loaded_from": "Utilise les Projectiles de :",
+  "item.redstone_arsenal.flux_quiver": "Carquois en Électrum Fluxé",
+
+  "item.redstone_arsenal.flux_pickaxe": "Pioche en Électrum Fluxé",
+  "item.redstone_arsenal.flux_shovel": "Pëlle en Électrum Fluxé",
+  "item.redstone_arsenal.flux_axe": "Hache en Électrum Fluxé",
+  "item.redstone_arsenal.flux_hoe": "Houe en Électrum Fluxé",
+  "item.redstone_arsenal.flux_sickle": "Faucille en Électrum Fluxé",
+  "item.redstone_arsenal.flux_hammer": "Marteau en Électrum Fluxé",
+  "item.redstone_arsenal.flux_excavator": "Excavateur en Électrum Fluxé",
+  "item.redstone_arsenal.flux_wrench": "Clé à Molette en Électrum Fluxé",
+  "item.redstone_arsenal.flux_fishing_rod": "Canne à Pèche en Électrum Fluxé",
+
+  "item.redstone_arsenal.flux_helmet": "Casque en Électrum Fluxé",
+  "item.redstone_arsenal.flux_chestplate": "Plastron en Électrum Fluxé",
+  "item.redstone_arsenal.flux_leggings": "Jambières en Électrum Fluxé",
+  "item.redstone_arsenal.flux_boots": "Bottes en Électrum Fluxé",
+  "item.redstone_arsenal.flux_elytra": "Élytres en Électrum Fluxé",
+  "item.redstone_arsenal.flux_controller": "Commandes pour Élytres en Électrum Fluxé",
+
+  "block.redstone_arsenal.flux_glow_air": "Air Fluxé",
+  "block.redstone_arsenal.flux_path": "Chemin Fluxé",
+
+  "entity.redstone_arsenal.flux_slash": "Coup d'Électrum Fluxé",
+  "entity.redstone_arsenal.flux_arrow": "Flèche en Électrum Fluxé",
+  "entity.redstone_arsenal.flux_trident": "Trident en Électrum Fluxé",
+  "entity.redstone_arsenal.flux_wrench": "Clé à Molette de Combat en Électrum Fluxé",
+  "entity.redstone_arsenal.flux_shockwave": "Onde de Choc",
+
+  "subtitles.redstone_arsenal.empower.on": "Un outil en Électrum Fluxé s'Énergise",
+  "subtitles.redstone_arsenal.empower.off": "La puissance d'un outil en Électrum Fluxé s'Atténue",
+  "subtitles.redstone_arsenal.shielding.break": "Bouclier en Électrum Fluxé se casse",
+  "subtitles.redstone_arsenal.shielding.recharge": "Poin de proection Éléctrique rechargé",
+
+  "_comment": "Keywords - These terms help things show up in JEI or other tooltip searches! :)",
+  "item.redstone_arsenal.flux_helmet.keyword": "armure",
+  "item.redstone_arsenal.flux_chestplate.keyword": "armure",
+  "item.redstone_arsenal.flux_leggings.keyword": "armure",
+  "item.redstone_arsenal.flux_boots.keyword": "armure",
+  "item.redstone_arsenal.flux_elytra.keyword": "plastron d'armure"
+}
