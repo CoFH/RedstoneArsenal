@@ -100,6 +100,11 @@ public class FluxArmorItem extends ArmorItemCoFH implements IFluxItem {
         return 0;
     }
 
+    @Override
+    public boolean makesPiglinsNeutral(ItemStack stack, LivingEntity wearer) {
+        return true;
+    }
+
     // region IEnergyContainerItem
     @Override
     public int getExtract(ItemStack container) {
