@@ -1,6 +1,7 @@
 package cofh.redstonearsenal;
 
 import cofh.core.config.ConfigManager;
+import cofh.core.event.CoreClientEvents;
 import cofh.lib.network.PacketHandler;
 import cofh.lib.util.DeferredRegisterCoFH;
 import cofh.redstonearsenal.capability.CapabilityFluxShielding;
@@ -80,19 +81,9 @@ public class RedstoneArsenal {
 
     private void clientSetup(final FMLClientSetupEvent event) {
 
-        //        if (RSAConfig.enableCreativeTab.get()) {
-        //            itemGroup = new ItemGroup(-1, ID_REDSTONE_ARSENAL) {
-        //
-        //                @Override
-        //                @OnlyIn (Dist.CLIENT)
-        //                public ItemStack makeIcon() {
-        //
-        //                    return new ItemStack(ITEMS.get("flux_sword"));
-        //                }
-        //            };
-        //        }
-
         OverlayRegistry.registerOverlayAbove(ForgeIngameGui.FOOD_LEVEL_ELEMENT, "Flux Shielding", FluxShieldingOverlay::render);
+
+        event.enqueueWork(() -> CoreClientEvents.addNamespace(ID_REDSTONE_ARSENAL));
     }
     // endregion
 
