@@ -45,7 +45,7 @@ import javax.annotation.Nullable;
 import java.util.List;
 import java.util.Set;
 
-import static cofh.core.config.CoreServerConfig.returnDismantleDrops;
+import static cofh.core.config.CoreCommonConfig.returnDismantleDrops;
 import static cofh.core.init.CoreMobEffects.WRENCHED;
 import static cofh.lib.util.helpers.StringHelper.getTextComponent;
 

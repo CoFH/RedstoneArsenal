@@ -53,7 +53,7 @@ public class FluxFishingRodItem extends FishingRodItemCoFH implements IMultiMode
         this.receive = xfer;
         setParams(enchantability, luckModifier, speedModifier);
 
-        ProxyUtils.registerItemModelProperty(this, new ResourceLocation("cast"), (stack, world, entity, seed) -> entity instanceof Player && ((Player) entity).fishing != null ? 1F : 0F);
+        ProxyUtils.registerItemModelProperty(this, new ResourceLocation("cast"), (stack, world, entity, seed) -> entity instanceof Player player && player.fishing != null ? 1F : 0F);
         ProxyUtils.registerItemModelProperty(this, new ResourceLocation("charged"), this::getChargedModelProperty);
         ProxyUtils.registerItemModelProperty(this, new ResourceLocation("empowered"), this::getEmpoweredModelProperty);
     }

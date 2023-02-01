@@ -22,6 +22,7 @@ import net.minecraftforge.energy.IEnergyStorage;
 
 import javax.annotation.Nullable;
 import java.util.List;
+import java.util.function.Consumer;
 
 import static cofh.lib.api.ContainerType.ENERGY;
 import static cofh.lib.util.Constants.RGB_DURABILITY_FLUX;
@@ -89,6 +90,13 @@ public interface IFluxItem extends ICoFHItem, IEnergyContainerItem {
     default boolean shouldCauseReequipAnimation(ItemStack oldStack, ItemStack newStack, boolean slotChanged) {
 
         return !oldStack.equals(newStack) && (slotChanged || getEnergyStored(oldStack) > 0 != getEnergyStored(newStack) > 0);
+    }
+
+    @Override
+    default <T extends LivingEntity> int damageItem(ItemStack stack, int amount, T entity, Consumer<T> onBroken) {
+
+        useEnergy(stack, Math.min(getEnergyStored(stack), amount * getEnergyPerUse(false)), entity);
+        return 0;
     }
 
     default boolean isBarVisible(ItemStack stack) {
