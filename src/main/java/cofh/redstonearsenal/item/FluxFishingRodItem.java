@@ -27,8 +27,6 @@ import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -59,7 +57,6 @@ public class FluxFishingRodItem extends FishingRodItemCoFH implements IMultiMode
     }
 
     @Override
-    @OnlyIn (Dist.CLIENT)
     public void appendHoverText(ItemStack stack, @Nullable Level worldIn, List<Component> tooltip, TooltipFlag flagIn) {
 
         if (Screen.hasShiftDown() || CoreClientConfig.alwaysShowDetails.get()) {

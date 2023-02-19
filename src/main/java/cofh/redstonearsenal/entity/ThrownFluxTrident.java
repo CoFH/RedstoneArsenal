@@ -24,8 +24,6 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.network.NetworkHooks;
 
 import javax.annotation.Nullable;
@@ -133,7 +131,6 @@ public class ThrownFluxTrident extends AbstractArrow {
         return this.tridentItem.copy();
     }
 
-    @OnlyIn (Dist.CLIENT)
     public boolean isFoil() {
 
         return this.entityData.get(ID_FOIL);

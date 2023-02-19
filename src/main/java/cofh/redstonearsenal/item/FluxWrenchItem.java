@@ -38,8 +38,6 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -78,7 +76,6 @@ public class FluxWrenchItem extends ItemCoFH implements IMultiModeFluxItem {
     }
 
     @Override
-    @OnlyIn (Dist.CLIENT)
     public void appendHoverText(ItemStack stack, @Nullable Level worldIn, List<Component> tooltip, TooltipFlag flagIn) {
 
         if (Screen.hasShiftDown() || CoreClientConfig.alwaysShowDetails.get()) {
