@@ -15,8 +15,6 @@ import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Block;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.client.gui.ForgeIngameGui;
 import net.minecraftforge.client.gui.OverlayRegistry;
 import net.minecraftforge.common.capabilities.RegisterCapabilitiesEvent;
@@ -90,7 +88,6 @@ public class RedstoneArsenal {
     public static final CreativeModeTab RSA_GROUP = new CreativeModeTab(-1, ID_REDSTONE_ARSENAL) {
 
         @Override
-        @OnlyIn (Dist.CLIENT)
         public ItemStack makeIcon() {
 
             return new ItemStack(ITEMS.get(ID_FLUX_SWORD));

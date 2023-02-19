@@ -12,8 +12,6 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.event.ForgeEventFactory;
 import net.minecraftforge.network.NetworkHooks;
 
@@ -103,7 +101,6 @@ public class FluxSlash extends Projectile {
         return NetworkHooks.getEntitySpawningPacket(this);
     }
 
-    @OnlyIn (Dist.CLIENT)
     public boolean shouldRenderAtSqrDistance(double p_70112_1_) {
 
         double d0 = this.getBoundingBox().getSize() * 10.0D;
