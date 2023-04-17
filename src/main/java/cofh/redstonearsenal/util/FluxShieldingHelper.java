@@ -15,6 +15,8 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.util.LazyOptional;
 
 import java.util.function.Consumer;
@@ -32,13 +34,13 @@ public class FluxShieldingHelper {
 
         Predicate<ItemStack> isShieldedItem = i -> i.getCapability(FLUX_SHIELDED_ITEM_CAPABILITY).map(cap -> cap.currCharges(entity) > 0).orElse(false);
 
-        //ARMOR
+        // ARMOR
         for (ItemStack piece : entity.getArmorSlots()) {
             if (isShieldedItem.test(piece)) {
                 return piece;
             }
         }
-        //CURIOS
+        // CURIOS
         final ItemStack[] retStack = {ItemStack.EMPTY};
         CuriosProxy.getAllWorn(entity).ifPresent(c -> {
             for (int i = 0; i < c.getSlots(); ++i) {
@@ -124,6 +126,7 @@ public class FluxShieldingHelper {
         }
     }
 
+    @OnlyIn (Dist.CLIENT)
     public static void updateHUD(int currCharges, int maxCharges) {
 
         if (maxCharges - currCharges < FluxShieldingOverlay.maxCharges - FluxShieldingOverlay.currCharges) {
@@ -136,11 +139,13 @@ public class FluxShieldingHelper {
         FluxShieldingOverlay.maxCharges = maxCharges;
     }
 
+    @OnlyIn (Dist.CLIENT)
     public static void updateHUD(int[] charges) {
 
         updateHUD(charges[0], charges[1]);
     }
 
+    @OnlyIn (Dist.CLIENT)
     public static void updateHUD(LocalPlayer player) {
 
         updateHUD(countCharges(player));
