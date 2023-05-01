@@ -4,9 +4,11 @@ import cofh.core.config.ConfigManager;
 import cofh.core.event.CoreClientEvents;
 import cofh.lib.network.PacketHandler;
 import cofh.lib.util.DeferredRegisterCoFH;
+import cofh.lib.util.Utils;
 import cofh.redstonearsenal.capability.CapabilityFluxShielding;
 import cofh.redstonearsenal.config.RSAConfig;
 import cofh.redstonearsenal.init.*;
+import cofh.redstonearsenal.util.ThermalCoreCompat;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.entity.EntityType;
@@ -70,6 +72,9 @@ public class RedstoneArsenal {
         RSAEntities.register();
         RSAPackets.register();
         RSASounds.register();
+
+        if(Utils.isModLoaded("thermal"))
+            ThermalCoreCompat.setFeatureFlags();
     }
 
     // region INITIALIZATION
