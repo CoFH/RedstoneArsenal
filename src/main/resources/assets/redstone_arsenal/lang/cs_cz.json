@@ -1,0 +1,68 @@
+{
+  "itemGroup.redstone_arsenal": "Redstone Arsenal",
+
+  "info.redstone_arsenal.mode.0": "Klidný",
+  "info.redstone_arsenal.mode.1": "Nabitý",
+
+  "death.attack.flux": "%2$s nabil fluxem hráče %1$s!",
+  "death.attack.flux.item": "%2$s použil %3$s pro nabití hráče %1$s fluxem!",
+
+  "item.redstone_arsenal.flux_coin": "Fluxem napuštěná mince",
+  "item.redstone_arsenal.flux_dust": "Fluxem napuštený prášek",
+  "item.redstone_arsenal.flux_gear": "Fluxem napuštené ozubené kolo",
+  "item.redstone_arsenal.flux_gem": "Fluxem napuštený drahokam",
+  "item.redstone_arsenal.flux_ingot": "Fluxem napuštený ingot",
+  "item.redstone_arsenal.flux_nugget": "Fluxem napuštený nuget",
+  "item.redstone_arsenal.flux_plate": "Fluxem napuštený plát",
+  "item.redstone_arsenal.flux_plating": "Fluxem napuštené plátování",
+  "item.redstone_arsenal.obsidian_rod": "Obsidiánová tyč",
+  "item.redstone_arsenal.flux_obsidian_rod": "Fluxem napuštená obsidiánová tyč",
+  "block.redstone_arsenal.flux_metal_block": "Fluxem napuštený kovový blok",
+  "block.redstone_arsenal.flux_gem_block": "Fluxem napuštený drahokamový blok",
+
+  "item.redstone_arsenal.flux_sword": "Fluxem napuštený meč",
+  "item.redstone_arsenal.flux_shield": "Fluxem napuštený štít",
+  "item.redstone_arsenal.flux_trident": "Fluxem napuštený trojzubec",
+  "item.redstone_arsenal.flux_bow": "Fluxem napuštený luk",
+  "item.redstone_arsenal.flux_crossbow": "Fluxem napuštená kuše",
+  "item.redstone_arsenal.flux_crossbow.loaded_from": "Nabito z:",
+  "item.redstone_arsenal.flux_quiver": "Fluxem napuštený toulec",
+
+  "item.redstone_arsenal.flux_pickaxe": "Fluxem napuštený krumpáč",
+  "item.redstone_arsenal.flux_shovel": "Fluxem napuštená lopata",
+  "item.redstone_arsenal.flux_axe": "Fluxem napuštená sekera",
+  "item.redstone_arsenal.flux_hoe": "Fluxem napuštená motyka",
+  "item.redstone_arsenal.flux_sickle": "Fluxem napuštený srp",
+  "item.redstone_arsenal.flux_hammer": "Fluxem napuštené kladivo",
+  "item.redstone_arsenal.flux_excavator": "Fluxem napuštené rypadlo",
+  "item.redstone_arsenal.flux_wrench": "Fluxem napuštený bojový klíč",
+  "item.redstone_arsenal.flux_fishing_rod": "Fluxem napuštený rybářský prut",
+
+  "item.redstone_arsenal.flux_helmet": "Fluxem napuštená helma",
+  "item.redstone_arsenal.flux_chestplate": "Fluxem napuštené brnění",
+  "item.redstone_arsenal.flux_leggings": "Fluxem napuštené kalhoty",
+  "item.redstone_arsenal.flux_boots": "Fluxem napuštené boty",
+  "item.redstone_arsenal.flux_elytra": "Fluxem napuštené krovky",
+  "item.redstone_arsenal.flux_controller": "Fluxem napuštený ovladač krovek",
+
+  "block.redstone_arsenal.flux_glow_air": "Fluxem napuštený vzduch",
+  "block.redstone_arsenal.flux_path": "Fluxem napuštená cesta",
+
+  "entity.redstone_arsenal.flux_slash": "Fluxem napuštené seknutí",
+  "entity.redstone_arsenal.flux_arrow": "Fluxem napuštený šíp",
+  "entity.redstone_arsenal.flux_trident": "Fluxem napuštený trojzubec",
+  "entity.redstone_arsenal.flux_wrench": "Fluxem napuštený bojový klíč",
+  "entity.redstone_arsenal.flux_shockwave": "Tlaková vlna",
+
+  "subtitles.redstone_arsenal.empower.on": "Fluxové nářadí se zapíná",
+  "subtitles.redstone_arsenal.empower.off": "Fluxové nářadí se vypíná",
+  "subtitles.redstone_arsenal.shielding.break": "Fluxový štít praská",
+  "subtitles.redstone_arsenal.shielding.recharge": "Fluxový štít se nabíjí",
+
+  "_comment": "Keywords - These terms help things show up in JEI or other tooltip searches! :)",
+  "item.redstone_arsenal.flux_helmet.keyword": "brnění",
+  "item.redstone_arsenal.flux_chestplate.keyword": "brnění",
+  "item.redstone_arsenal.flux_leggings.keyword": "brnění",
+  "item.redstone_arsenal.flux_boots.keyword": "brnění",
+  "item.redstone_arsenal.flux_elytra.keyword": "brnění"
+}
