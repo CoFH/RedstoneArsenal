@@ -24,8 +24,6 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.network.NetworkHooks;
 
 import javax.annotation.Nullable;
@@ -33,6 +31,7 @@ import javax.annotation.Nullable;
 import static cofh.redstonearsenal.RedstoneArsenal.ITEMS;
 import static cofh.redstonearsenal.init.RSAEntities.FLUX_TRIDENT;
 import static cofh.redstonearsenal.init.RSAIDs.ID_FLUX_TRIDENT;
+import static net.minecraft.nbt.Tag.TAG_COMPOUND;
 
 public class ThrownFluxTrident extends AbstractArrow {
 
@@ -132,7 +131,6 @@ public class ThrownFluxTrident extends AbstractArrow {
         return this.tridentItem.copy();
     }
 
-    @OnlyIn (Dist.CLIENT)
     public boolean isFoil() {
 
         return this.entityData.get(ID_FOIL);
@@ -214,10 +212,9 @@ public class ThrownFluxTrident extends AbstractArrow {
     public void readAdditionalSaveData(CompoundTag nbt) {
 
         super.readAdditionalSaveData(nbt);
-        if (nbt.contains("Trident", 10)) {
+        if (nbt.contains("Trident", TAG_COMPOUND)) {
             this.tridentItem = ItemStack.of(nbt.getCompound("Trident"));
         }
-
         this.dealtDamage = nbt.getBoolean("DealtDamage");
         this.entityData.set(ID_LOYALTY, (byte) EnchantmentHelper.getLoyalty(this.tridentItem));
     }

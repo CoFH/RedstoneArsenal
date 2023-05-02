@@ -34,13 +34,13 @@ public class FluxShieldingHelper {
 
         Predicate<ItemStack> isShieldedItem = i -> i.getCapability(FLUX_SHIELDED_ITEM_CAPABILITY).map(cap -> cap.currCharges(entity) > 0).orElse(false);
 
-        //ARMOR
+        // ARMOR
         for (ItemStack piece : entity.getArmorSlots()) {
             if (isShieldedItem.test(piece)) {
                 return piece;
             }
         }
-        //CURIOS
+        // CURIOS
         final ItemStack[] retStack = {ItemStack.EMPTY};
         CuriosProxy.getAllWorn(entity).ifPresent(c -> {
             for (int i = 0; i < c.getSlots(); ++i) {

@@ -7,8 +7,6 @@ import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.AirBlock;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
 
 public class FluxGlowAirBlock extends AirBlock {
 
@@ -17,7 +15,6 @@ public class FluxGlowAirBlock extends AirBlock {
         super(builder);
     }
 
-    @OnlyIn (Dist.CLIENT)
     @Override
     public void animateTick(BlockState state, Level level, BlockPos pos, RandomSource rand) {
 

@@ -5,6 +5,7 @@ import cofh.lib.api.item.IEnergyContainerItem;
 import cofh.lib.energy.EnergyContainerItemWrapper;
 import cofh.lib.util.Utils;
 import cofh.redstonearsenal.util.RSAEnergyHelper;
+import net.minecraft.ChatFormatting;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.damagesource.DamageSource;
@@ -22,6 +23,7 @@ import net.minecraftforge.energy.IEnergyStorage;
 
 import javax.annotation.Nullable;
 import java.util.List;
+import java.util.function.Consumer;
 
 import static cofh.lib.api.ContainerType.ENERGY;
 import static cofh.lib.util.Constants.RGB_DURABILITY_FLUX;
@@ -91,6 +93,13 @@ public interface IFluxItem extends ICoFHItem, IEnergyContainerItem {
         return !oldStack.equals(newStack) && (slotChanged || getEnergyStored(oldStack) > 0 != getEnergyStored(newStack) > 0);
     }
 
+    @Override
+    default <T extends LivingEntity> int damageItem(ItemStack stack, int amount, T entity, Consumer<T> onBroken) {
+
+        useEnergy(stack, Math.min(getEnergyStored(stack), amount * getEnergyPerUse(false)), entity);
+        return 0;
+    }
+
     default boolean isBarVisible(ItemStack stack) {
 
         return getEnergyStored(stack) > 0;
@@ -123,10 +132,11 @@ public interface IFluxItem extends ICoFHItem, IEnergyContainerItem {
     default void tooltipDelegate(ItemStack stack, @Nullable Level worldIn, List<Component> tooltip, TooltipFlag flagIn) {
 
         boolean creative = isCreative(stack, ENERGY);
-        tooltip.add(getTextComponent(localize("info.cofh.energy") + ": "
-                + (creative ?
-                localize("info.cofh.infinite") :
-                getScaledNumber(getEnergyStored(stack)) + " / " + getScaledNumber(getMaxEnergyStored(stack)) + " RF")));
+        if (getMaxEnergyStored(stack) > 0) {
+            tooltip.add(creative
+                    ? getTextComponent(localize("info.cofh.energy") + ": ").append(getTextComponent("info.cofh.infinite").withStyle(ChatFormatting.LIGHT_PURPLE).withStyle(ChatFormatting.ITALIC))
+                    : getTextComponent(localize("info.cofh.energy") + ": " + getScaledNumber(getEnergyStored(stack)) + " / " + getScaledNumber(getMaxEnergyStored(stack)) + " " + localize("info.cofh.unit_rf")));
+        }
         addEnergyTooltip(stack, worldIn, tooltip, flagIn, getExtract(stack), getReceive(stack), creative);
     }
 
