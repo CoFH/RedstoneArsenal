@@ -14,7 +14,7 @@
   "item.redstone_arsenal.flux_ingot": "Lingot d'Électrum Fluxé",
   "item.redstone_arsenal.flux_nugget": "Pépite d'Électrum Fluxé",
   "item.redstone_arsenal.flux_plate": "Plaque d'Électrum Fluxé",
-  "item.redstone_arsenal.flux_plating": "Flux-Infused Plating",
+  "item.redstone_arsenal.flux_plating": "Plaquage d'Armure en Éléctrum Fluxé",
   "item.redstone_arsenal.obsidian_rod": "Bâton d'Obsidienne",
   "item.redstone_arsenal.flux_obsidian_rod": "Bâton d'Obsidienne Fluxé",
   "block.redstone_arsenal.flux_metal_block": "Bloc d'Électrum Fluxé",
@@ -35,7 +35,7 @@
   "item.redstone_arsenal.flux_sickle": "Faucille en Électrum Fluxé",
   "item.redstone_arsenal.flux_hammer": "Marteau en Électrum Fluxé",
   "item.redstone_arsenal.flux_excavator": "Excavateur en Électrum Fluxé",
-  "item.redstone_arsenal.flux_wrench": "Clé à Molette en Électrum Fluxé",
+  "item.redstone_arsenal.flux_wrench": "Clé à Molette de Combat en Électrum Fluxé",
   "item.redstone_arsenal.flux_fishing_rod": "Canne à Pèche en Électrum Fluxé",
 
   "item.redstone_arsenal.flux_helmet": "Casque en Électrum Fluxé",
