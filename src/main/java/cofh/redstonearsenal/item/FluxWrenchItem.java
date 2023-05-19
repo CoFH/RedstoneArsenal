@@ -139,10 +139,8 @@ public class FluxWrenchItem extends ItemCoFH implements IMultiModeFluxItem {
         Block block = state.getBlock();
 
         if (player.isSecondaryUseActive() && block instanceof IDismantleable dismantleable && dismantleable.canDismantle(world, pos, state, player)) {
-            if (Utils.isServerWorld(world)) {
-                BlockHitResult target = new BlockHitResult(context.getClickLocation(), context.getClickedFace(), context.getClickedPos(), context.isInside());
-                dismantleable.dismantleBlock(world, pos, state, target, player, returnDismantleDrops());
-            }
+            BlockHitResult target = new BlockHitResult(context.getClickLocation(), context.getClickedFace(), context.getClickedPos(), context.isInside());
+            dismantleable.dismantleBlock(world, pos, state, target, player, returnDismantleDrops());
             player.swing(context.getHand());
             return true;
         } else if (!player.isSecondaryUseActive()) {
