@@ -146,20 +146,6 @@ public class RSAEvents {
         }
         LivingEntity target = event.getEntity();
         DamageSource source = event.getSource();
-        if (ShieldEvents.canBlockDamageSource(target, source) || target.isInvulnerableTo(source) ||
-                (target.hasEffect(MobEffects.FIRE_RESISTANCE) && source.isFire())) {
-            return;
-        }
-        // Flux Shield
-        if (target.isBlocking() && source.getMsgId().equals("flux")) {
-            ItemStack shield = target.getUseItem();
-            if (shield.getItem() instanceof FluxShieldItem && ShieldEvents.canBlockDamagePosition(target, source.getSourcePosition())) {
-                shield.getCapability(SHIELD_ITEM_CAPABILITY).ifPresent(cap -> cap.onBlock(target, source, event.getAmount()));
-                event.setCanceled(true);
-                return;
-            }
-        }
-
         // Flux Shielding
         float amount = event.getAmount();
         if (amount <= 500.0F && !(target instanceof Player player && (player.isCreative() || player.isSpectator())) && !(source.isBypassArmor() && source.isBypassMagic())) {

@@ -125,7 +125,7 @@ public class FluxExcavatorItem extends ExcavatorItem implements IMultiModeFluxIt
             BlockPlaceContext blockContext = new BlockPlaceContext(context);
             BlockPos playerPos = player.blockPosition();
             BlockPos eyePos = new BlockPos(player.getEyePosition(1));
-            if (player.abilities.instabuild) {
+            if (player.isCreative()) {
                 for (BlockPos pos : blocks) {
                     BlockPos fillPos = pos.relative(context.getClickedFace());
                     if (world.getBlockState(fillPos).canBeReplaced(blockContext) && !fillPos.equals(playerPos) && !fillPos.equals(eyePos)) {
@@ -138,8 +138,7 @@ public class FluxExcavatorItem extends ExcavatorItem implements IMultiModeFluxIt
                     BlockPos fillPos = pos.relative(context.getClickedFace());
                     if (world.getBlockState(fillPos).canBeReplaced(blockContext) && !fillPos.equals(playerPos) && !fillPos.equals(eyePos)) {
                         Block block = world.getBlockState(pos).getBlock();
-                        sorted.putIfAbsent(block, new ArrayList<>());
-                        sorted.get(block).add(fillPos);
+                        sorted.computeIfAbsent(block, b -> new ArrayList<>()).add(fillPos);
                     }
                 }
                 NonNullList<ItemStack> inventory = player.inventory.items;

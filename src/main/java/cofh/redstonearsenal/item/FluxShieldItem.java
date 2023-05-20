@@ -1,6 +1,7 @@
 package cofh.redstonearsenal.item;
 
 import cofh.core.config.CoreClientConfig;
+import cofh.core.event.ShieldEvents;
 import cofh.core.util.ProxyUtils;
 import cofh.lib.api.capability.IShieldItem;
 import cofh.lib.api.item.IEnergyContainerItem;
@@ -16,6 +17,7 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntitySelector;
 import net.minecraft.world.entity.LivingEntity;
@@ -194,18 +196,32 @@ public class FluxShieldItem extends ShieldItemCoFH implements IMultiModeFluxItem
         }
 
         @Override
-        public void onBlock(LivingEntity entity, DamageSource source, float amount) {
+        public boolean canBlock(LivingEntity target, DamageSource source) {
+
+            if (IShieldItem.super.canBlock(target, source)) {
+                return true;
+            }
+            if (!target.isBlocking() || target.isInvulnerableTo(source) || (target.hasEffect(MobEffects.FIRE_RESISTANCE) && source.isFire())) {
+                return false;
+            }
+            //TODO 1.20 change to tags
+            return source.getMsgId().equals("flux") && IShieldItem.canBlockDamagePosition(target, source.getSourcePosition());
+        }
+
+        @Override
+        public float onBlock(LivingEntity target, DamageSource source, float amount) {
 
             if (isEmpowered(shieldItem)) {
-                repel(entity.level, entity, shieldItem);
+                repel(target.level, target, shieldItem);
             }
-            if (amount >= 3.0F && !(entity instanceof Player && ((Player) entity).abilities.instabuild)) {
+            if (amount >= 3.0F && !(target instanceof Player player && player.isCreative())) {
                 int energy = Math.min(getEnergyStored(), Mth.ceil(amount) * getEnergyPerUse(false));
                 int extract = getExtract(shieldItem);
                 for (; energy > 0; energy -= extract) {
                     useEnergy(shieldItem, Math.min(extract, energy), false);
                 }
             }
+            return amount;
         }
 
         // region ICapabilityProvider

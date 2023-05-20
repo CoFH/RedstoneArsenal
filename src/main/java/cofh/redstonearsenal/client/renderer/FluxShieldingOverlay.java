@@ -10,7 +10,7 @@ import static cofh.lib.util.constants.ModIds.ID_REDSTONE_ARSENAL;
 
 public class FluxShieldingOverlay {
 
-    protected static final ResourceLocation ICONS = new ResourceLocation(ID_REDSTONE_ARSENAL + ":textures/gui/flux_shielding_icons.png");
+    protected static final ResourceLocation ICONS = new ResourceLocation(ID_REDSTONE_ARSENAL, "textures/gui/flux_shielding_icons.png");
     public static int currCharges = 0;
     public static int maxCharges = 0;
 
@@ -19,7 +19,7 @@ public class FluxShieldingOverlay {
         if (maxCharges <= 0) {
             return;
         }
-        final Minecraft minecraft = Minecraft.getInstance();
+        final Minecraft minecraft = gui.getMinecraft();
         if (minecraft.options.hideGui || !gui.shouldDrawSurvivalElements()) {
             return;
         }
