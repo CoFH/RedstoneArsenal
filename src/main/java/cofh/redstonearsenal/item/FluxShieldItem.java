@@ -1,7 +1,6 @@
 package cofh.redstonearsenal.item;
 
 import cofh.core.config.CoreClientConfig;
-import cofh.core.event.ShieldEvents;
 import cofh.core.util.ProxyUtils;
 import cofh.lib.api.capability.IShieldItem;
 import cofh.lib.api.item.IEnergyContainerItem;
