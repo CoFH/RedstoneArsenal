@@ -129,8 +129,11 @@ public class RSAEvents {
                 if (state.is(Blocks.DIRT_PATH) || state.is(FLUX_PATH.get()) || state.is(Blocks.FARMLAND)) {
                     event.setFinalState(Blocks.DIRT.defaultBlockState());
                 } else if (shovel.isEmpowered(stack)) {
-                    BlockState modified = state.getBlock().getToolModifiedState(state, event.getContext(), action, event.isSimulated());
+                    BlockState modified = state.getBlock().getToolModifiedState(state, event.getContext(), action, true);
                     if (modified != null && modified.is(Blocks.DIRT_PATH)) {
+                        if (!event.isSimulated()) {
+                            state.getBlock().getToolModifiedState(state, event.getContext(), action, false);
+                        }
                         event.setFinalState(FLUX_PATH.get().defaultBlockState());
                     }
                 }
