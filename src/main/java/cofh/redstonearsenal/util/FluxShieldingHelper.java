@@ -1,18 +1,18 @@
 package cofh.redstonearsenal.util;
 
 import cofh.core.compat.curios.CuriosProxy;
+import cofh.core.util.ProxyUtils;
 import cofh.lib.util.helpers.MathHelper;
 import cofh.redstonearsenal.capability.IFluxShieldedItem;
-import cofh.redstonearsenal.client.renderer.FluxShieldingOverlay;
 import cofh.redstonearsenal.network.client.FluxShieldingPacket;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.core.particles.DustParticleOptions;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.common.util.LazyOptional;
@@ -28,17 +28,20 @@ public class FluxShieldingHelper {
 
     public static final String TAG_FLUX_SHIELD = "FluxShield";
 
+    public static int currentCharges = 0;
+    public static int maximumCharges = 0;
+
     public static ItemStack findShieldedItem(LivingEntity entity) {
 
         Predicate<ItemStack> isShieldedItem = i -> i.getCapability(FLUX_SHIELDED_ITEM_CAPABILITY).map(cap -> cap.currCharges(entity) > 0).orElse(false);
 
-        //ARMOR
+        // ARMOR
         for (ItemStack piece : entity.getArmorSlots()) {
             if (isShieldedItem.test(piece)) {
                 return piece;
             }
         }
-        //CURIOS
+        // CURIOS
         final ItemStack[] retStack = {ItemStack.EMPTY};
         CuriosProxy.getAllWorn(entity).ifPresent(c -> {
             for (int i = 0; i < c.getSlots(); ++i) {
@@ -126,14 +129,15 @@ public class FluxShieldingHelper {
 
     public static void updateHUD(int currCharges, int maxCharges) {
 
-        if (maxCharges - currCharges < FluxShieldingOverlay.maxCharges - FluxShieldingOverlay.currCharges) {
-            Minecraft mc = Minecraft.getInstance();
-            if (mc.level != null && mc.player != null) {
-                mc.level.playSound(mc.player, mc.player, SOUND_SHIELDING_RECHARGE.get(), SoundSource.PLAYERS, 0.75F, 0.3F * currCharges / maxCharges + 0.7F);
+        Player player = ProxyUtils.getClientPlayer();
+        Level level = ProxyUtils.getClientWorld();
+        if (maxCharges - currCharges < maximumCharges - currentCharges) {
+            if (level != null && player != null) {
+                level.playSound(player, player, SOUND_SHIELDING_RECHARGE.get(), SoundSource.PLAYERS, 0.75F, 0.3F * currCharges / maxCharges + 0.7F);
             }
         }
-        FluxShieldingOverlay.currCharges = currCharges;
-        FluxShieldingOverlay.maxCharges = maxCharges;
+        currentCharges = currCharges;
+        maximumCharges = maxCharges;
     }
 
     public static void updateHUD(int[] charges) {
@@ -141,7 +145,7 @@ public class FluxShieldingHelper {
         updateHUD(charges[0], charges[1]);
     }
 
-    public static void updateHUD(LocalPlayer player) {
+    public static void updateHUD(Player player) {
 
         updateHUD(countCharges(player));
     }
