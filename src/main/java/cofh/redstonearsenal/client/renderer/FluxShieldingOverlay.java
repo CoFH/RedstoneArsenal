@@ -1,5 +1,6 @@
 package cofh.redstonearsenal.client.renderer;
 
+import cofh.redstonearsenal.util.FluxShieldingHelper;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiComponent;
@@ -10,13 +11,11 @@ import static cofh.lib.util.constants.ModIds.ID_REDSTONE_ARSENAL;
 
 public class FluxShieldingOverlay {
 
-    protected static final ResourceLocation ICONS = new ResourceLocation(ID_REDSTONE_ARSENAL, "textures/gui/flux_shielding_icons.png");
-    public static int currCharges = 0;
-    public static int maxCharges = 0;
+    public static final ResourceLocation ICONS = new ResourceLocation(ID_REDSTONE_ARSENAL, "textures/gui/flux_shielding_icons.png");
 
     public static void render(ForgeGui gui, PoseStack stack, float partialTick, int width, int height) {
 
-        if (maxCharges <= 0) {
+        if (FluxShieldingHelper.maximumCharges <= 0) {
             return;
         }
         final Minecraft minecraft = gui.getMinecraft();
@@ -29,11 +28,11 @@ public class FluxShieldingOverlay {
         int y = height - gui.rightHeight;
         gui.rightHeight += 10;
 
-        for (int i = currCharges; i > 0; --i) {
+        for (int i = FluxShieldingHelper.currentCharges; i > 0; --i) {
             GuiComponent.blit(stack, x, y, 0, 0, 9, 9, 27, 27);
             x += 8;
         }
-        for (int i = maxCharges - currCharges; i > 0; --i) {
+        for (int i = FluxShieldingHelper.maximumCharges - FluxShieldingHelper.currentCharges; i > 0; --i) {
             GuiComponent.blit(stack, x, y, 9, 0, 9, 9, 27, 27);
             x += 8;
         }
