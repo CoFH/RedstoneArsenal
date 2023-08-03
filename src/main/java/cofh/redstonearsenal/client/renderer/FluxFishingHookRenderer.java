@@ -101,7 +101,7 @@ public class FluxFishingHookRenderer extends FishingHookRenderer {
         return (player.getMainArm() == HumanoidArm.RIGHT) == player.getMainHandItem().getItem() instanceof FishingRodItemCoFH;
     }
 
-    //TODO Hek: ATs
+    // TODO Hek: ATs
     protected static float fraction(int p_114691_, int p_114692_) {
 
         return (float) p_114691_ / (float) p_114692_;

@@ -203,7 +203,7 @@ public class FluxShieldItem extends ShieldItemCoFH implements IMultiModeFluxItem
             if (!target.isBlocking() || target.isInvulnerableTo(source) || (target.hasEffect(MobEffects.FIRE_RESISTANCE) && source.isFire())) {
                 return false;
             }
-            //TODO 1.20 change to tags
+            // TODO 1.20 change to tags
             return source.getMsgId().equals("flux") && IShieldItem.canBlockDamagePosition(target, source.getSourcePosition());
         }
 

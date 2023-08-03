@@ -155,7 +155,7 @@ public class FluxArrow extends AbstractArrow {
             //if (blockResult.getType() != RayTraceResult.Type.MISS) {
             //    nextPos = blockResult.getLocation();
             //}
-            ////TODO: account for bouncing off invuln enemies
+            //// TODO: account for bouncing off invuln enemies
             //for (EntityRayTraceResult entityResult : ArcheryHelper.findHitEntities(this.level, this, currPos, nextPos, this::canHitEntity).sorted(Comparator.comparingDouble(result -> result.getLocation().distanceToSqr(currPos))).collect(Collectors.toList())) {
             //    if (!this.isAlive()) {
             //        return;
