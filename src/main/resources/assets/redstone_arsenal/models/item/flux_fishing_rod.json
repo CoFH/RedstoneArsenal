@@ -1,5 +1,5 @@
 {
-  "parent": "item/handheld_rod",
+  "parent": "minecraft:item/handheld_rod",
   "textures": {
     "layer0": "redstone_arsenal:item/flux_fishing_rod"
   },
