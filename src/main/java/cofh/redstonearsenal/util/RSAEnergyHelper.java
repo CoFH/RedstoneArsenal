@@ -3,7 +3,7 @@ package cofh.redstonearsenal.util;
 import cofh.core.capability.CapabilityRedstoneFlux;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.energy.CapabilityEnergy;
+import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.energy.IEnergyStorage;
 
 /**
@@ -26,7 +26,7 @@ public class RSAEnergyHelper {
 
     public static Capability<? extends IEnergyStorage> getBaseEnergySystem() {
 
-        return standaloneRedstoneFlux ? CapabilityRedstoneFlux.RF_ENERGY : CapabilityEnergy.ENERGY;
+        return standaloneRedstoneFlux ? CapabilityRedstoneFlux.RF_ENERGY : ForgeCapabilities.ENERGY;
     }
 
 }

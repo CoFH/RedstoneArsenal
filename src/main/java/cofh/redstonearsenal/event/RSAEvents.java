@@ -7,6 +7,7 @@ import cofh.redstonearsenal.item.FluxSickleItem;
 import cofh.redstonearsenal.item.FluxTridentItem;
 import cofh.redstonearsenal.util.FluxShieldingHelper;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.tags.DamageTypeTags;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
@@ -30,7 +31,7 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
 import static cofh.lib.util.constants.ModIds.ID_REDSTONE_ARSENAL;
-import static cofh.redstonearsenal.init.RSABlocks.FLUX_PATH;
+import static cofh.redstonearsenal.init.ModBlocks.FLUX_PATH;
 import static net.minecraft.world.entity.EquipmentSlot.MAINHAND;
 
 @Mod.EventBusSubscriber (modid = ID_REDSTONE_ARSENAL)
@@ -151,7 +152,7 @@ public class RSAEvents {
         DamageSource source = event.getSource();
         // Flux Shielding
         float amount = event.getAmount();
-        if (amount <= 500.0F && !(target instanceof Player player && (player.isCreative() || player.isSpectator())) && !(source.isBypassArmor() && source.isBypassMagic())) {
+        if (amount <= 500.0F && !(target instanceof Player player && (player.isCreative() || player.isSpectator())) && !(source.is(DamageTypeTags.BYPASSES_ARMOR) && source.is(DamageTypeTags.BYPASSES_EFFECTS))) {
             ItemStack shieldedItem = FluxShieldingHelper.findShieldedItem(target);
             if (!shieldedItem.isEmpty()) {
                 if (target.invulnerableTime > 0) {
@@ -168,7 +169,7 @@ public class RSAEvents {
         }
 
         // Flux Armor Helmet Damage
-        if (source.isDamageHelmet()) {
+        if (source.is(DamageTypeTags.DAMAGES_HELMET)) {
             ItemStack helmet = target.getItemBySlot(EquipmentSlot.HEAD);
             float damage = Math.max(0.5F, amount * 0.25F);
             if (helmet.getItem() instanceof FluxArmorItem armor) {
@@ -186,7 +187,7 @@ public class RSAEvents {
         }
         // Flux Shielding
         DamageSource source = event.getSource();
-        if (source.isBypassArmor() && source.isBypassMagic()) {
+        if (source.is(DamageTypeTags.BYPASSES_ARMOR) && source.is(DamageTypeTags.BYPASSES_EFFECTS)) {
             return;
         }
         float amount = event.getAmount();
@@ -199,7 +200,7 @@ public class RSAEvents {
             if (target instanceof ServerPlayer) {
                 FluxShieldingHelper.updateHUD((ServerPlayer) target);
             }
-        } else if (!source.isBypassArmor()) { // Flux Armor Damage
+        } else if (!source.is(DamageTypeTags.BYPASSES_ARMOR)) { // Flux Armor Damage
             float damage = Math.max(0.5F, amount * 0.25F);
             target.getArmorSlots().forEach(stack -> {
                 if (stack.getItem() instanceof FluxArmorItem armor) {

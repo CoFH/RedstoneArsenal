@@ -21,8 +21,8 @@ import java.util.function.Consumer;
 import java.util.function.Predicate;
 
 import static cofh.redstonearsenal.capability.CapabilityFluxShielding.FLUX_SHIELDED_ITEM_CAPABILITY;
-import static cofh.redstonearsenal.init.RSASounds.SOUND_SHIELDING_BREAK;
-import static cofh.redstonearsenal.init.RSASounds.SOUND_SHIELDING_RECHARGE;
+import static cofh.redstonearsenal.init.ModSounds.SOUND_SHIELDING_BREAK;
+import static cofh.redstonearsenal.init.ModSounds.SOUND_SHIELDING_RECHARGE;
 
 public class FluxShieldingHelper {
 

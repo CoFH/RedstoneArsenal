@@ -15,6 +15,7 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ArmorItem;
 import net.minecraft.world.item.ArmorMaterial;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
@@ -34,9 +35,9 @@ public class FluxElytraItem extends FluxArmorItem implements IMultiModeFluxItem 
     public int boostTime = 32;
     public int energyUseInterval = 8;
 
-    public FluxElytraItem(ArmorMaterial material, EquipmentSlot slot, Properties builder, int maxEnergy, int maxTransfer) {
+    public FluxElytraItem(ArmorMaterial pMaterial, ArmorItem.Type pType, Properties pProperties, int maxEnergy, int maxTransfer) {
 
-        super(material, slot, builder, maxEnergy, maxTransfer);
+        super(pMaterial, pType, pProperties, maxEnergy, maxTransfer);
 
         ProxyUtils.registerItemModelProperty(this, new ResourceLocation("empowered"), this::getEmpoweredModelProperty);
     }

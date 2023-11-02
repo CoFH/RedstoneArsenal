@@ -3,6 +3,7 @@ package cofh.redstonearsenal.entity;
 import cofh.lib.item.FishingRodItemCoFH;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.protocol.Packet;
+import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
@@ -13,7 +14,7 @@ import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.entity.IEntityAdditionalSpawnData;
 import net.minecraftforge.network.NetworkHooks;
 
-import static cofh.redstonearsenal.init.RSAEntities.FISH_HOOK;
+import static cofh.redstonearsenal.init.ModEntities.FISH_HOOK;
 
 public class FluxFishingHook extends FishingHook implements IEntityAdditionalSpawnData {
 
@@ -52,7 +53,7 @@ public class FluxFishingHook extends FishingHook implements IEntityAdditionalSpa
     }
 
     @Override
-    public Packet<?> getAddEntityPacket() {
+    public Packet<ClientGamePacketListener> getAddEntityPacket() {
 
         return NetworkHooks.getEntitySpawningPacket(this);
     }

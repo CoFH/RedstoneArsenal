@@ -107,7 +107,7 @@ public class FluxHammerItem extends HammerItem implements IMultiModeFluxItem {
         Player player = context.getPlayer();
         ItemStack stack = context.getItemInHand();
         int energy = getEnergyPerUse(true) * 2;
-        if (player == null || !player.isOnGround() || !isEmpowered(stack) || !(hasEnergy(stack, energy) || player.abilities.instabuild)) {
+        if (player == null || !player.onGround() || !isEmpowered(stack) || !(hasEnergy(stack, energy) || player.abilities.instabuild)) {
             return InteractionResult.FAIL;
         }
         Level world = context.getLevel();

@@ -1,8 +1,8 @@
 package cofh.redstonearsenal.init;
 
-public class RSAIDs {
+public class ModIDs {
 
-    private RSAIDs() {
+    private ModIDs() {
 
     }
 

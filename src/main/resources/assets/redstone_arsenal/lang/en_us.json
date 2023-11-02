@@ -4,8 +4,8 @@
   "info.redstone_arsenal.mode.0": "Quelled",
   "info.redstone_arsenal.mode.1": "Empowered",
 
-  "death.attack.flux": "%2$s's flux flummoxed %1$s!",
-  "death.attack.flux.item": "%2$s used %3$s to flummox %1$s with flux!",
+  "death.attack.redstone_arsenal.flux": "%2$s's flux flummoxed %1$s!",
+  "death.attack.redstone_arsenal.flux.item": "%2$s used %3$s to flummox %1$s with flux!",
 
   "item.redstone_arsenal.flux_coin": "Flux-Infused Coin",
   "item.redstone_arsenal.flux_dust": "Flux-Infused Dust",

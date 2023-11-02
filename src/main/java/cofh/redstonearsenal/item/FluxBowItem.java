@@ -291,7 +291,7 @@ public class FluxBowItem extends BowItemCoFH implements IMultiModeFluxItem {
 
         public void simulateArrow(AbstractArrow arrow, Level world, int maxTicks) {
 
-            for (int i = 0; i < maxTicks && arrow.isAlive() && !arrow.isOnGround() && arrow.life <= 1; ++i) {
+            for (int i = 0; i < maxTicks && arrow.isAlive() && !arrow.onGround() && arrow.life <= 1; ++i) {
                 arrow.tick();
                 Vec3 velocity = arrow.getDeltaMovement();
                 if (!world.isClientSide()) {

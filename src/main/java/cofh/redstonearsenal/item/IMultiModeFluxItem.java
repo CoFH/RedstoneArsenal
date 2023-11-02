@@ -18,8 +18,8 @@ import javax.annotation.Nullable;
 import java.util.List;
 
 import static cofh.lib.util.helpers.StringHelper.getTextComponent;
-import static cofh.redstonearsenal.init.RSASounds.SOUND_EMPOWER;
-import static cofh.redstonearsenal.init.RSASounds.SOUND_QUELL;
+import static cofh.redstonearsenal.init.ModSounds.SOUND_EMPOWER;
+import static cofh.redstonearsenal.init.ModSounds.SOUND_QUELL;
 
 public interface IMultiModeFluxItem extends IFluxItem, IMultiModeItem {
 

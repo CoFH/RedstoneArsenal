@@ -6,11 +6,11 @@ import net.minecraft.world.entity.MobCategory;
 import net.minecraftforge.registries.RegistryObject;
 
 import static cofh.redstonearsenal.RedstoneArsenal.ENTITIES;
-import static cofh.redstonearsenal.init.RSAIDs.*;
+import static cofh.redstonearsenal.init.ModIDs.*;
 
-public class RSAEntities {
+public class ModEntities {
 
-    private RSAEntities() {
+    private ModEntities() {
 
     }
 

@@ -35,7 +35,7 @@ import javax.annotation.Nullable;
 import java.util.List;
 
 import static cofh.lib.util.helpers.StringHelper.getTextComponent;
-import static cofh.redstonearsenal.init.RSABlocks.FLUX_GLOW_AIR;
+import static cofh.redstonearsenal.init.ModBlocks.FLUX_GLOW_AIR;
 import static net.minecraft.world.level.block.Blocks.AIR;
 
 public class FluxPickaxeItem extends PickaxeItemCoFH implements IMultiModeFluxItem {

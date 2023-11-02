@@ -6,11 +6,13 @@ import cofh.lib.energy.EnergyContainerItemWrapper;
 import cofh.lib.util.Utils;
 import cofh.redstonearsenal.util.RSAEnergyHelper;
 import net.minecraft.ChatFormatting;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.damagesource.DamageSource;
-import net.minecraft.world.damagesource.EntityDamageSource;
-import net.minecraft.world.damagesource.IndirectEntityDamageSource;
+import net.minecraft.world.damagesource.DamageType;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.projectile.Projectile;
@@ -27,6 +29,7 @@ import java.util.function.Consumer;
 
 import static cofh.lib.api.ContainerType.ENERGY;
 import static cofh.lib.util.Constants.RGB_DURABILITY_FLUX;
+import static cofh.lib.util.constants.ModIds.ID_REDSTONE_ARSENAL;
 import static cofh.lib.util.helpers.StringHelper.*;
 
 public interface IFluxItem extends ICoFHItem, IEnergyContainerItem {
@@ -142,12 +145,15 @@ public interface IFluxItem extends ICoFHItem, IEnergyContainerItem {
 
     static DamageSource fluxDirectDamage(LivingEntity attacker) {
 
-        return (new EntityDamageSource("flux", attacker)).bypassArmor();
+        return attacker.level.damageSources().source(FLUX, attacker);
     }
 
     static DamageSource fluxRangedDamage(Projectile projectile, @Nullable Entity shooter) {
 
-        return (new IndirectEntityDamageSource("flux", projectile, shooter)).setProjectile().bypassArmor();
+        return projectile.level.damageSources().source(FLUX_RANGED, projectile, shooter);
     }
+
+    ResourceKey<DamageType> FLUX = ResourceKey.create(Registries.DAMAGE_TYPE, new ResourceLocation(ID_REDSTONE_ARSENAL, "flux"));
+    ResourceKey<DamageType> FLUX_RANGED = ResourceKey.create(Registries.DAMAGE_TYPE, new ResourceLocation(ID_REDSTONE_ARSENAL, "flux_ranged"));
 
 }

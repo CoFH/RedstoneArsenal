@@ -8,6 +8,7 @@ import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.protocol.Packet;
+import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.network.protocol.game.ClientboundGameEventPacket;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
@@ -32,7 +33,7 @@ import net.minecraftforge.network.NetworkHooks;
 import javax.annotation.Nullable;
 import java.util.Arrays;
 
-import static cofh.redstonearsenal.init.RSAEntities.FLUX_ARROW;
+import static cofh.redstonearsenal.init.ModEntities.FLUX_ARROW;
 
 public class FluxArrow extends AbstractArrow {
 
@@ -90,7 +91,7 @@ public class FluxArrow extends AbstractArrow {
     }
 
     @Override
-    public Packet<?> getAddEntityPacket() {
+    public Packet<ClientGamePacketListener> getAddEntityPacket() {
 
         return NetworkHooks.getEntitySpawningPacket(this);
     }

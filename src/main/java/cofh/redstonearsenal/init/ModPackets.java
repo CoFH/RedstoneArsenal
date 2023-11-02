@@ -4,7 +4,7 @@ import cofh.redstonearsenal.network.client.FluxShieldingPacket;
 
 import static cofh.redstonearsenal.RedstoneArsenal.PACKET_HANDLER;
 
-public class RSAPackets {
+public class ModPackets {
 
     public static final int PACKET_FLUX_SHIELDING = 1;
 

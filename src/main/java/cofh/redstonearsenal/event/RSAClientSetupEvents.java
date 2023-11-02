@@ -19,7 +19,7 @@ import net.minecraftforge.fml.common.Mod;
 import org.apache.logging.log4j.Level;
 
 import static cofh.lib.util.constants.ModIds.ID_REDSTONE_ARSENAL;
-import static cofh.redstonearsenal.init.RSAEntities.*;
+import static cofh.redstonearsenal.init.ModEntities.*;
 
 @Mod.EventBusSubscriber (value = Dist.CLIENT, modid = ID_REDSTONE_ARSENAL, bus = Mod.EventBusSubscriber.Bus.MOD)
 public class RSAClientSetupEvents {
@@ -71,7 +71,7 @@ public class RSAClientSetupEvents {
     @SubscribeEvent
     public static void overlaySetup(final RegisterGuiOverlaysEvent event) {
 
-        event.registerAbove(VanillaGuiOverlay.AIR_LEVEL.id(), "flux_shielding", FluxShieldingOverlay::render);
+        event.registerAbove(VanillaGuiOverlay.AIR_LEVEL.id(), "flux_shielding", new FluxShieldingOverlay());
     }
 
     // region RELOAD

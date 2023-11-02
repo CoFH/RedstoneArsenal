@@ -12,6 +12,7 @@ import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.tags.DamageTypeTags;
 import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
@@ -200,7 +201,7 @@ public class FluxShieldItem extends ShieldItemCoFH implements IMultiModeFluxItem
             if (IShieldItem.super.canBlock(target, source)) {
                 return true;
             }
-            if (!target.isBlocking() || target.isInvulnerableTo(source) || (target.hasEffect(MobEffects.FIRE_RESISTANCE) && source.isFire())) {
+            if (!target.isBlocking() || target.isInvulnerableTo(source) || (target.hasEffect(MobEffects.FIRE_RESISTANCE) && source.is(DamageTypeTags.IS_FIRE))) {
                 return false;
             }
             // TODO 1.20 change to tags

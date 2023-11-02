@@ -23,7 +23,6 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.tags.BlockTags;
-import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
@@ -144,7 +143,7 @@ public class FluxSickleItem extends SickleItem implements IMultiModeFluxItem, IL
     @Override
     public boolean isCorrectToolForDrops(ItemStack stack, BlockState state) {
 
-        return hasEnergy(stack, false) && (EFFECTIVE_MATERIALS.contains(state.getMaterial()) || state.getBlock() instanceof HugeMushroomBlock);
+        return hasEnergy(stack, false) && (super.isCorrectToolForDrops(stack, state) || state.getBlock() instanceof HugeMushroomBlock);
     }
 
     @Override
@@ -275,14 +274,14 @@ public class FluxSickleItem extends SickleItem implements IMultiModeFluxItem, IL
         boolean hit = false;
         for (LivingEntity target : player.level.getEntitiesOfClass(LivingEntity.class, stack.getSweepHitBox(player, player))) {
             if (target == player || player.isAlliedTo(target) || (empowered && target.isBaby()) ||
-                    (target instanceof ArmorStand stand && stand.isMarker()) || !player.canHit(target, 0)) {
+                    (target instanceof ArmorStand stand && stand.isMarker()) || !player.canReach(target, 0)) {
                 continue;
             }
             hit = true;
             Vec3 disp = player.position().subtract(target.position());
             target.knockback(0.3F, disp.x, disp.z);
             float bonus = EnchantmentHelper.getDamageBonus(stack, target.getMobType()) * strength;
-            target.hurt(DamageSource.playerAttack(player), 1.0F + (damage + bonus) * sweep);
+            target.hurt(player.level.damageSources().playerAttack(player), 1.0F + (damage + bonus) * sweep);
         }
         if (hit) {
             useEnergy(stack, false, player);

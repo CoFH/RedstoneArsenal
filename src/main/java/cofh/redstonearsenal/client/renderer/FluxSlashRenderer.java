@@ -5,9 +5,7 @@ import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.blaze3d.vertex.VertexFormat;
-import com.mojang.math.Matrix3f;
-import com.mojang.math.Matrix4f;
-import com.mojang.math.Vector3f;
+import com.mojang.math.Axis;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderStateShard;
 import net.minecraft.client.renderer.RenderType;
@@ -16,6 +14,8 @@ import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
+import org.joml.Matrix3f;
+import org.joml.Matrix4f;
 
 import static cofh.lib.util.constants.ModIds.ID_REDSTONE_ARSENAL;
 import static net.minecraft.client.renderer.RenderStateShard.*;
@@ -41,9 +41,9 @@ public class FluxSlashRenderer extends EntityRenderer<FluxSlash> {
 
         matrixStackIn.pushPose();
 
-        matrixStackIn.mulPose(Vector3f.YP.rotationDegrees(Mth.lerp(partialTicks, entity.yRotO, entity.yRot) - 90));
-        matrixStackIn.mulPose(Vector3f.ZP.rotationDegrees(Mth.lerp(partialTicks, entity.xRotO, entity.xRot) + 10));
-        matrixStackIn.mulPose(Vector3f.XP.rotationDegrees(entity.zRot));
+        matrixStackIn.mulPose(Axis.YP.rotationDegrees(Mth.lerp(partialTicks, entity.yRotO, entity.yRot) - 90));
+        matrixStackIn.mulPose(Axis.ZP.rotationDegrees(Mth.lerp(partialTicks, entity.xRotO, entity.xRot) + 10));
+        matrixStackIn.mulPose(Axis.XP.rotationDegrees(entity.zRot));
         matrixStackIn.scale(0.6F, 0.6F, 1.8F);
         PoseStack.Pose matrixStackEntry = matrixStackIn.last();
         Matrix4f pose = matrixStackEntry.pose();

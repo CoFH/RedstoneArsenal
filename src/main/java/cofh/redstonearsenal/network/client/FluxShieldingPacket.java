@@ -8,7 +8,7 @@ import cofh.redstonearsenal.util.FluxShieldingHelper;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
 
-import static cofh.redstonearsenal.init.RSAPackets.PACKET_FLUX_SHIELDING;
+import static cofh.redstonearsenal.init.ModPackets.PACKET_FLUX_SHIELDING;
 
 public class FluxShieldingPacket extends PacketBase implements IPacketClient {
 

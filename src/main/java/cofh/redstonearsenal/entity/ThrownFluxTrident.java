@@ -4,6 +4,7 @@ import cofh.redstonearsenal.item.FluxTridentItem;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.protocol.Packet;
+import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
@@ -29,8 +30,8 @@ import net.minecraftforge.network.NetworkHooks;
 import javax.annotation.Nullable;
 
 import static cofh.redstonearsenal.RedstoneArsenal.ITEMS;
-import static cofh.redstonearsenal.init.RSAEntities.FLUX_TRIDENT;
-import static cofh.redstonearsenal.init.RSAIDs.ID_FLUX_TRIDENT;
+import static cofh.redstonearsenal.init.ModEntities.FLUX_TRIDENT;
+import static cofh.redstonearsenal.init.ModIDs.ID_FLUX_TRIDENT;
 import static net.minecraft.nbt.Tag.TAG_COMPOUND;
 
 public class ThrownFluxTrident extends AbstractArrow {
@@ -69,7 +70,7 @@ public class ThrownFluxTrident extends AbstractArrow {
     }
 
     @Override
-    public Packet<?> getAddEntityPacket() {
+    public Packet<ClientGamePacketListener> getAddEntityPacket() {
 
         return NetworkHooks.getEntitySpawningPacket(this);
     }
@@ -160,7 +161,7 @@ public class ThrownFluxTrident extends AbstractArrow {
         }
 
         Entity entity1 = this.getOwner();
-        DamageSource damagesource = DamageSource.trident(this, (Entity) (entity1 == null ? this : entity1));
+        DamageSource damagesource = this.damageSources().trident(this, entity1 == null ? this : entity1);
         this.dealtDamage = true;
         SoundEvent soundevent = SoundEvents.TRIDENT_HIT;
         if (entity.hurt(damagesource, f)) {

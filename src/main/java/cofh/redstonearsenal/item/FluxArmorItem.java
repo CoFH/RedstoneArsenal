@@ -15,6 +15,7 @@ import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
+import net.minecraft.world.item.ArmorItem;
 import net.minecraft.world.item.ArmorMaterial;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
@@ -33,9 +34,9 @@ public class FluxArmorItem extends ArmorItemCoFH implements IFluxItem {
     protected int extract;
     protected int receive;
 
-    public FluxArmorItem(ArmorMaterial material, EquipmentSlot slot, Properties builder, int maxEnergy, int maxTransfer) {
+    public FluxArmorItem(ArmorMaterial pMaterial, ArmorItem.Type pType, Properties pProperties, int maxEnergy, int maxTransfer) {
 
-        super(material, slot, builder);
+        super(pMaterial, pType, pProperties);
 
         this.maxEnergy = maxEnergy;
         this.extract = maxTransfer;
@@ -87,7 +88,7 @@ public class FluxArmorItem extends ArmorItemCoFH implements IFluxItem {
     @Override
     public Multimap<Attribute, AttributeModifier> getAttributeModifiers(EquipmentSlot slot, ItemStack stack) {
 
-        return hasEnergy(stack, false) && slot == this.slot ? super.getAttributeModifiers(slot, stack) : ImmutableMultimap.of();
+        return hasEnergy(stack, false) && slot == this.getEquipmentSlot() ? super.getAttributeModifiers(slot, stack) : ImmutableMultimap.of();
     }
 
     @Override

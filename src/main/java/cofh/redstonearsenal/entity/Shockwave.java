@@ -16,7 +16,7 @@ import net.minecraft.world.phys.Vec3;
 
 import static cofh.core.init.CoreMobEffects.SUNDERED;
 import static cofh.core.init.CoreParticles.SHOCKWAVE;
-import static cofh.redstonearsenal.init.RSAEntities.SHOCKWAVE_ENTITY;
+import static cofh.redstonearsenal.init.ModEntities.SHOCKWAVE_ENTITY;
 
 public class Shockwave extends AbstractAoESpell {
 
@@ -78,9 +78,9 @@ public class Shockwave extends AbstractAoESpell {
                     float falloff = (duration - (tickCount * 0.5F)) / duration;
                     DamageSource source;
                     if (this.owner instanceof Player) {
-                        source = DamageSource.playerAttack((Player) this.owner);
+                        source = owner.damageSources().playerAttack((Player) owner);
                     } else {
-                        source = DamageSource.mobAttack(this.owner);
+                        source = owner.damageSources().mobAttack(owner);
                     }
                     if (entity.hurt(source, damage * falloff)) {
                         hitSomething = true;

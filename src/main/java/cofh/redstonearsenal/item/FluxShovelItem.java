@@ -37,7 +37,7 @@ import javax.annotation.Nullable;
 import java.util.List;
 
 import static cofh.lib.util.helpers.StringHelper.getTextComponent;
-import static cofh.redstonearsenal.init.RSABlocks.FLUX_PATH;
+import static cofh.redstonearsenal.init.ModBlocks.FLUX_PATH;
 
 public class FluxShovelItem extends ShovelItemCoFH implements IMultiModeFluxItem {
 

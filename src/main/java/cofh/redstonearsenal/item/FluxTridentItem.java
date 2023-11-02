@@ -113,7 +113,7 @@ public class FluxTridentItem extends TridentItemCoFH implements IMultiModeFluxIt
         super.inventoryTick(stack, world, entity, itemSlot, isSelected);
 
         if (entity instanceof LivingEntity living) {
-            if (living.isAutoSpinAttack() && (living.isOnGround() || (living.isUnderWater() && living.getDeltaMovement().lengthSqr() < 0.09F))) {
+            if (living.isAutoSpinAttack() && (living.onGround() || (living.isUnderWater() && living.getDeltaMovement().lengthSqr() < 0.09F))) {
                 stopSpinAttack(living);
             }
         }
@@ -163,7 +163,7 @@ public class FluxTridentItem extends TridentItemCoFH implements IMultiModeFluxIt
                         float riptideMult = (1.0F + riptideLevel) * 0.75F / MathHelper.sqrt(xPush * xPush + yPush * yPush + zPush * zPush);
                         player.push(xPush * riptideMult, yPush * riptideMult, zPush * riptideMult);
                         player.startAutoSpinAttack(20);
-                        if (player.isOnGround()) {
+                        if (player.onGround()) {
                             player.move(MoverType.SELF, new Vec3(0.0D, 1.1999999, 0.0D));
                         }
                         SoundEvent soundevent;
@@ -209,7 +209,7 @@ public class FluxTridentItem extends TridentItemCoFH implements IMultiModeFluxIt
 
     public static boolean canStartPlunging(LivingEntity living) {
 
-        if (living.isOnGround() || living.isAutoSpinAttack()) {
+        if (living.onGround() || living.isAutoSpinAttack()) {
             return false;
         }
         ClipContext context = new ClipContext(living.position(), living.position().add(0, -3, 0), ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, living);
@@ -297,7 +297,7 @@ public class FluxTridentItem extends TridentItemCoFH implements IMultiModeFluxIt
         if (slot == EquipmentSlot.MAINHAND) {
             multimap.put(Attributes.ATTACK_DAMAGE, new AttributeModifier(BASE_ATTACK_DAMAGE_UUID, "Weapon modifier", getAttackDamage(stack), AttributeModifier.Operation.ADDITION));
             multimap.put(Attributes.ATTACK_SPEED, new AttributeModifier(BASE_ATTACK_SPEED_UUID, "Weapon modifier", getAttackSpeed(stack), AttributeModifier.Operation.ADDITION));
-            multimap.put(ForgeMod.ATTACK_RANGE.get(), new AttributeModifier(UUID_WEAPON_RANGE, "Weapon modifier", getAddedAttackRange(stack), AttributeModifier.Operation.ADDITION));
+            multimap.put(ForgeMod.ENTITY_REACH.get(), new AttributeModifier(UUID_WEAPON_RANGE, "Weapon modifier", getAddedAttackRange(stack), AttributeModifier.Operation.ADDITION));
         }
         return multimap;
     }

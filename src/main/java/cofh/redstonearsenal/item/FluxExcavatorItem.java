@@ -17,6 +17,7 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.NonNullList;
+import net.minecraft.core.Vec3i;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -37,6 +38,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.common.ToolAction;
 import net.minecraftforge.common.ToolActions;
 import net.minecraftforge.common.capabilities.Capability;
@@ -124,7 +126,8 @@ public class FluxExcavatorItem extends ExcavatorItem implements IMultiModeFluxIt
         } else {
             BlockPlaceContext blockContext = new BlockPlaceContext(context);
             BlockPos playerPos = player.blockPosition();
-            BlockPos eyePos = new BlockPos(player.getEyePosition(1));
+            Vec3 vecEyePos = player.getEyePosition(1);
+            BlockPos eyePos = new BlockPos(new Vec3i((int) vecEyePos.x, (int) vecEyePos.y, (int) vecEyePos.z));
             if (player.isCreative()) {
                 for (BlockPos pos : blocks) {
                     BlockPos fillPos = pos.relative(context.getClickedFace());

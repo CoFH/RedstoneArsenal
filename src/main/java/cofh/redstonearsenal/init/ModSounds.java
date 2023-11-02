@@ -7,9 +7,9 @@ import net.minecraftforge.registries.RegistryObject;
 import static cofh.lib.util.constants.ModIds.ID_REDSTONE_ARSENAL;
 import static cofh.redstonearsenal.RedstoneArsenal.SOUND_EVENTS;
 
-public class RSASounds {
+public class ModSounds {
 
-    private RSASounds() {
+    private ModSounds() {
 
     }
 
@@ -19,7 +19,7 @@ public class RSASounds {
 
     public static RegistryObject<SoundEvent> registerSound(String soundID) {
 
-        return SOUND_EVENTS.register(soundID, () -> new SoundEvent(new ResourceLocation(ID_REDSTONE_ARSENAL, soundID)));
+        return SOUND_EVENTS.register(soundID, () -> SoundEvent.createVariableRangeEvent(new ResourceLocation(ID_REDSTONE_ARSENAL, soundID)));
     }
 
     // region IDs

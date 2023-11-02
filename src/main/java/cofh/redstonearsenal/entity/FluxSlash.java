@@ -3,6 +3,7 @@ package cofh.redstonearsenal.entity;
 import cofh.core.util.helpers.ArcheryHelper;
 import cofh.redstonearsenal.item.IFluxItem;
 import net.minecraft.network.protocol.Packet;
+import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.projectile.Projectile;
@@ -15,7 +16,7 @@ import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.event.ForgeEventFactory;
 import net.minecraftforge.network.NetworkHooks;
 
-import static cofh.redstonearsenal.init.RSAEntities.FLUX_SLASH;
+import static cofh.redstonearsenal.init.ModEntities.FLUX_SLASH;
 
 public class FluxSlash extends Projectile {
 
@@ -96,7 +97,7 @@ public class FluxSlash extends Projectile {
     }
 
     @Override
-    public Packet<?> getAddEntityPacket() {
+    public Packet<ClientGamePacketListener> getAddEntityPacket() {
 
         return NetworkHooks.getEntitySpawningPacket(this);
     }
