@@ -23,6 +23,5 @@ public class ModEntities {
     public static final RegistryObject<EntityType<ThrownFluxTrident>> FLUX_TRIDENT = ENTITIES.register(ID_FLUX_TRIDENT, () -> EntityType.Builder.<ThrownFluxTrident>of(ThrownFluxTrident::new, MobCategory.MISC).sized(0.5F, 0.5F).build(ID_FLUX_TRIDENT));
     public static final RegistryObject<EntityType<ThrownFluxWrench>> FLUX_WRENCH = ENTITIES.register(ID_FLUX_WRENCH, () -> EntityType.Builder.<ThrownFluxWrench>of(ThrownFluxWrench::new, MobCategory.MISC).sized(0.75F, 0.5F).build(ID_FLUX_WRENCH));
     public static final RegistryObject<EntityType<Shockwave>> SHOCKWAVE_ENTITY = ENTITIES.register(ID_SHOCKWAVE, () -> EntityType.Builder.<Shockwave>of(Shockwave::new, MobCategory.MISC).sized(0.1F, 0.1F).fireImmune().build(ID_SHOCKWAVE));
-    public static final RegistryObject<EntityType<FluxFishingHook>> FISH_HOOK = ENTITIES.register(ID_FISH_HOOK, () -> EntityType.Builder.<FluxFishingHook>of(FluxFishingHook::new, MobCategory.MISC).noSave().noSummon().sized(0.25F, 0.25F).clientTrackingRange(4).updateInterval(5).build(ID_FISH_HOOK));
 
 }

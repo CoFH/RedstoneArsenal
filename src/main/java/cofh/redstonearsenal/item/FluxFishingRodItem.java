@@ -5,7 +5,6 @@ import cofh.core.util.ProxyUtils;
 import cofh.lib.item.FishingRodItemCoFH;
 import cofh.lib.util.Utils;
 import cofh.lib.util.helpers.MathHelper;
-import cofh.redstonearsenal.entity.FluxFishingHook;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.core.BlockPos;
@@ -94,7 +93,7 @@ public class FluxFishingRodItem extends FishingRodItemCoFH implements IMultiMode
             if (!world.isClientSide) {
                 int luck = EnchantmentHelper.getFishingLuckBonus(stack) + luckModifier;
                 int speed = EnchantmentHelper.getFishingSpeedBonus(stack) + speedModifier;
-                world.addFreshEntity(new FluxFishingHook(player, world, luck, speed));
+                world.addFreshEntity(new FishingHook(player, world, luck, speed));
             }
             player.awardStat(Stats.ITEM_USED.get(this));
         } else {
@@ -142,11 +141,6 @@ public class FluxFishingRodItem extends FishingRodItemCoFH implements IMultiMode
                 bobber.getHookedIn().fallDistance = 0;
             }
         }
-    }
-
-    @Override
-    public void releaseUsing(ItemStack stack, Level world, LivingEntity living, int useDuration) {
-
     }
 
     @Override

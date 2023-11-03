@@ -65,7 +65,6 @@ public class RSAClientSetupEvents {
         event.registerEntityRenderer(FLUX_TRIDENT.get(), ThrownFluxTridentRenderer::new);
         event.registerEntityRenderer(FLUX_WRENCH.get(), FluxWrenchRenderer::new);
         event.registerEntityRenderer(SHOCKWAVE_ENTITY.get(), NothingRenderer::new);
-        event.registerEntityRenderer(FISH_HOOK.get(), FluxFishingHookRenderer::new);
     }
 
     @SubscribeEvent
