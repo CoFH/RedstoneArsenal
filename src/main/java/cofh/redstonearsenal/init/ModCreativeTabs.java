@@ -20,7 +20,7 @@ public class ModCreativeTabs {
 
     }
 
-    public static final RegistryObject<CreativeModeTab> TAB = CREATIVE_TABS.register(ID_REDSTONE_ARSENAL, () -> CreativeModeTab.builder()
+    private static final RegistryObject<CreativeModeTab> TAB = CREATIVE_TABS.register(ID_REDSTONE_ARSENAL, () -> CreativeModeTab.builder()
             .title(Component.translatable("itemGroup.redstone_arsenal"))
             .icon(() -> new ItemStack(ITEMS.get(ID_FLUX_SWORD)))
             .displayItems((parameters, output) -> ModItems.CREATIVE_TAB_ITEMS.forEach((item) -> output.accept(item.get())))
