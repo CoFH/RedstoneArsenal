@@ -1,6 +1,6 @@
 package cofh.redstonearsenal.client.renderer;
 
-import cofh.redstonearsenal.entity.FluxSlash;
+import cofh.redstonearsenal.common.entity.FluxSlash;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;

@@ -1,7 +1,7 @@
 package cofh.redstonearsenal.client.renderer;
 
 import cofh.core.util.helpers.RenderHelper;
-import cofh.redstonearsenal.entity.ThrownFluxWrench;
+import cofh.redstonearsenal.common.entity.ThrownFluxWrench;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
 import net.minecraft.client.renderer.MultiBufferSource;

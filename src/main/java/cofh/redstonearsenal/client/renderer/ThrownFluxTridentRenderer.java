@@ -1,6 +1,6 @@
 package cofh.redstonearsenal.client.renderer;
 
-import cofh.redstonearsenal.entity.ThrownFluxTrident;
+import cofh.redstonearsenal.common.entity.ThrownFluxTrident;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Axis;

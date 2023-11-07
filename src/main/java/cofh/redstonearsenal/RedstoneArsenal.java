@@ -1,12 +1,12 @@
 package cofh.redstonearsenal;
 
-import cofh.core.config.ConfigManager;
-import cofh.core.event.CoreClientEvents;
-import cofh.lib.network.PacketHandler;
+import cofh.core.client.event.CoreClientEvents;
+import cofh.core.common.config.ConfigManager;
+import cofh.lib.common.network.PacketHandler;
 import cofh.lib.util.DeferredRegisterCoFH;
-import cofh.redstonearsenal.capability.CapabilityFluxShielding;
-import cofh.redstonearsenal.config.RSAConfig;
-import cofh.redstonearsenal.init.*;
+import cofh.redstonearsenal.common.capability.CapabilityFluxShielding;
+import cofh.redstonearsenal.common.config.RSAConfig;
+import cofh.redstonearsenal.init.registries.*;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;

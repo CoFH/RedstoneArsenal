@@ -3,8 +3,8 @@ package cofh.redstonearsenal.util;
 import cofh.core.compat.curios.CuriosProxy;
 import cofh.core.util.ProxyUtils;
 import cofh.lib.util.helpers.MathHelper;
-import cofh.redstonearsenal.capability.IFluxShieldedItem;
-import cofh.redstonearsenal.network.client.FluxShieldingPacket;
+import cofh.redstonearsenal.common.capability.IFluxShieldedItem;
+import cofh.redstonearsenal.common.network.packet.client.FluxShieldingPacket;
 import net.minecraft.core.particles.DustParticleOptions;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -20,9 +20,9 @@ import net.minecraftforge.common.util.LazyOptional;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 
-import static cofh.redstonearsenal.capability.CapabilityFluxShielding.FLUX_SHIELDED_ITEM_CAPABILITY;
-import static cofh.redstonearsenal.init.ModSounds.SOUND_SHIELDING_BREAK;
-import static cofh.redstonearsenal.init.ModSounds.SOUND_SHIELDING_RECHARGE;
+import static cofh.redstonearsenal.common.capability.CapabilityFluxShielding.FLUX_SHIELDED_ITEM_CAPABILITY;
+import static cofh.redstonearsenal.init.registries.ModSounds.SOUND_SHIELDING_BREAK;
+import static cofh.redstonearsenal.init.registries.ModSounds.SOUND_SHIELDING_RECHARGE;
 
 public class FluxShieldingHelper {
 

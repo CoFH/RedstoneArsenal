@@ -1,6 +1,6 @@
 package cofh.redstonearsenal.client.renderer;
 
-import cofh.redstonearsenal.item.FluxElytraItem;
+import cofh.redstonearsenal.common.item.FluxElytraItem;
 import net.minecraft.client.model.EntityModel;
 import net.minecraft.client.model.geom.EntityModelSet;
 import net.minecraft.client.renderer.entity.RenderLayerParent;
