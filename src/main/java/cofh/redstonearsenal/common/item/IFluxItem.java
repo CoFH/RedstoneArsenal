@@ -150,7 +150,7 @@ public interface IFluxItem extends ICoFHItem, IEnergyContainerItem {
 
     static DamageSource fluxRangedDamage(Projectile projectile, @Nullable Entity shooter) {
 
-        return projectile.level.damageSources().source(FLUX_RANGED, projectile, shooter);
+        return projectile.level.damageSources().source(FLUX_RANGED, shooter, projectile);
     }
 
     ResourceKey<DamageType> FLUX = ResourceKey.create(Registries.DAMAGE_TYPE, new ResourceLocation(ID_REDSTONE_ARSENAL, "flux"));

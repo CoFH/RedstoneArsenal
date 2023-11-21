@@ -1,5 +1,6 @@
 package cofh.redstonearsenal.client.event;
 
+import cofh.core.client.renderer.entity.ShockwaveRenderer;
 import cofh.lib.client.renderer.entity.NothingRenderer;
 import cofh.redstonearsenal.RedstoneArsenal;
 import cofh.redstonearsenal.client.renderer.*;
@@ -64,7 +65,7 @@ public class RSAClientSetupEvents {
         event.registerEntityRenderer(FLUX_ARROW.get(), FluxArrowRenderer::new);
         event.registerEntityRenderer(FLUX_TRIDENT.get(), ThrownFluxTridentRenderer::new);
         event.registerEntityRenderer(FLUX_WRENCH.get(), FluxWrenchRenderer::new);
-        event.registerEntityRenderer(SHOCKWAVE_ENTITY.get(), NothingRenderer::new);
+        event.registerEntityRenderer(SHOCKWAVE_ENTITY.get(), ShockwaveRenderer::new);
     }
 
     @SubscribeEvent

@@ -9,7 +9,7 @@ import cofh.lib.api.capability.IAreaEffectItem;
 import cofh.lib.api.item.IEnergyContainerItem;
 import cofh.lib.common.energy.EnergyContainerItemWrapper;
 import cofh.lib.util.Utils;
-import cofh.redstonearsenal.common.entity.Shockwave;
+import cofh.redstonearsenal.common.entity.FluxHammerShockwave;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Multimap;
@@ -115,7 +115,7 @@ public class FluxHammerItem extends HammerItem implements IMultiModeFluxItem {
         BlockState state = world.getBlockState(pos);
         if (world.isClientSide) {
             world.playSound(player, pos, state.getSoundType(world, pos, player).getBreakSound(), SoundSource.BLOCKS, 1.0F, 1.0F);
-        } else if (world.addFreshEntity(new Shockwave(world, player, Vec3.atCenterOf(pos), player.yRot))) {
+        } else if (world.addFreshEntity(new FluxHammerShockwave(world, Vec3.atBottomCenterOf(pos).add(0, 0.98, 0), player))) {
             useEnergy(stack, energy, player.abilities.instabuild);
             player.getCooldowns().addCooldown(this, getSlamCooldown(stack));
         }
