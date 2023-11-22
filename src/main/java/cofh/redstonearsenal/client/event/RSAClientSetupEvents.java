@@ -1,7 +1,6 @@
 package cofh.redstonearsenal.client.event;
 
 import cofh.core.client.renderer.entity.ShockwaveRenderer;
-import cofh.lib.client.renderer.entity.NothingRenderer;
 import cofh.redstonearsenal.RedstoneArsenal;
 import cofh.redstonearsenal.client.renderer.*;
 import net.minecraft.client.Minecraft;
