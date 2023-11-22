@@ -115,7 +115,7 @@ public class FluxHammerItem extends HammerItem implements IMultiModeFluxItem {
         BlockState state = world.getBlockState(pos);
         if (world.isClientSide) {
             world.playSound(player, pos, state.getSoundType(world, pos, player).getBreakSound(), SoundSource.BLOCKS, 1.0F, 1.0F);
-        } else if (world.addFreshEntity(new FluxHammerShockwave(world, Vec3.atBottomCenterOf(pos).add(0, 0.98, 0), player))) {
+        } else if (world.addFreshEntity(new FluxHammerShockwave(world, Vec3.atBottomCenterOf(pos.above()), player))) {
             useEnergy(stack, energy, player.abilities.instabuild);
             player.getCooldowns().addCooldown(this, getSlamCooldown(stack));
         }
