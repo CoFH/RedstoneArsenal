@@ -1,6 +1,7 @@
 package cofh.redstonearsenal.common.entity;
 
 import cofh.core.common.entity.Shockwave;
+import cofh.lib.util.Utils;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.damagesource.DamageSources;
 import net.minecraft.world.damagesource.DamageTypes;
@@ -36,17 +37,17 @@ public class FluxHammerShockwave extends Shockwave {
     }
 
     @Override
-    protected DamageSource getDamageSource() {
+    protected DamageSource getDamageSource(Vec3 pos) {
 
         Entity owner = getOwner();
         DamageSources sources = level.damageSources();
         if (owner instanceof Player player) {
-            return sources.source(DamageTypes.PLAYER_ATTACK, this, player);
+            return Utils.source(sources, DamageTypes.PLAYER_ATTACK, this, player, pos);
         }
         if (owner instanceof LivingEntity living) {
-            return sources.source(DamageTypes.MOB_ATTACK, this, living);
+            return Utils.source(sources, DamageTypes.MOB_ATTACK, this, living, pos);
         }
-        return sources.source(DamageTypes.IN_WALL, this);
+        return Utils.source(sources, DamageTypes.IN_WALL, this, this, pos);
     }
 
 }
