@@ -4,8 +4,8 @@
   "info.redstone_arsenal.mode.0": "休眠",
   "info.redstone_arsenal.mode.1": "充能",
 
-  "death.attack.flux": "%2$s的能量困扰着%1$s！",
-  "death.attack.flux.item": "%2$s使用%3$s对%1$s注入能量！",
+  "death.attack.redstone_arsenal.flux": "%2$s的能量困扰着%1$s！",
+  "death.attack.redstone_arsenal.flux.item": "%2$s使用%3$s对%1$s注入能量！",
 
   "item.redstone_arsenal.flux_coin": "红石充能币",
   "item.redstone_arsenal.flux_dust": "红石充能粉末",

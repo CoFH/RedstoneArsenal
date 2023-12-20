@@ -4,8 +4,8 @@
   "info.redstone_arsenal.mode.0": "Klidný",
   "info.redstone_arsenal.mode.1": "Nabitý",
 
-  "death.attack.flux": "%2$s nabil fluxem hráče %1$s!",
-  "death.attack.flux.item": "%2$s použil %3$s pro nabití hráče %1$s fluxem!",
+  "death.attack.redstone_arsenal.flux": "%2$s nabil fluxem hráče %1$s!",
+  "death.attack.redstone_arsenal.flux.item": "%2$s použil %3$s pro nabití hráče %1$s fluxem!",
 
   "item.redstone_arsenal.flux_coin": "Fluxem napuštěná mince",
   "item.redstone_arsenal.flux_dust": "Fluxem napuštený prášek",

@@ -4,8 +4,8 @@
   "info.redstone_arsenal.mode.0": "Atténué",
   "info.redstone_arsenal.mode.1": "Énergisé",
 
-  "death.attack.flux": "%2$s s'est fait Énergisé(e) par %1$s!",
-  "death.attack.flux.item": "%2$s a utilisé(e) %3$s pour Énergiser %1$s avec de l'Énergie",
+  "death.attack.redstone_arsenal.flux": "%2$s s'est fait Énergisé(e) par %1$s!",
+  "death.attack.redstone_arsenal.flux.item": "%2$s a utilisé(e) %3$s pour Énergiser %1$s avec de l'Énergie",
 
   "item.redstone_arsenal.flux_coin": "Pièce en Électrum Fluxé",
   "item.redstone_arsenal.flux_dust": "Poudre d'Électrum Fluxé",
