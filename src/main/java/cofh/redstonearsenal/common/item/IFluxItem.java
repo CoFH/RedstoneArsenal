@@ -6,13 +6,9 @@ import cofh.lib.common.energy.EnergyContainerItemWrapper;
 import cofh.lib.util.Utils;
 import cofh.redstonearsenal.util.RSAEnergyHelper;
 import net.minecraft.ChatFormatting;
-import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.damagesource.DamageSource;
-import net.minecraft.world.damagesource.DamageType;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.projectile.Projectile;
@@ -29,8 +25,9 @@ import java.util.function.Consumer;
 
 import static cofh.lib.api.ContainerType.ENERGY;
 import static cofh.lib.util.Constants.RGB_DURABILITY_FLUX;
-import static cofh.lib.util.constants.ModIds.ID_REDSTONE_ARSENAL;
 import static cofh.lib.util.helpers.StringHelper.*;
+import static cofh.redstonearsenal.RedstoneArsenal.FLUX;
+import static cofh.redstonearsenal.RedstoneArsenal.FLUX_RANGED;
 
 public interface IFluxItem extends ICoFHItem, IEnergyContainerItem {
 
@@ -152,8 +149,5 @@ public interface IFluxItem extends ICoFHItem, IEnergyContainerItem {
 
         return projectile.level.damageSources().source(FLUX_RANGED, shooter, projectile);
     }
-
-    ResourceKey<DamageType> FLUX = ResourceKey.create(Registries.DAMAGE_TYPE, new ResourceLocation(ID_REDSTONE_ARSENAL, "flux"));
-    ResourceKey<DamageType> FLUX_RANGED = ResourceKey.create(Registries.DAMAGE_TYPE, new ResourceLocation(ID_REDSTONE_ARSENAL, "flux_ranged"));
 
 }

@@ -8,8 +8,10 @@ import cofh.redstonearsenal.common.capability.CapabilityFluxShielding;
 import cofh.redstonearsenal.common.config.RSAConfig;
 import cofh.redstonearsenal.init.registries.*;
 import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;
+import net.minecraft.world.damagesource.DamageType;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.CreativeModeTabs;
@@ -95,4 +97,8 @@ public class RedstoneArsenal {
         }
     }
     // endregion
+
+    public static final ResourceKey<DamageType> FLUX = ResourceKey.create(Registries.DAMAGE_TYPE, new ResourceLocation(ID_REDSTONE_ARSENAL, "flux"));
+    public static final ResourceKey<DamageType> FLUX_RANGED = ResourceKey.create(Registries.DAMAGE_TYPE, new ResourceLocation(ID_REDSTONE_ARSENAL, "flux_ranged"));
+
 }
