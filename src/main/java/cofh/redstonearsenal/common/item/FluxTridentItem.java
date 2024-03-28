@@ -5,6 +5,7 @@ import cofh.core.common.config.CoreClientConfig;
 import cofh.core.common.item.ILeftClickHandlerItem;
 import cofh.core.init.CoreParticles;
 import cofh.core.util.ProxyUtils;
+import cofh.core.util.helpers.vfx.VFXHelper;
 import cofh.lib.common.item.TridentItemCoFH;
 import cofh.lib.util.Utils;
 import cofh.lib.util.helpers.MathHelper;
@@ -224,7 +225,7 @@ public class FluxTridentItem extends TridentItemCoFH implements IMultiModeFluxIt
         float range = getPlungeRange(attacker.fallDistance);
         if (world.isClientSide) {
             // TODO circle particle
-            world.addParticle(new CylindricalParticleOptions(CoreParticles.BLAST_WAVE.get(), range * 2.0F, range * 3.0F, 1.5F), attacker.getX(), attacker.getY(), attacker.getZ(), 0, 0, 0);
+            world.addParticle(new CylindricalParticleOptions(CoreParticles.BLAST_WAVE.get(), range * 2.0F, range * 3.0F, 0, VFXHelper.windColor(world.random).toRGBA(), 1.5F), attacker.getX(), attacker.getY(), attacker.getZ(), 0, 0, 0);
             return true;
         }
         if (Utils.getItemEnchantmentLevel(Enchantments.CHANNELING, stack) > 0) {
