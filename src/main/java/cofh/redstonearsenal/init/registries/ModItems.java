@@ -13,7 +13,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Rarity;
 import net.minecraft.world.item.Tier;
 import net.minecraft.world.item.crafting.Ingredient;
-import net.minecraftforge.registries.RegistryObject;
+import net.neoforged.neoforge.registries.RegistryObject;
 
 import java.util.LinkedHashSet;
 import java.util.function.Supplier;

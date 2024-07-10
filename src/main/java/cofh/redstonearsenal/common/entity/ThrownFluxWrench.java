@@ -37,14 +37,14 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.TheEndGatewayBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.*;
-import net.minecraftforge.entity.IEntityAdditionalSpawnData;
-import net.minecraftforge.event.ForgeEventFactory;
-import net.minecraftforge.network.NetworkHooks;
+import net.neoforged.neoforge.entity.IEntityWithComplexSpawn;
+import net.neoforged.neoforge.event.ForgeEventFactory;
+import net.neoforged.neoforge.network.NetworkHooks;
 
 import static cofh.redstonearsenal.init.registries.ModEntities.FLUX_WRENCH;
 import static cofh.redstonearsenal.init.registries.ModIDs.ID_FLUX_WRENCH;
 
-public class ThrownFluxWrench extends Projectile implements IEntityAdditionalSpawnData {
+public class ThrownFluxWrench extends Projectile implements IEntityWithComplexSpawn {
 
     protected static final EntityDataAccessor<ItemStack> DATA_ITEM_STACK = SynchedEntityData.defineId(ThrownFluxWrench.class, EntityDataSerializers.ITEM_STACK);
 

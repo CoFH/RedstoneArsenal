@@ -2,7 +2,7 @@ package cofh.redstonearsenal.init.registries;
 
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;
-import net.minecraftforge.registries.RegistryObject;
+import net.neoforged.neoforge.registries.RegistryObject;
 
 import static cofh.lib.util.constants.ModIds.ID_REDSTONE_ARSENAL;
 import static cofh.redstonearsenal.RedstoneArsenal.SOUND_EVENTS;

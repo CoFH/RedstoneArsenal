@@ -3,7 +3,7 @@ package cofh.redstonearsenal.init.registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.registries.RegistryObject;
+import net.neoforged.neoforge.registries.RegistryObject;
 
 import static cofh.lib.util.constants.ModIds.ID_REDSTONE_ARSENAL;
 import static cofh.redstonearsenal.RedstoneArsenal.CREATIVE_TABS;

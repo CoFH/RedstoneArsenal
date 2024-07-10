@@ -6,7 +6,7 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.DirtPathBlock;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.material.MapColor;
-import net.minecraftforge.registries.RegistryObject;
+import net.neoforged.neoforge.registries.RegistryObject;
 
 import static cofh.lib.util.helpers.BlockHelper.lightValue;
 import static cofh.redstonearsenal.RedstoneArsenal.BLOCKS;

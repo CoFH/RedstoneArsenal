@@ -3,7 +3,7 @@ package cofh.redstonearsenal.init.registries;
 import cofh.redstonearsenal.common.entity.*;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MobCategory;
-import net.minecraftforge.registries.RegistryObject;
+import net.neoforged.neoforge.registries.RegistryObject;
 
 import static cofh.redstonearsenal.RedstoneArsenal.ENTITIES;
 import static cofh.redstonearsenal.init.registries.ModIDs.*;
