@@ -4,13 +4,10 @@ import cofh.core.common.config.CoreClientConfig;
 import cofh.core.common.item.ItemCoFH;
 import cofh.core.util.ProxyUtils;
 import cofh.lib.api.capability.IArcheryAmmoItem;
-import cofh.lib.api.item.IEnergyContainerItem;
 import cofh.lib.common.energy.EnergyContainerItemWrapper;
 import cofh.redstonearsenal.common.entity.FluxArrow;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.core.Direction;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
@@ -20,15 +17,10 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.level.Level;
-import net.neoforged.neoforge.common.capabilities.Capability;
-import net.neoforged.neoforge.common.capabilities.ICapabilityProvider;
-import net.neoforged.neoforge.common.util.LazyOptional;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.List;
 
-import static cofh.core.common.capability.CapabilityArchery.AMMO_ITEM_CAPABILITY;
 import static cofh.lib.util.Utils.getItemEnchantmentLevel;
 import static cofh.lib.util.helpers.StringHelper.getTextComponent;
 
@@ -83,12 +75,6 @@ public class FluxQuiverItem extends ItemCoFH implements IMultiModeFluxItem {
     }
 
     @Override
-    public ICapabilityProvider initCapabilities(ItemStack stack, @Nullable CompoundTag nbt) {
-
-        return new FluxQuiverItemWrapper(stack, this);
-    }
-
-    @Override
     public int getEnergyPerUse(boolean empowered) {
 
         return empowered ? energyPerUseEmpowered : energyPerUse;
@@ -135,22 +121,22 @@ public class FluxQuiverItem extends ItemCoFH implements IMultiModeFluxItem {
     // endregion
 
     // region CAPABILITY WRAPPER
-    protected class FluxQuiverItemWrapper extends EnergyContainerItemWrapper implements IArcheryAmmoItem {
+    public static class AmmoWrapper extends EnergyContainerItemWrapper implements IArcheryAmmoItem {
 
-        private final LazyOptional<IArcheryAmmoItem> holder = LazyOptional.of(() -> this);
+        final ItemStack quiverStack;
+        final FluxQuiverItem quiverItem;
 
-        final ItemStack quiverItem;
+        public AmmoWrapper(ItemStack quiverItemContainer, FluxQuiverItem item) {
 
-        FluxQuiverItemWrapper(ItemStack quiverItemContainer, IEnergyContainerItem item) {
-
-            super(quiverItemContainer, item, item.getEnergyCapability());
-            this.quiverItem = quiverItemContainer;
+            super(quiverItemContainer, item);
+            this.quiverStack = quiverItemContainer;
+            this.quiverItem = item;
         }
 
         @Override
         public void onArrowLoosed(Player shooter) {
 
-            useEnergy(quiverItem, isEmpowered(quiverItem), shooter != null && shooter.abilities.instabuild);
+            quiverItem.useEnergy(quiverStack, quiverItem.isEmpowered(quiverStack), shooter != null && shooter.abilities.instabuild);
         }
 
         @Override
@@ -158,7 +144,7 @@ public class FluxQuiverItem extends ItemCoFH implements IMultiModeFluxItem {
 
             FluxArrow arrow = new FluxArrow(world, shooter);
             arrow.pickup = AbstractArrow.Pickup.DISALLOWED;
-            if (isEmpowered(quiverItem)) {
+            if (quiverItem.isEmpowered(quiverStack)) {
                 ItemStack weapon = shooter.getMainHandItem().isEmpty() ? shooter.getOffhandItem() : shooter.getMainHandItem();
                 if (!weapon.isEmpty()) {
                     if (weapon.getItem() instanceof CrossbowItem) {
@@ -175,7 +161,7 @@ public class FluxQuiverItem extends ItemCoFH implements IMultiModeFluxItem {
         @Override
         public boolean isEmpty(Player shooter) {
 
-            return !hasEnergy(quiverItem, isEmpowered(quiverItem));
+            return !quiverItem.hasEnergy(quiverStack, quiverItem.isEmpowered(quiverStack));
         }
 
         @Override
@@ -184,17 +170,6 @@ public class FluxQuiverItem extends ItemCoFH implements IMultiModeFluxItem {
             return shooter != null && shooter.abilities.instabuild || getItemEnchantmentLevel(Enchantments.INFINITY_ARROWS, bow) > 0;
         }
 
-        // region ICapabilityProvider
-        @Override
-        @Nonnull
-        public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, @Nullable Direction side) {
-
-            if (cap == AMMO_ITEM_CAPABILITY) {
-                return AMMO_ITEM_CAPABILITY.orEmpty(cap, holder);
-            }
-            return super.getCapability(cap, side);
-        }
-        // endregion
     }
     // endregion
 }

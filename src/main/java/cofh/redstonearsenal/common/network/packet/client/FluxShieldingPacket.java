@@ -1,53 +1,28 @@
 package cofh.redstonearsenal.common.network.packet.client;
 
-import cofh.core.util.ProxyUtils;
-import cofh.lib.common.network.packet.IPacketClient;
-import cofh.lib.common.network.packet.PacketBase;
-import cofh.redstonearsenal.RedstoneArsenal;
+import cofh.redstonearsenal.common.network.data.client.FluxShieldingPayload;
 import cofh.redstonearsenal.util.FluxShieldingHelper;
-import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
+import net.neoforged.neoforge.network.PacketDistributor;
+import net.neoforged.neoforge.network.handling.PlayPayloadContext;
 
-import static cofh.redstonearsenal.init.registries.ModPackets.PACKET_FLUX_SHIELDING;
+public class FluxShieldingPacket {
 
-public class FluxShieldingPacket extends PacketBase implements IPacketClient {
+    public static final FluxShieldingPacket INSTANCE = new FluxShieldingPacket();
 
-    protected int currCharges;
-    protected int maxCharges;
+    public static FluxShieldingPacket get() {
 
-    public FluxShieldingPacket() {
-
-        super(PACKET_FLUX_SHIELDING, RedstoneArsenal.PACKET_HANDLER);
+        return INSTANCE;
     }
 
-    @Override
-    public void handleClient() {
+    public void handle(final FluxShieldingPayload payload, final PlayPayloadContext context) {
 
-        if (ProxyUtils.isClient()) {
-            FluxShieldingHelper.updateHUD(currCharges, maxCharges);
-        }
+        context.workHandler().submitAsync(() -> FluxShieldingHelper.updateHUD(payload.curCharges(), payload.maxCharges()));
     }
 
-    @Override
-    public void write(FriendlyByteBuf buf) {
+    public static void sendToClient(int curCharges, int maxCharges, ServerPlayer player) {
 
-        buf.writeByte(currCharges);
-        buf.writeByte(maxCharges);
-    }
-
-    @Override
-    public void read(FriendlyByteBuf buf) {
-
-        currCharges = buf.readByte();
-        maxCharges = buf.readByte();
-    }
-
-    public static void sendToClient(int currCharges, int maxCharges, ServerPlayer player) {
-
-        FluxShieldingPacket packet = new FluxShieldingPacket();
-        packet.currCharges = currCharges;
-        packet.maxCharges = maxCharges;
-        packet.sendToPlayer(player);
+        PacketDistributor.PLAYER.with(player).send(new FluxShieldingPayload(curCharges, maxCharges));
     }
 
     public static void sendToClient(int[] charges, ServerPlayer player) {

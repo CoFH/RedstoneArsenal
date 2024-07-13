@@ -45,7 +45,7 @@ import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.client.extensions.common.IClientItemExtensions;
-import net.neoforged.neoforge.common.ForgeMod;
+import net.neoforged.neoforge.common.NeoForgeMod;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -298,7 +298,7 @@ public class FluxTridentItem extends TridentItemCoFH implements IMultiModeFluxIt
         if (slot == EquipmentSlot.MAINHAND) {
             multimap.put(Attributes.ATTACK_DAMAGE, new AttributeModifier(BASE_ATTACK_DAMAGE_UUID, "Weapon modifier", getAttackDamage(stack), AttributeModifier.Operation.ADDITION));
             multimap.put(Attributes.ATTACK_SPEED, new AttributeModifier(BASE_ATTACK_SPEED_UUID, "Weapon modifier", getAttackSpeed(stack), AttributeModifier.Operation.ADDITION));
-            multimap.put(ForgeMod.ENTITY_REACH.get(), new AttributeModifier(UUID_WEAPON_RANGE, "Weapon modifier", getAddedAttackRange(stack), AttributeModifier.Operation.ADDITION));
+            multimap.put(NeoForgeMod.ENTITY_REACH.value(), new AttributeModifier(UUID_WEAPON_RANGE, "Weapon modifier", getAddedAttackRange(stack), AttributeModifier.Operation.ADDITION));
         }
         return multimap;
     }

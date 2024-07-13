@@ -3,8 +3,6 @@ package cofh.redstonearsenal.common.entity;
 import cofh.redstonearsenal.common.item.FluxTridentItem;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.protocol.Packet;
-import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
@@ -25,7 +23,6 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.neoforge.network.NetworkHooks;
 
 import javax.annotation.Nullable;
 
@@ -45,12 +42,12 @@ public class ThrownFluxTrident extends AbstractArrow {
 
     public ThrownFluxTrident(EntityType<? extends ThrownFluxTrident> type, Level world) {
 
-        super(type, world);
+        super(type, world, ItemStack.EMPTY);
     }
 
     public ThrownFluxTrident(Level world, LivingEntity owner, ItemStack stack) {
 
-        super(FLUX_TRIDENT.get(), owner, world);
+        super(FLUX_TRIDENT.get(), owner, world, stack);
         this.tridentItem = stack.copy();
         this.entityData.set(ID_LOYALTY, (byte) EnchantmentHelper.getLoyalty(stack));
         this.entityData.set(ID_FOIL, stack.hasFoil());
@@ -58,7 +55,7 @@ public class ThrownFluxTrident extends AbstractArrow {
 
     public ThrownFluxTrident(Level world, double x, double y, double z) {
 
-        super(FLUX_TRIDENT.get(), x, y, z, world);
+        super(FLUX_TRIDENT.get(), x, y, z, world, ItemStack.EMPTY);
     }
 
     @Override
@@ -67,12 +64,6 @@ public class ThrownFluxTrident extends AbstractArrow {
         super.defineSynchedData();
         this.entityData.define(ID_LOYALTY, (byte) 0);
         this.entityData.define(ID_FOIL, false);
-    }
-
-    @Override
-    public Packet<ClientGamePacketListener> getAddEntityPacket() {
-
-        return NetworkHooks.getEntitySpawningPacket(this);
     }
 
     public boolean isEmpowered() {

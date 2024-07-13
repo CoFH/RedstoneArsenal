@@ -1,13 +1,11 @@
 package cofh.redstonearsenal.common.item;
 
-import cofh.core.common.capability.CapabilityAreaEffect;
 import cofh.core.common.config.CoreClientConfig;
 import cofh.core.common.item.ILeftClickHandlerItem;
 import cofh.core.common.item.SickleItem;
 import cofh.core.util.ProxyUtils;
 import cofh.core.util.helpers.AreaEffectHelper;
-import cofh.lib.api.capability.IAreaEffectItem;
-import cofh.lib.api.item.IEnergyContainerItem;
+import cofh.lib.api.capability.IAreaEffectHandler;
 import cofh.lib.common.energy.EnergyContainerItemWrapper;
 import cofh.lib.util.Utils;
 import com.google.common.collect.HashMultimap;
@@ -17,8 +15,6 @@ import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvents;
@@ -42,11 +38,7 @@ import net.minecraft.world.level.block.HugeMushroomBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.neoforge.common.capabilities.Capability;
-import net.neoforged.neoforge.common.capabilities.ICapabilityProvider;
-import net.neoforged.neoforge.common.util.LazyOptional;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.List;
 import java.util.Set;
@@ -104,12 +96,6 @@ public class FluxSickleItem extends SickleItem implements IMultiModeFluxItem, IL
     public boolean isEnchantable(ItemStack stack) {
 
         return getEnchantmentValue(stack) > 0;
-    }
-
-    @Override
-    public ICapabilityProvider initCapabilities(ItemStack stack, @Nullable CompoundTag nbt) {
-
-        return new FluxSickleItemWrapper(stack, this);
     }
 
     @Override
@@ -225,38 +211,28 @@ public class FluxSickleItem extends SickleItem implements IMultiModeFluxItem, IL
     // endregion
 
     // region CAPABILITY WRAPPER
-    protected class FluxSickleItemWrapper extends EnergyContainerItemWrapper implements IAreaEffectItem {
+    public static class AreaWrapper extends EnergyContainerItemWrapper implements IAreaEffectHandler {
 
-        private final LazyOptional<IAreaEffectItem> holder = LazyOptional.of(() -> this);
+        protected final FluxSickleItem sickle;
 
-        FluxSickleItemWrapper(ItemStack containerIn, IEnergyContainerItem itemIn) {
+        public AreaWrapper(ItemStack containerIn, FluxSickleItem itemIn) {
 
-            super(containerIn, itemIn, itemIn.getEnergyCapability());
+            super(containerIn, itemIn);
+            sickle = itemIn;
         }
 
         @Override
         public ImmutableList<BlockPos> getAreaEffectBlocks(BlockPos pos, Player player) {
 
-            if (hasEnergy(container, false)) {
-                if (isEmpowered(container)) {
-                    return AreaEffectHelper.getMatureBlocksCentered(container, pos, player, radius, height);
+            if (sickle.hasEnergy(container, false)) {
+                if (sickle.isEmpowered(container)) {
+                    return AreaEffectHelper.getMatureBlocksCentered(container, pos, player, sickle.radius, sickle.height);
                 }
-                return AreaEffectHelper.getBlocksCentered(container, pos, player, radius, height);
+                return AreaEffectHelper.getBlocksCentered(container, pos, player, sickle.radius, sickle.height);
             }
             return ImmutableList.of();
         }
 
-        // region ICapabilityProvider
-        @Override
-        @Nonnull
-        public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, @Nullable Direction side) {
-
-            if (cap == CapabilityAreaEffect.AREA_EFFECT_ITEM_CAPABILITY) {
-                return CapabilityAreaEffect.AREA_EFFECT_ITEM_CAPABILITY.orEmpty(cap, holder);
-            }
-            return super.getCapability(cap, side);
-        }
-        // endregion
     }
     // endregion
 

@@ -3,8 +3,6 @@ package cofh.redstonearsenal.common.entity;
 import cofh.redstonearsenal.common.item.IFluxItem;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.protocol.Packet;
-import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
@@ -20,7 +18,6 @@ import net.minecraft.world.entity.projectile.AbstractArrow;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.*;
-import net.neoforged.neoforge.network.NetworkHooks;
 
 import javax.annotation.Nullable;
 
@@ -35,17 +32,17 @@ public class FluxArrow extends AbstractArrow {
 
     public FluxArrow(EntityType<? extends FluxArrow> entityIn, Level worldIn) {
 
-        super(entityIn, worldIn);
+        super(entityIn, worldIn, ItemStack.EMPTY);
     }
 
     public FluxArrow(Level worldIn, LivingEntity shooter) {
 
-        super(FLUX_ARROW.get(), shooter, worldIn);
+        super(FLUX_ARROW.get(), shooter, worldIn, ItemStack.EMPTY);
     }
 
     public FluxArrow(Level worldIn, double x, double y, double z) {
 
-        super(FLUX_ARROW.get(), x, y, z, worldIn);
+        super(FLUX_ARROW.get(), x, y, z, worldIn, ItemStack.EMPTY);
     }
 
     @Override
@@ -79,12 +76,6 @@ public class FluxArrow extends AbstractArrow {
         } else {
             this.entityData.set(RSA_FLAGS, (byte) (b0 & ~flag));
         }
-    }
-
-    @Override
-    public Packet<ClientGamePacketListener> getAddEntityPacket() {
-
-        return NetworkHooks.getEntitySpawningPacket(this);
     }
 
     public DamageSource getDamageSource(AbstractArrow arrow, @Nullable Entity shooter) {

@@ -4,7 +4,6 @@ import cofh.core.common.config.CoreClientConfig;
 import cofh.core.common.item.ILeftClickHandlerItem;
 import cofh.core.util.ProxyUtils;
 import cofh.core.util.helpers.ArcheryHelper;
-import cofh.lib.common.energy.EnergyContainerItemWrapper;
 import cofh.lib.common.item.CrossbowItemCoFH;
 import net.minecraft.ChatFormatting;
 import net.minecraft.advancements.CriteriaTriggers;
@@ -26,7 +25,6 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
-import net.neoforged.neoforge.common.capabilities.ICapabilityProvider;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -76,12 +74,6 @@ public class FluxCrossbowItem extends CrossbowItemCoFH implements IMultiModeFlux
     public boolean isEnchantable(ItemStack stack) {
 
         return getEnchantmentValue(stack) > 0;
-    }
-
-    @Override
-    public ICapabilityProvider initCapabilities(ItemStack stack, @Nullable CompoundTag nbt) {
-
-        return new EnergyContainerItemWrapper(stack, this, getEnergyCapability());
     }
 
     @Override

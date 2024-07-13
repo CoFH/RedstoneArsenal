@@ -11,8 +11,6 @@ import net.minecraft.core.particles.DustParticleOptions;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.network.protocol.Packet;
-import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
@@ -38,8 +36,7 @@ import net.minecraft.world.level.block.entity.TheEndGatewayBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.*;
 import net.neoforged.neoforge.entity.IEntityWithComplexSpawn;
-import net.neoforged.neoforge.event.ForgeEventFactory;
-import net.neoforged.neoforge.network.NetworkHooks;
+import net.neoforged.neoforge.event.EventHooks;
 
 import static cofh.redstonearsenal.init.registries.ModEntities.FLUX_WRENCH;
 import static cofh.redstonearsenal.init.registries.ModIDs.ID_FLUX_WRENCH;
@@ -75,12 +72,6 @@ public class ThrownFluxWrench extends Projectile implements IEntityWithComplexSp
     protected void defineSynchedData() {
 
         this.getEntityData().define(DATA_ITEM_STACK, new ItemStack(getDefaultItem()));
-    }
-
-    @Override
-    public Packet<ClientGamePacketListener> getAddEntityPacket() {
-
-        return NetworkHooks.getEntitySpawningPacket(this);
     }
 
     protected Item getDefaultItem() {
@@ -179,7 +170,7 @@ public class ThrownFluxWrench extends Projectile implements IEntityWithComplexSp
             }
         }
         this.hitEntities(this.level, start, end);
-        if (blockCollision && !ForgeEventFactory.onProjectileImpact(this, blockResult)) {
+        if (blockCollision && !EventHooks.onProjectileImpact(this, blockResult)) {
             this.onHitBlock(blockResult);
         }
     }
@@ -192,7 +183,7 @@ public class ThrownFluxWrench extends Projectile implements IEntityWithComplexSp
     public void hitEntities(Level world, Vec3 startPos, Vec3 endPos) {
 
         ArcheryHelper.findHitEntities(world, this, startPos, endPos, this::canHitEntity)
-                .filter(result -> !ForgeEventFactory.onProjectileImpact(this, result))
+                .filter(result -> !EventHooks.onProjectileImpact(this, result))
                 .forEach(this::onHitEntity);
     }
 

@@ -1,8 +1,8 @@
 package cofh.redstonearsenal.util;
 
-import cofh.core.compat.curios.CuriosProxy;
 import cofh.core.util.ProxyUtils;
 import cofh.lib.util.helpers.MathHelper;
+import cofh.redstonearsenal.common.capability.CapabilityFluxShielding;
 import cofh.redstonearsenal.common.capability.IFluxShieldedItem;
 import cofh.redstonearsenal.common.network.packet.client.FluxShieldingPacket;
 import net.minecraft.core.particles.DustParticleOptions;
@@ -15,12 +15,10 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.neoforge.common.util.LazyOptional;
 
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 
-import static cofh.redstonearsenal.common.capability.CapabilityFluxShielding.FLUX_SHIELDED_ITEM_CAPABILITY;
 import static cofh.redstonearsenal.init.registries.ModSounds.SOUND_SHIELDING_BREAK;
 import static cofh.redstonearsenal.init.registries.ModSounds.SOUND_SHIELDING_RECHARGE;
 
@@ -33,7 +31,7 @@ public class FluxShieldingHelper {
 
     public static ItemStack findShieldedItem(LivingEntity entity) {
 
-        Predicate<ItemStack> isShieldedItem = i -> i.getCapability(FLUX_SHIELDED_ITEM_CAPABILITY).map(cap -> cap.currCharges(entity) > 0).orElse(false);
+        Predicate<ItemStack> isShieldedItem = stack -> stack.getCapability(CapabilityFluxShielding.ITEM) != null && stack.getCapability(CapabilityFluxShielding.ITEM).curCharges(entity) > 0;
 
         // ARMOR
         for (ItemStack piece : entity.getArmorSlots()) {
@@ -43,15 +41,17 @@ public class FluxShieldingHelper {
         }
         // CURIOS
         final ItemStack[] retStack = {ItemStack.EMPTY};
-        CuriosProxy.getAllWorn(entity).ifPresent(c -> {
-            for (int i = 0; i < c.getSlots(); ++i) {
-                ItemStack slot = c.getStackInSlot(i);
-                if (isShieldedItem.test(slot)) {
-                    retStack[0] = slot;
-                    return;
-                }
-            }
-        });
+
+        // TODO: Fix
+        //        CuriosProxy.getAllWorn(entity).ifPresent(c -> {
+        //            for (int i = 0; i < c.getSlots(); ++i) {
+        //                ItemStack slot = c.getStackInSlot(i);
+        //                if (isShieldedItem.test(slot)) {
+        //                    retStack[0] = slot;
+        //                    return;
+        //                }
+        //            }
+        //        });
         return retStack[0];
     }
 
@@ -70,12 +70,13 @@ public class FluxShieldingHelper {
         for (ItemStack item : entity.getArmorSlots()) {
             count.accept(item);
         }
+        // TODO: Fix
         // CURIOS
-        CuriosProxy.getAllWorn(entity).ifPresent(c -> {
-            for (int i = 0; i < c.getSlots(); ++i) {
-                count.accept(c.getStackInSlot(i));
-            }
-        });
+        //        CuriosProxy.getAllWorn(entity).ifPresent(c -> {
+        //            for (int i = 0; i < c.getSlots(); ++i) {
+        //                count.accept(c.getStackInSlot(i));
+        //            }
+        //        });
         return counter;
     }
 
@@ -94,8 +95,8 @@ public class FluxShieldingHelper {
         if (stack.isEmpty()) {
             return false;
         }
-        LazyOptional<IFluxShieldedItem> cap = stack.getCapability(FLUX_SHIELDED_ITEM_CAPABILITY);
-        if (cap.map(c -> c.useCharge(entity)).orElse(false)) {
+        IFluxShieldedItem cap = stack.getCapability(CapabilityFluxShielding.ITEM);
+        if (cap != null && cap.useCharge(entity)) {
             onUseFluxShieldCharge(entity);
             return true;
         }
@@ -104,12 +105,12 @@ public class FluxShieldingHelper {
 
     public static int getCurrCharges(LivingEntity entity, ItemStack stack) {
 
-        return stack.isEmpty() ? 0 : stack.getCapability(FLUX_SHIELDED_ITEM_CAPABILITY).map(cap -> cap.currCharges(entity)).orElse(0);
+        return stack.isEmpty() ? 0 : stack.getCapability(CapabilityFluxShielding.ITEM) != null ? stack.getCapability(CapabilityFluxShielding.ITEM).curCharges(entity) : 0;
     }
 
     public static int getMaxCharges(LivingEntity entity, ItemStack stack) {
 
-        return stack.isEmpty() ? 0 : stack.getCapability(FLUX_SHIELDED_ITEM_CAPABILITY).map(cap -> cap.maxCharges(entity)).orElse(0);
+        return stack.isEmpty() ? 0 : stack.getCapability(CapabilityFluxShielding.ITEM) != null ? stack.getCapability(CapabilityFluxShielding.ITEM).maxCharges(entity) : 0;
     }
 
     public static boolean equalCharges(LivingEntity entity, ItemStack a, ItemStack b) {

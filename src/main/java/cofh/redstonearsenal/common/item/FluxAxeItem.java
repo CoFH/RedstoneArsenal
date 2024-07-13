@@ -1,11 +1,9 @@
 package cofh.redstonearsenal.common.item;
 
-import cofh.core.common.capability.CapabilityAreaEffect;
 import cofh.core.common.config.CoreClientConfig;
 import cofh.core.util.ProxyUtils;
 import cofh.core.util.helpers.AreaEffectHelper;
-import cofh.lib.api.capability.IAreaEffectItem;
-import cofh.lib.api.item.IEnergyContainerItem;
+import cofh.lib.api.capability.IAreaEffectHandler;
 import cofh.lib.common.energy.EnergyContainerItemWrapper;
 import cofh.lib.common.item.AxeItemCoFH;
 import cofh.lib.util.Utils;
@@ -16,8 +14,6 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
@@ -38,11 +34,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.neoforge.common.ToolAction;
 import net.neoforged.neoforge.common.ToolActions;
-import net.neoforged.neoforge.common.capabilities.Capability;
-import net.neoforged.neoforge.common.capabilities.ICapabilityProvider;
-import net.neoforged.neoforge.common.util.LazyOptional;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.List;
 import java.util.Optional;
@@ -118,12 +110,6 @@ public class FluxAxeItem extends AxeItemCoFH implements IMultiModeFluxItem {
         } else {
             return InteractionResult.PASS;
         }
-    }
-
-    @Override
-    public ICapabilityProvider initCapabilities(ItemStack stack, @Nullable CompoundTag nbt) {
-
-        return new FluxAxeItemWrapper(stack, this);
     }
 
     @Override
@@ -227,36 +213,26 @@ public class FluxAxeItem extends AxeItemCoFH implements IMultiModeFluxItem {
     // endregion
 
     // region CAPABILITY WRAPPER
-    protected class FluxAxeItemWrapper extends EnergyContainerItemWrapper implements IAreaEffectItem {
+    public static class AreaWrapper extends EnergyContainerItemWrapper implements IAreaEffectHandler {
 
-        private final LazyOptional<IAreaEffectItem> holder = LazyOptional.of(() -> this);
+        protected final FluxAxeItem axe;
 
-        FluxAxeItemWrapper(ItemStack containerIn, IEnergyContainerItem itemIn) {
+        public AreaWrapper(ItemStack containerIn, FluxAxeItem itemIn) {
 
-            super(containerIn, itemIn, itemIn.getEnergyCapability());
+            super(containerIn, itemIn);
+            axe = itemIn;
         }
 
         @Override
         public ImmutableList<BlockPos> getAreaEffectBlocks(BlockPos pos, Player player) {
 
-            if (isEmpowered(container) && hasEnergy(container, false)) {
-                int range = Math.min(getRange(container), getEnergyStored() / getEnergyPerUse(false) - 1);
+            if (axe.isEmpowered(container) && axe.hasEnergy(container, false)) {
+                int range = Math.min(axe.getRange(container), getEnergyStored() / axe.getEnergyPerUse(false) - 1);
                 return AreaEffectHelper.getBreakableWoodenBlocksVertical(container, pos, player, range);
             }
             return ImmutableList.of();
         }
 
-        // region ICapabilityProvider
-        @Override
-        @Nonnull
-        public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, @Nullable Direction side) {
-
-            if (cap == CapabilityAreaEffect.AREA_EFFECT_ITEM_CAPABILITY) {
-                return CapabilityAreaEffect.AREA_EFFECT_ITEM_CAPABILITY.orEmpty(cap, holder);
-            }
-            return super.getCapability(cap, side);
-        }
-        // endregion
     }
     // endregion
 }

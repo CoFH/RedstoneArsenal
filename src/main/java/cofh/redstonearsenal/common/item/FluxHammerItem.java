@@ -1,12 +1,10 @@
 package cofh.redstonearsenal.common.item;
 
-import cofh.core.common.capability.CapabilityAreaEffect;
 import cofh.core.common.config.CoreClientConfig;
 import cofh.core.common.item.HammerItem;
 import cofh.core.util.ProxyUtils;
 import cofh.core.util.helpers.AreaEffectHelper;
-import cofh.lib.api.capability.IAreaEffectItem;
-import cofh.lib.api.item.IEnergyContainerItem;
+import cofh.lib.api.capability.IAreaEffectHandler;
 import cofh.lib.common.energy.EnergyContainerItemWrapper;
 import cofh.lib.util.Utils;
 import cofh.redstonearsenal.common.entity.FluxHammerShockwave;
@@ -16,8 +14,6 @@ import com.google.common.collect.Multimap;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundSource;
@@ -38,11 +34,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.common.ToolAction;
-import net.neoforged.neoforge.common.capabilities.Capability;
-import net.neoforged.neoforge.common.capabilities.ICapabilityProvider;
-import net.neoforged.neoforge.common.util.LazyOptional;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.List;
 
@@ -93,12 +85,6 @@ public class FluxHammerItem extends HammerItem implements IMultiModeFluxItem {
     public boolean isEnchantable(ItemStack stack) {
 
         return getEnchantmentValue(stack) > 0;
-    }
-
-    @Override
-    public ICapabilityProvider initCapabilities(ItemStack stack, @Nullable CompoundTag nbt) {
-
-        return new FluxHammerItemWrapper(stack, this);
     }
 
     @Override
@@ -241,35 +227,25 @@ public class FluxHammerItem extends HammerItem implements IMultiModeFluxItem {
     // endregion
 
     // region CAPABILITY WRAPPER
-    protected class FluxHammerItemWrapper extends EnergyContainerItemWrapper implements IAreaEffectItem {
+    public static class AreaWrapper extends EnergyContainerItemWrapper implements IAreaEffectHandler {
 
-        private final LazyOptional<IAreaEffectItem> holder = LazyOptional.of(() -> this);
+        protected final FluxHammerItem hammer;
 
-        FluxHammerItemWrapper(ItemStack containerIn, IEnergyContainerItem itemIn) {
+        public AreaWrapper(ItemStack containerIn, FluxHammerItem itemIn) {
 
-            super(containerIn, itemIn, itemIn.getEnergyCapability());
+            super(containerIn, itemIn);
+            hammer = itemIn;
         }
 
         @Override
         public ImmutableList<BlockPos> getAreaEffectBlocks(BlockPos pos, Player player) {
 
-            if (hasEnergy(container, false)) {
+            if (hammer.hasEnergy(container, false)) {
                 return AreaEffectHelper.getBreakableBlocksRadius(container, pos, player, 1 + getItemEnchantmentLevel(getEnchantment(ID_ENSORCELLATION, ID_EXCAVATING), container));
             }
             return ImmutableList.of();
         }
 
-        // region ICapabilityProvider
-        @Override
-        @Nonnull
-        public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, @Nullable Direction side) {
-
-            if (cap == CapabilityAreaEffect.AREA_EFFECT_ITEM_CAPABILITY) {
-                return CapabilityAreaEffect.AREA_EFFECT_ITEM_CAPABILITY.orEmpty(cap, holder);
-            }
-            return super.getCapability(cap, side);
-        }
-        // endregion
     }
     // endregion
 }

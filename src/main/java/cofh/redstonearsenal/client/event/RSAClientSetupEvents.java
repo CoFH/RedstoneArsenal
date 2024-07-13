@@ -7,15 +7,16 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.EntityModel;
 import net.minecraft.client.model.geom.EntityModelSet;
 import net.minecraft.client.renderer.entity.*;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.neoforged.api.distmarker.Dist;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.Mod;
 import net.neoforged.neoforge.client.event.EntityRenderersEvent;
 import net.neoforged.neoforge.client.event.RegisterClientReloadListenersEvent;
 import net.neoforged.neoforge.client.event.RegisterGuiOverlaysEvent;
 import net.neoforged.neoforge.client.gui.overlay.VanillaGuiOverlay;
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.Mod;
 import org.apache.logging.log4j.Level;
 
 import static cofh.lib.util.constants.ModIds.ID_REDSTONE_ARSENAL;
@@ -28,7 +29,7 @@ public class RSAClientSetupEvents {
     public static void entityLayerSetup(final EntityRenderersEvent.AddLayers event) {
 
         EntityModelSet models = event.getEntityModels();
-        for (String skin : event.getSkins()) {
+        for (var skin : event.getSkins()) {
             LivingEntityRenderer<? extends Player, ? extends EntityModel<? extends Player>> renderer = event.getSkin(skin);
             if (renderer != null) {
                 try {
@@ -70,7 +71,7 @@ public class RSAClientSetupEvents {
     @SubscribeEvent
     public static void overlaySetup(final RegisterGuiOverlaysEvent event) {
 
-        event.registerAbove(VanillaGuiOverlay.AIR_LEVEL.id(), "flux_shielding", new FluxShieldingOverlay());
+        event.registerAbove(VanillaGuiOverlay.AIR_LEVEL.id(), new ResourceLocation(ID_REDSTONE_ARSENAL, "flux_shielding"), new FluxShieldingOverlay());
     }
 
     // region RELOAD

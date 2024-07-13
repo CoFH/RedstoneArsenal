@@ -3,13 +3,10 @@ package cofh.redstonearsenal.common.item;
 import cofh.core.common.config.CoreClientConfig;
 import cofh.core.util.ProxyUtils;
 import cofh.lib.api.capability.IShieldItem;
-import cofh.lib.api.item.IEnergyContainerItem;
 import cofh.lib.common.energy.EnergyContainerItemWrapper;
 import cofh.lib.common.item.ShieldItemCoFH;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.core.Direction;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.DamageTypeTags;
@@ -28,15 +25,10 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.common.ToolAction;
-import net.neoforged.neoforge.common.capabilities.Capability;
-import net.neoforged.neoforge.common.capabilities.ICapabilityProvider;
-import net.neoforged.neoforge.common.util.LazyOptional;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.List;
 
-import static cofh.core.common.capability.CapabilityShieldItem.SHIELD_ITEM_CAPABILITY;
 import static cofh.lib.util.helpers.StringHelper.getTextComponent;
 
 public class FluxShieldItem extends ShieldItemCoFH implements IMultiModeFluxItem {
@@ -70,12 +62,6 @@ public class FluxShieldItem extends ShieldItemCoFH implements IMultiModeFluxItem
         } else if (CoreClientConfig.holdShiftForDetails.get()) {
             tooltip.add(getTextComponent("info.cofh.hold_shift_for_details").withStyle(ChatFormatting.GRAY));
         }
-    }
-
-    @Override
-    public ICapabilityProvider initCapabilities(ItemStack stack, @Nullable CompoundTag nbt) {
-
-        return new FluxShieldItemWrapper(stack, this);
     }
 
     @Override
@@ -183,16 +169,16 @@ public class FluxShieldItem extends ShieldItemCoFH implements IMultiModeFluxItem
     // endregion
 
     // region CAPABILITY WRAPPER
-    protected class FluxShieldItemWrapper extends EnergyContainerItemWrapper implements IShieldItem {
+    public static class ShieldWrapper extends EnergyContainerItemWrapper implements IShieldItem {
 
-        private final LazyOptional<IShieldItem> holder = LazyOptional.of(() -> this);
+        final ItemStack shieldStack;
+        final FluxShieldItem shieldItem;
 
-        final ItemStack shieldItem;
+        public ShieldWrapper(ItemStack shieldItemContainer, FluxShieldItem item) {
 
-        FluxShieldItemWrapper(ItemStack shieldItem, IEnergyContainerItem container) {
-
-            super(shieldItem, container, container.getEnergyCapability());
-            this.shieldItem = shieldItem;
+            super(shieldItemContainer, item);
+            this.shieldStack = shieldItemContainer;
+            this.shieldItem = item;
         }
 
         @Override
@@ -204,37 +190,26 @@ public class FluxShieldItem extends ShieldItemCoFH implements IMultiModeFluxItem
             if (!target.isBlocking() || target.isInvulnerableTo(source) || (target.hasEffect(MobEffects.FIRE_RESISTANCE) && source.is(DamageTypeTags.IS_FIRE))) {
                 return false;
             }
-            // TODO 1.20 change to tags
+            // TODO: Change to tags
             return source.getMsgId().equals("flux") && IShieldItem.canBlockDamagePosition(target, source.getSourcePosition());
         }
 
         @Override
         public float onBlock(LivingEntity target, DamageSource source, float amount) {
 
-            if (isEmpowered(shieldItem)) {
-                repel(target.level, target, shieldItem);
+            if (shieldItem.isEmpowered(shieldStack)) {
+                shieldItem.repel(target.level, target, shieldStack);
             }
             if (amount >= 3.0F && !(target instanceof Player player && player.isCreative())) {
-                int energy = Math.min(getEnergyStored(), Mth.ceil(amount) * getEnergyPerUse(false));
-                int extract = getExtract(shieldItem);
+                int energy = Math.min(getEnergyStored(), Mth.ceil(amount) * shieldItem.getEnergyPerUse(false));
+                int extract = shieldItem.getExtract(shieldStack);
                 for (; energy > 0; energy -= extract) {
-                    useEnergy(shieldItem, Math.min(extract, energy), false);
+                    shieldItem.useEnergy(shieldStack, Math.min(extract, energy), false);
                 }
             }
             return amount;
         }
 
-        // region ICapabilityProvider
-        @Override
-        @Nonnull
-        public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, @Nullable Direction side) {
-
-            if (cap == SHIELD_ITEM_CAPABILITY) {
-                return SHIELD_ITEM_CAPABILITY.orEmpty(cap, holder);
-            }
-            return super.getCapability(cap, side);
-        }
-        // endregion
     }
     // endregion
 }

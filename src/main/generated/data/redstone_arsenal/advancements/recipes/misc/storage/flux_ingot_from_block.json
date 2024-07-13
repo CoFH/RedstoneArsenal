@@ -1,0 +1,50 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_at_least_9_flux_ingot": {
+      "conditions": {
+        "items": [
+          {
+            "count": {
+              "min": 9
+            },
+            "items": [
+              "redstone_arsenal:flux_ingot"
+            ]
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_flux_metal_block": {
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "redstone_arsenal:flux_metal_block"
+            ]
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_the_recipe": {
+      "conditions": {
+        "recipe": "redstone_arsenal:storage/flux_ingot_from_block"
+      },
+      "trigger": "minecraft:recipe_unlocked"
+    }
+  },
+  "requirements": [
+    [
+      "has_the_recipe",
+      "has_at_least_9_flux_ingot",
+      "has_flux_metal_block"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "redstone_arsenal:storage/flux_ingot_from_block"
+    ]
+  }
+}

@@ -2,8 +2,6 @@ package cofh.redstonearsenal.common.entity;
 
 import cofh.core.util.helpers.ArcheryHelper;
 import cofh.redstonearsenal.common.item.IFluxItem;
-import net.minecraft.network.protocol.Packet;
-import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.projectile.Projectile;
@@ -13,8 +11,7 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.neoforge.event.ForgeEventFactory;
-import net.neoforged.neoforge.network.NetworkHooks;
+import net.neoforged.neoforge.event.EventHooks;
 
 import static cofh.redstonearsenal.init.registries.ModEntities.FLUX_SLASH;
 
@@ -96,12 +93,6 @@ public class FluxSlash extends Projectile {
         setPos(getX() + velocity.x, getY() + velocity.y, getZ() + velocity.z);
     }
 
-    @Override
-    public Packet<ClientGamePacketListener> getAddEntityPacket() {
-
-        return NetworkHooks.getEntitySpawningPacket(this);
-    }
-
     public boolean shouldRenderAtSqrDistance(double p_70112_1_) {
 
         double d0 = this.getBoundingBox().getSize() * 10.0D;
@@ -125,7 +116,7 @@ public class FluxSlash extends Projectile {
         }
         this.hitEntities(this.level, start, end);
 
-        if (blockCollision && !ForgeEventFactory.onProjectileImpact(this, blockResult)) {
+        if (blockCollision && !EventHooks.onProjectileImpact(this, blockResult)) {
             this.onHitBlock(blockResult);
         }
     }
@@ -138,7 +129,7 @@ public class FluxSlash extends Projectile {
     protected void hitEntities(Level world, Vec3 startPos, Vec3 endPos) {
 
         ArcheryHelper.findHitEntities(world, this, startPos, endPos, this::canHitEntity)
-                .filter(result -> !ForgeEventFactory.onProjectileImpact(this, result))
+                .filter(result -> !EventHooks.onProjectileImpact(this, result))
                 .forEach(this::onHitEntity);
     }
 

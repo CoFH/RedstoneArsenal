@@ -3,12 +3,10 @@ package cofh.redstonearsenal.common.item;
 import cofh.core.common.config.CoreClientConfig;
 import cofh.core.common.item.ArmorItemCoFH;
 import cofh.core.util.ProxyUtils;
-import cofh.redstonearsenal.common.capability.FluxShieldedEnergyItemWrapper;
 import com.google.common.collect.ImmutableMultimap;
 import com.google.common.collect.Multimap;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.EquipmentSlot;
@@ -20,7 +18,6 @@ import net.minecraft.world.item.ArmorMaterial;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
-import net.neoforged.neoforge.common.capabilities.ICapabilityProvider;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -59,12 +56,6 @@ public class FluxArmorItem extends ArmorItemCoFH implements IFluxItem {
     public boolean isEnchantable(ItemStack stack) {
 
         return getEnchantmentValue(stack) > 0;
-    }
-
-    @Override
-    public ICapabilityProvider initCapabilities(ItemStack stack, @Nullable CompoundTag nbt) {
-
-        return new FluxShieldedEnergyItemWrapper(stack, getEnergyPerUse(true));
     }
 
     @Override

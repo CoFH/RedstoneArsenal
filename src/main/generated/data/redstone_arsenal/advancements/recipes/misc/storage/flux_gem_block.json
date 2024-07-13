@@ -1,0 +1,37 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_at_least_9_flux_gem": {
+      "conditions": {
+        "items": [
+          {
+            "count": {
+              "min": 9
+            },
+            "items": [
+              "redstone_arsenal:flux_gem"
+            ]
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_the_recipe": {
+      "conditions": {
+        "recipe": "redstone_arsenal:storage/flux_gem_block"
+      },
+      "trigger": "minecraft:recipe_unlocked"
+    }
+  },
+  "requirements": [
+    [
+      "has_the_recipe",
+      "has_at_least_9_flux_gem"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "redstone_arsenal:storage/flux_gem_block"
+    ]
+  }
+}

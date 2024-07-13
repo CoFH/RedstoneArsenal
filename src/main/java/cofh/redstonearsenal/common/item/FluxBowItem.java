@@ -1,5 +1,6 @@
 package cofh.redstonearsenal.common.item;
 
+import cofh.core.common.capability.CoreCapabilities;
 import cofh.core.common.capability.templates.ArcheryAmmoItemWrapper;
 import cofh.core.common.capability.templates.ArcheryBowItemWrapper;
 import cofh.core.common.config.CoreClientConfig;
@@ -13,9 +14,7 @@ import cofh.lib.util.Utils;
 import cofh.lib.util.helpers.MathHelper;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.core.Direction;
 import net.minecraft.core.particles.DustParticleOptions;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
@@ -30,16 +29,10 @@ import net.minecraft.world.entity.projectile.AbstractArrow;
 import net.minecraft.world.item.*;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.neoforge.common.capabilities.Capability;
-import net.neoforged.neoforge.common.capabilities.ICapabilityProvider;
-import net.neoforged.neoforge.common.util.LazyOptional;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.List;
 
-import static cofh.core.common.capability.CapabilityArchery.AMMO_ITEM_CAPABILITY;
-import static cofh.core.common.capability.CapabilityArchery.BOW_ITEM_CAPABILITY;
 import static cofh.core.util.references.EnsorcIDs.ID_TRUESHOT;
 import static cofh.core.util.references.EnsorcIDs.ID_VOLLEY;
 import static cofh.lib.util.Utils.getEnchantment;
@@ -82,12 +75,6 @@ public class FluxBowItem extends BowItemCoFH implements IMultiModeFluxItem {
     public boolean isEnchantable(ItemStack stack) {
 
         return getEnchantmentValue(stack) > 0;
-    }
-
-    @Override
-    public ICapabilityProvider initCapabilities(ItemStack stack, @Nullable CompoundTag nbt) {
-
-        return new FluxBowItemWrapper(stack, this);
     }
 
     public float getPullModelProperty(ItemStack stack, Level world, LivingEntity entity, int seed) {
@@ -149,20 +136,21 @@ public class FluxBowItem extends BowItemCoFH implements IMultiModeFluxItem {
     // endregion
 
     // region CAPABILITY WRAPPER
-    protected class FluxBowItemWrapper extends EnergyContainerItemWrapper implements IArcheryBowItem {
+    public static class BowWrapper extends EnergyContainerItemWrapper implements IArcheryBowItem {
 
-        private final LazyOptional<IArcheryBowItem> holder = LazyOptional.of(() -> this);
         private final float accuracyModifier;
         private final float damageModifier;
         private final float velocityModifier;
         protected final int simulateTicks = 100;
 
-        final ItemStack bowItem;
+        final ItemStack bowStack;
+        final FluxBowItem bowItem;
 
-        FluxBowItemWrapper(ItemStack bowItemContainer, FluxBowItem item) {
+        public BowWrapper(ItemStack bowItemContainer, FluxBowItem item) {
 
-            super(bowItemContainer, item, item.getEnergyCapability());
-            this.bowItem = bowItemContainer;
+            super(bowItemContainer, item);
+            this.bowStack = bowItemContainer;
+            this.bowItem = item;
 
             this.accuracyModifier = MathHelper.clamp(item.accuracyModifier, 0.1F, 10.0F);
             this.damageModifier = MathHelper.clamp(item.damageModifier, 0.1F, 10.0F);
@@ -190,23 +178,28 @@ public class FluxBowItem extends BowItemCoFH implements IMultiModeFluxItem {
         @Override
         public void onArrowLoosed(Player shooter) {
 
-            useEnergy(bowItem, isEmpowered(bowItem), shooter.abilities.instabuild);
+            bowItem.useEnergy(bowStack, bowItem.isEmpowered(bowStack), shooter.abilities.instabuild);
         }
 
         @Override
         public boolean fireArrow(ItemStack arrow, Player shooter, int charge, Level world) {
 
-            if (isEmpowered(bowItem) && hasEnergy(bowItem, true)) {
-                return fireInstantArrow(bowItem, arrow, shooter, charge, world);
+            if (bowItem.isEmpowered(bowStack) && bowItem.hasEnergy(bowStack, true)) {
+                return fireInstantArrow(bowStack, arrow, shooter, charge, world);
             }
-            return ArcheryHelper.fireArrow(bowItem, arrow, shooter, charge, world);
+            return ArcheryHelper.fireArrow(bowStack, arrow, shooter, charge, world);
         }
 
         public boolean fireInstantArrow(ItemStack bow, ItemStack ammo, Player shooter, int charge, Level world) {
 
-            IArcheryBowItem bowCap = bow.getCapability(BOW_ITEM_CAPABILITY).orElse(new ArcheryBowItemWrapper(bow));
-            IArcheryAmmoItem ammoCap = ammo.getCapability(AMMO_ITEM_CAPABILITY).orElse(new ArcheryAmmoItemWrapper(ammo));
-
+            IArcheryBowItem bowCap = bow.getCapability(CoreCapabilities.ArcheryHandler.BOW);
+            if (bowCap == null) {
+                bowCap = new ArcheryBowItemWrapper(bow);
+            }
+            IArcheryAmmoItem ammoCap = ammo.getCapability(CoreCapabilities.ArcheryHandler.AMMO);
+            if (ammoCap == null) {
+                ammoCap = new ArcheryAmmoItemWrapper(ammo);
+            }
             boolean infinite = shooter.abilities.instabuild
                     || ammoCap.isInfinite(bow, shooter)
                     || (ArcheryHelper.isArrow(ammo) && ((ArrowItem) ammo.getItem()).isInfinite(ammo, bow, shooter))
@@ -244,7 +237,7 @@ public class FluxBowItem extends BowItemCoFH implements IMultiModeFluxItem {
                         for (int shot = 0; shot < numArrows; ++shot) {
                             AbstractArrow arrow = ArcheryHelper.createArrow(world, ammo, shooter);
                             if (bowItem != null) {
-                                arrow = bowItem.customArrow(arrow);
+                                arrow = bowItem.customArrow(arrow, ammo);
                             }
                             arrow.shootFromRotation(shooter, shooter.xRot - volleyPitch * shot, shooter.yRot, 0.0F, arrowVelocity * 3.0F * velocityMod, accuracyMod);// * (1 + shot * 2));
                             arrow.setBaseDamage(arrow.getBaseDamage() * damageMod);
@@ -305,17 +298,6 @@ public class FluxBowItem extends BowItemCoFH implements IMultiModeFluxItem {
             }
         }
 
-        // region ICapabilityProvider
-        @Override
-        @Nonnull
-        public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, @Nullable Direction side) {
-
-            if (cap == BOW_ITEM_CAPABILITY) {
-                return BOW_ITEM_CAPABILITY.orEmpty(cap, holder);
-            }
-            return super.getCapability(cap, side);
-        }
-        // endregion
     }
     // endregion
 }

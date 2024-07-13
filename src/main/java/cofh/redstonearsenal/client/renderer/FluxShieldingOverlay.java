@@ -4,7 +4,7 @@ import cofh.redstonearsenal.util.FluxShieldingHelper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.resources.ResourceLocation;
-import net.neoforged.neoforge.client.gui.overlay.ForgeGui;
+import net.neoforged.neoforge.client.gui.overlay.ExtendedGui;
 import net.neoforged.neoforge.client.gui.overlay.IGuiOverlay;
 
 import static cofh.lib.util.constants.ModIds.ID_REDSTONE_ARSENAL;
@@ -13,7 +13,7 @@ public class FluxShieldingOverlay implements IGuiOverlay {
 
     public static final ResourceLocation ICONS = new ResourceLocation(ID_REDSTONE_ARSENAL, "textures/gui/flux_shielding_icons.png");
 
-    public void render(ForgeGui gui, GuiGraphics guiGraphics, float partialTick, int width, int height) {
+    public void render(ExtendedGui gui, GuiGraphics guiGraphics, float partialTick, int width, int height) {
 
         if (FluxShieldingHelper.maximumCharges <= 0) {
             return;

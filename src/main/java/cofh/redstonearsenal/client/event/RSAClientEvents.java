@@ -14,11 +14,11 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.HitResult;
 import net.neoforged.api.distmarker.Dist;
-import net.neoforged.neoforge.client.event.InputEvent.InteractionKeyMappingTriggered;
-import net.neoforged.neoforge.event.TickEvent;
 import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.Mod;
+import net.neoforged.neoforge.client.event.InputEvent.InteractionKeyMappingTriggered;
+import net.neoforged.neoforge.event.TickEvent;
 
 import static cofh.lib.util.constants.ModIds.ID_REDSTONE_ARSENAL;
 
@@ -42,23 +42,23 @@ public class RSAClientEvents {
         Item item = stack.getItem();
         // Flux Sword and Sickle
         if (item instanceof FluxSwordItem || item instanceof FluxSickleItem) {
-            ItemLeftClickPacket.createAndSend();
+            ItemLeftClickPacket.sendToServer();
         }
         // Flux Trident
         if (item instanceof FluxTridentItem trident) {
             if (trident.isEmpowered(stack) && trident.hasEnergy(stack, true) && trident.startPlunge(player)) {
                 event.setCanceled(true);
                 event.setSwingHand(false);
-                ItemLeftClickPacket.createAndSend();
+                ItemLeftClickPacket.sendToServer();
             }
         }
         // Flux Crossbow
         if (item instanceof FluxCrossbowItem crossbow && crossbow.getLoadedAmmoCount(stack) > 0) {
             HitResult result = Minecraft.getInstance().hitResult;
             if (result == null || !result.getType().equals(HitResult.Type.BLOCK)) {
-                ItemLeftClickPacket.createAndSend();
+                ItemLeftClickPacket.sendToServer();
             } else if (player.attackStrengthTicker > 5) {
-                ItemLeftClickPacket.createAndSend();
+                ItemLeftClickPacket.sendToServer();
                 player.resetAttackStrengthTicker();
             }
             event.setSwingHand(false);

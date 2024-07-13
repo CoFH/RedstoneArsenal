@@ -1,17 +1,16 @@
 package cofh.redstonearsenal.common.capability;
 
-import net.neoforged.neoforge.common.capabilities.Capability;
-import net.neoforged.neoforge.common.capabilities.CapabilityManager;
-import net.neoforged.neoforge.common.capabilities.CapabilityToken;
-import net.neoforged.neoforge.common.capabilities.RegisterCapabilitiesEvent;
+import net.minecraft.resources.ResourceLocation;
+import net.neoforged.neoforge.capabilities.ItemCapability;
 
-public class CapabilityFluxShielding {
+import static cofh.lib.util.constants.ModIds.ID_REDSTONE_ARSENAL;
 
-    public static Capability<IFluxShieldedItem> FLUX_SHIELDED_ITEM_CAPABILITY = CapabilityManager.get(new CapabilityToken<>() {});
+public final class CapabilityFluxShielding {
 
-    public static void register(RegisterCapabilitiesEvent event) {
+    public static final ItemCapability<IFluxShieldedItem, Void> ITEM = ItemCapability.createVoid(new ResourceLocation(ID_REDSTONE_ARSENAL, "flux_shielding"), IFluxShieldedItem.class);
 
-        event.register(IFluxShieldedItem.class);
+    private CapabilityFluxShielding() {
+
     }
 
 }

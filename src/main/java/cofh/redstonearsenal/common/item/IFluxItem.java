@@ -2,11 +2,8 @@ package cofh.redstonearsenal.common.item;
 
 import cofh.lib.api.item.ICoFHItem;
 import cofh.lib.api.item.IEnergyContainerItem;
-import cofh.lib.common.energy.EnergyContainerItemWrapper;
 import cofh.lib.util.Utils;
-import cofh.redstonearsenal.util.RSAEnergyHelper;
 import net.minecraft.ChatFormatting;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
@@ -15,9 +12,6 @@ import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
-import net.neoforged.neoforge.common.capabilities.Capability;
-import net.neoforged.neoforge.common.capabilities.ICapabilityProvider;
-import net.neoforged.neoforge.energy.IEnergyStorage;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -33,11 +27,6 @@ public interface IFluxItem extends ICoFHItem, IEnergyContainerItem {
 
     int ENERGY_PER_USE = 500;
     int ENERGY_PER_USE_EMPOWERED = 2000;
-
-    default Capability<? extends IEnergyStorage> getEnergyCapability() {
-
-        return RSAEnergyHelper.getBaseEnergySystem();
-    }
 
     default int getEnergyPerUse(boolean empowered) {
 
@@ -121,12 +110,6 @@ public interface IFluxItem extends ICoFHItem, IEnergyContainerItem {
     default float getChargedModelProperty(ItemStack stack, Level world, LivingEntity entity, int seed) {
 
         return hasEnergy(stack, false) ? 1F : 0F;
-    }
-
-    @Override
-    default ICapabilityProvider initCapabilities(ItemStack stack, @Nullable CompoundTag nbt) {
-
-        return new EnergyContainerItemWrapper(stack, this, getEnergyCapability());
     }
 
     default void tooltipDelegate(ItemStack stack, @Nullable Level worldIn, List<Component> tooltip, TooltipFlag flagIn) {
