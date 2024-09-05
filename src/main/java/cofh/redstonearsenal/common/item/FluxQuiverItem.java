@@ -123,20 +123,18 @@ public class FluxQuiverItem extends ItemCoFH implements IMultiModeFluxItem {
     // region CAPABILITY WRAPPER
     public static class AmmoWrapper extends EnergyContainerItemWrapper implements IArcheryAmmoItem {
 
-        final ItemStack quiverStack;
         final FluxQuiverItem quiverItem;
 
-        public AmmoWrapper(ItemStack quiverItemContainer, FluxQuiverItem item) {
+        public AmmoWrapper(ItemStack containerIn, FluxQuiverItem itemIn) {
 
-            super(quiverItemContainer, item);
-            this.quiverStack = quiverItemContainer;
-            this.quiverItem = item;
+            super(containerIn, itemIn);
+            this.quiverItem = itemIn;
         }
 
         @Override
         public void onArrowLoosed(Player shooter) {
 
-            quiverItem.useEnergy(quiverStack, quiverItem.isEmpowered(quiverStack), shooter != null && shooter.abilities.instabuild);
+            quiverItem.useEnergy(container, quiverItem.isEmpowered(container), shooter != null && shooter.abilities.instabuild);
         }
 
         @Override
@@ -144,7 +142,7 @@ public class FluxQuiverItem extends ItemCoFH implements IMultiModeFluxItem {
 
             FluxArrow arrow = new FluxArrow(world, shooter);
             arrow.pickup = AbstractArrow.Pickup.DISALLOWED;
-            if (quiverItem.isEmpowered(quiverStack)) {
+            if (quiverItem.isEmpowered(container)) {
                 ItemStack weapon = shooter.getMainHandItem().isEmpty() ? shooter.getOffhandItem() : shooter.getMainHandItem();
                 if (!weapon.isEmpty()) {
                     if (weapon.getItem() instanceof CrossbowItem) {
@@ -161,7 +159,7 @@ public class FluxQuiverItem extends ItemCoFH implements IMultiModeFluxItem {
         @Override
         public boolean isEmpty(Player shooter) {
 
-            return !quiverItem.hasEnergy(quiverStack, quiverItem.isEmpowered(quiverStack));
+            return !quiverItem.hasEnergy(container, quiverItem.isEmpowered(container));
         }
 
         @Override

@@ -13,7 +13,7 @@ java {
         languageVersion = JavaLanguageVersion.of(17)
     }
     withSourcesJar()
-    withJavadocJar()
+    // withJavadocJar()
 }
 
 sourceSets.main.resources.srcDirs += "src/main/generated"
@@ -84,7 +84,7 @@ repositories {
 
 dependencies {
     implementation("net.neoforged:neoforge:${neo_version}")
-    implementation "com.teamcofh:cofh_core:${mc_version}-${cofh_core_version}.+"
+    implementation "com.teamcofh:cofh_core:${mc_version}-${cofh_core_version}+"
 }
 
 def commonManifest = {
