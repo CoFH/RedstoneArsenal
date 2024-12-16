@@ -65,10 +65,10 @@ public class FluxPickaxeItem extends PickaxeItemCoFH implements IMultiModeFluxIt
     }
 
     @Override
-    public void appendHoverText(ItemStack stack, @Nullable Level worldIn, List<Component> tooltip, TooltipFlag flagIn) {
+    public void appendHoverText(ItemStack stack, @Nullable Level level, List<Component> tooltip, TooltipFlag flagIn) {
 
         if (Screen.hasShiftDown() || CoreClientConfig.alwaysShowDetails.get()) {
-            tooltipDelegate(stack, worldIn, tooltip, flagIn);
+            tooltipDelegate(stack, level, tooltip, flagIn);
         } else if (CoreClientConfig.holdShiftForDetails.get()) {
             tooltip.add(getTextComponent("info.cofh.hold_shift_for_details").withStyle(ChatFormatting.GRAY));
         }
@@ -94,9 +94,9 @@ public class FluxPickaxeItem extends PickaxeItemCoFH implements IMultiModeFluxIt
     }
 
     @Override
-    public boolean mineBlock(ItemStack stack, Level worldIn, BlockState state, BlockPos pos, LivingEntity entityLiving) {
+    public boolean mineBlock(ItemStack stack, Level level, BlockState state, BlockPos pos, LivingEntity entityLiving) {
 
-        if (Utils.isServerWorld(worldIn) && state.getDestroySpeed(worldIn, pos) != 0.0F) {
+        if (Utils.isServerWorld(level) && state.getDestroySpeed(level, pos) != 0.0F) {
             useEnergy(stack, false, entityLiving);
         }
         return true;
@@ -131,27 +131,25 @@ public class FluxPickaxeItem extends PickaxeItemCoFH implements IMultiModeFluxIt
         ItemStack tool = context.getItemInHand();
         Player player = context.getPlayer();
         if (player != null) {
-            Level world = context.getLevel();
+            Level level = context.getLevel();
             if (player.isShiftKeyDown()) {
                 if (useEnergy(tool, true, player.abilities.instabuild)) {
                     int r = REMOVE_RADIUS;
                     int r2 = r * r;
                     for (BlockPos pos : BlockPos.betweenClosed(context.getClickedPos().offset(-r, -r, -r), context.getClickedPos().offset(r, r, r))) {
-                        if (pos.distSqr(context.getClickedPos()) < r2 && world.getBlockState(pos).getBlock().equals(FLUX_GLOW_AIR.get())) {
-                            removeAir(world, player, pos, 0.3F);
+                        if (pos.distSqr(context.getClickedPos()) < r2 && level.getBlockState(pos).getBlock().equals(FLUX_GLOW_AIR.get())) {
+                            removeAir(level, player, pos, 0.3F);
                         }
                     }
                     return InteractionResult.SUCCESS;
                 }
             } else {
                 BlockPos pos = context.getClickedPos().relative(context.getClickedFace());
-                BlockState state = world.getBlockState(pos);
+                BlockState state = level.getBlockState(pos);
                 if (state.getBlock().equals(FLUX_GLOW_AIR.get()) && useEnergy(tool, false, player.abilities.instabuild)) {
-                    removeAir(world, player, pos, 0.5F);
-                    return InteractionResult.SUCCESS;
+                    return removeAir(level, player, pos, 0.5F) ? InteractionResult.SUCCESS : InteractionResult.FAIL;
                 } else if (state.isAir() && useEnergy(tool, true, player.abilities.instabuild)) {
-                    placeAir(world, player, pos, 0.5F);
-                    return InteractionResult.SUCCESS;
+                    return placeAir(level, player, pos, 0.5F) ? InteractionResult.SUCCESS : InteractionResult.FAIL;
                 }
             }
         }
@@ -159,34 +157,40 @@ public class FluxPickaxeItem extends PickaxeItemCoFH implements IMultiModeFluxIt
     }
 
     @Override
-    public void inventoryTick(ItemStack stack, Level world, Entity entity, int itemSlot, boolean isSelected) {
+    public void inventoryTick(ItemStack stack, Level level, Entity entity, int itemSlot, boolean isSelected) {
 
-        super.inventoryTick(stack, world, entity, itemSlot, isSelected);
+        super.inventoryTick(stack, level, entity, itemSlot, isSelected);
 
-        if (!world.isClientSide() && isEmpowered(stack) && world.getGameTime() % 8 == 0) {
+        if (!level.isClientSide() && isEmpowered(stack) && level.getGameTime() % 8 == 0) {
             BlockPos pos = entity.blockPosition();
-            if (world.isEmptyBlock(pos) && world.getRawBrightness(pos, world.getSkyDarken()) <= LOW_LIGHT_THRESHOLD && useEnergy(stack, true, entity)) {
-                placeAir(world, null, pos, 0.3F);
+            if (level.isEmptyBlock(pos) && level.getRawBrightness(pos, level.getSkyDarken()) <= LOW_LIGHT_THRESHOLD && useEnergy(stack, true, true) && placeAir(level, null, pos, 0.3F)) {
+                useEnergy(stack, true, entity);
             }
         }
     }
 
-    public void placeAir(Level world, Player player, BlockPos pos, float volume) {
+    public boolean placeAir(Level level, Player player, BlockPos pos, float volume) {
 
-        world.playSound(player, pos, SoundEvents.FLINTANDSTEEL_USE, SoundSource.PLAYERS, volume, 1.0F);
-        if (!world.isClientSide()) {
-            ((ServerLevel) world).sendParticles(DustParticleOptions.REDSTONE, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, 4, 0.25, 0.25, 0.25, 0);
+        if (level.setBlockAndUpdate(pos, FLUX_GLOW_AIR.get().defaultBlockState())) {
+            level.playSound(player, pos, SoundEvents.FLINTANDSTEEL_USE, SoundSource.PLAYERS, volume, 1.0F);
+            if (!level.isClientSide()) {
+                ((ServerLevel) level).sendParticles(DustParticleOptions.REDSTONE, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, 4, 0.25, 0.25, 0.25, 0);
+            }
+            return true;
         }
-        world.setBlockAndUpdate(pos, FLUX_GLOW_AIR.get().defaultBlockState());
+        return false;
     }
 
-    public void removeAir(Level world, Player player, BlockPos pos, float volume) {
+    public boolean removeAir(Level level, Player player, BlockPos pos, float volume) {
 
-        world.playSound(player, pos, SoundEvents.FIRE_EXTINGUISH, SoundSource.PLAYERS, 0.5F, 1.0F);
-        if (!world.isClientSide()) {
-            ((ServerLevel) world).sendParticles(DustParticleOptions.REDSTONE, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, 4, 0.25, 0.25, 0.25, 0);
+        if (level.setBlockAndUpdate(pos, AIR.defaultBlockState())) {
+            level.playSound(player, pos, SoundEvents.FIRE_EXTINGUISH, SoundSource.PLAYERS, 0.5F, 1.0F);
+            if (!level.isClientSide()) {
+                ((ServerLevel) level).sendParticles(DustParticleOptions.REDSTONE, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, 4, 0.25, 0.25, 0.25, 0);
+            }
+            return true;
         }
-        world.setBlockAndUpdate(pos, AIR.defaultBlockState());
+        return false;
     }
 
     protected float getAttackDamage(ItemStack stack) {

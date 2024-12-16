@@ -147,7 +147,7 @@ public interface IFluxItem extends ICoFHItem, IEnergyContainerItem {
 
     static DamageSource fluxRangedDamage(Projectile projectile, @Nullable Entity shooter) {
 
-        return projectile.level.damageSources().source(FLUX_RANGED, shooter, projectile);
+        return projectile.level.damageSources().source(FLUX_RANGED, projectile, shooter);
     }
 
 }
