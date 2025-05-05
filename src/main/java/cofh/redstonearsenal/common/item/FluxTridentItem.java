@@ -225,7 +225,7 @@ public class FluxTridentItem extends TridentItemCoFH implements IMultiModeFluxIt
         float range = getPlungeRange(attacker.fallDistance);
         if (world.isClientSide) {
             // TODO circle particle
-            world.addParticle(new CylindricalParticleOptions(CoreParticles.BLAST_WAVE.get(), range * 2.0F, range * 3.0F, 0, VFXHelper.windColor(world.random).toRGBA(), 1.5F), attacker.getX(), attacker.getY(), attacker.getZ(), 0, 0, 0);
+            world.addParticle(new CylindricalParticleOptions(CoreParticles.BLAST_WAVE.get(), range * 2.0F, range * 3.0F, 0, VFXHelper.windColor(world.random), 1.5F), attacker.getX(), attacker.getY(), attacker.getZ(), 0, 0, 0);
             return true;
         }
         if (Utils.getItemEnchantmentLevel(Enchantments.CHANNELING, stack) > 0) {

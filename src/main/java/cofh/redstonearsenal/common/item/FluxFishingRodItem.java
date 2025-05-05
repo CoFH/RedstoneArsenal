@@ -137,6 +137,7 @@ public class FluxFishingRodItem extends FishingRodItemCoFH implements IMultiMode
             //target.push(disp.x, disp.y, disp.z);
             target.setDeltaMovement(vel.add(dir.scale(MathHelper.clamp(dist - vel.dot(dir), -reelSpeed, reelSpeed))));
             target.hasImpulse = true;
+            target.hurtMarked = true;
             if (disp.y() > 0) {
                 bobber.getHookedIn().fallDistance = 0;
             }
